@@ -1,6 +1,6 @@
 # Learning Constraint Logic Programming with Prolog
 
-This page is a research record of my attenpt to learn Prolog programming using Constraint Logic Programming (CLP).  
+This page is a research record of my attempt to learn Prolog programming using Constraint Logic Programming (CLP).  
 
 
 ## Project: Basic ideas
