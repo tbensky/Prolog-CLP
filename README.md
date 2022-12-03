@@ -5,7 +5,7 @@ This page is a research record of my attenpt to learn Prolog programming using C
 
 ## Project: Basic ideas
 
-Here is a simple Prolog program that tries to instantiate the variablex `X`, `Y`, and `Z`.  
+Here is a simple Prolog program that tries to instantiate the variables `X`, `Y`, and `Z`.  
 
 ```prolog
 go(X,Y,Z) :- 
@@ -45,13 +45,13 @@ X = 4,
 Y in 7..13,
 4+Z#=Y,
 Z in 3..9.
-Z in 3..sup.
 ```
 
-Which happily ran, acknowledging that X is 4, Y will be involved in $4+Z=Y$ and Z will be between 3 and $\infty$.
+Which happily ran, acknowledging that X is 4, Y will be involved in $4+Z=Y$ and Z will be between 3 and 9. If the code continued,
+at some point Z might be nailed down, at which point, Prolog will be able to find Y as well.
 
-This is the basic idea of Prolog+CLP. Programs don't have to stop just becase variables are not know. It's happy to work
-with just constraints on variables and continue.
+This is the basic idea of Prolog+CLP. Programs don't have to stop just becase variables are not known. It's happy to work
+with constraints on variables and continue.
 
 In the last example, if we run ``go(X,Y,Z), label([X,Y,Z])`` then Prolog will actually start spitting out solutions that
 meet our constraints, like
@@ -85,6 +85,7 @@ Y = 13,
 Z = 9.
 ```
 
+In CLP, "labeling" is when we force Prolog to come up with actual values for variables.
 
 ## Project: Sudoku with and without CLP
 
