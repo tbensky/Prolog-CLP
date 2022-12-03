@@ -51,7 +51,7 @@ Which happily ran, acknowledging that X is 4, Y will be involved in $4+Z=Y$ and 
 at some point Z might be nailed down, at which point, Prolog will be able to find Y as well.
 
 This is the basic idea of Prolog+CLP. Programs don't have to stop just becase variables are not known. It's happy to work
-with constraints on variables and continue.
+with *constraints* on variables and continue.
 
 In the last example, if we run ``go(X,Y,Z), label([X,Y,Z])`` then Prolog will actually start spitting out solutions that
 meet our constraints, like
@@ -85,7 +85,7 @@ Y = 13,
 Z = 9.
 ```
 
-In CLP, "labeling" is when we force Prolog to come up with actual values for variables.
+In CLP, ***labeling*** is when we force Prolog to come up with actual values for variables.
 
 ## Project: Sudoku with and without CLP
 
