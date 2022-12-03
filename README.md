@@ -1,6 +1,6 @@
 # Learning Constraint Logic Programming with Prolog
 
-This page is a research record of my attempt to learn Prolog programming using Constraint Logic Programming (CLP).  
+This page is a research record of my attempt to learn Prolog programming using Constraint Logic Programming (CLP).  The work here was greatly helped along by the [Power of Prolog](https://www.metalevel.at/prolog/optimization) series.
 
 
 ## Project: Basic ideas
@@ -89,7 +89,11 @@ In CLP, ***labeling*** is when we force Prolog to come up with actual values for
 
 ## Project: Sudoku with and without CLP
 
+I never liked writing code to solve puzzles, but since [this book](https://www.amazon.com/Art-Computer-Programming-Combinatorial-Algorithms/dp/0201038048/) came out, I became quickly convinced that puzzles are a good way of learning CLP. So OK, puzzles it is. Let's start with Sudoku.
+
 ### Without CLP
+
+
 
 ### With CLP
 
