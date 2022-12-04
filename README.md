@@ -105,8 +105,7 @@ sudoku([
          A3, B3, C3, D3,
          A4, B4, C4, D4
          ] ) :-
-
-            
+         
          maplist(domain,[
                            A1, B1, C1, D1,
                            A2, B2, C2, D2,
@@ -132,14 +131,10 @@ sudoku([
          distinct([C1,D1,C2,D2]),
          distinct([C3,D3,C4,D4]).
 
-         
-   
-
 % sort removes duplicate elements upon the sort, so [4,3,3,2,1] will become [1,2,3,4].
 % do if length of sorted and unsorted list are the same, then the list must not have
 % duplicate elements.
 distinct(L) :- sort(L,L1), length(L,Len), length(L1,Len).
-
  
 %domains for the numbers
 domain(1).  
@@ -147,10 +142,8 @@ domain(2).
 domain(3).  
 domain(4).
 
-
 print_soln([]) :- nl.
 print_soln([A,B,C,D|T]) :- write([A,B,C,D]), nl, print_soln(T). 
-
 
 go(X) :- X = [
                1,4,_,_,
@@ -187,7 +180,7 @@ Next, the code
                            ]),
 ```
 
-chooses a value for each variable by applying each to the `domain` goal.  The Sudoku rules of 1) unique columns, 2) unique rows, and 3) unique 2x2 blocks is enforced. We let it go using `go(X).`, and sure enough after about 3 seconds (3 GHz Intel iMac), we'll get the solution of:
+chooses a value for each variable by applying each to the `domain` goal.  The Sudoku rules of 1) unique columns, 2) unique rows, and 3) unique 2x2 blocks are enforced in the series of `distinct` predicate calls. We let it go using `go(X).`, and sure enough after about 3 seconds (3 GHz Intel iMac), we'll get the solution of:
 
 ```prolog
 [1,4,3,2]
