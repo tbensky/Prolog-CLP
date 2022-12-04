@@ -145,7 +145,7 @@ sudoku([
          distinct([C3,D3,C4,D4]).
 
 % sort removes duplicate elements upon the sort, so [4,3,3,2,1] will become [1,2,3,4].
-% do if length of sorted and unsorted list are the same, then the list must not have
+% do if the length of sorted and unsorted list are the same, then the list must not have
 % duplicate elements.
 distinct(L) :- sort(L,L1), length(L,Len), length(L1,Len).
  
@@ -202,7 +202,7 @@ chooses a value for each variable by applying each to the `domain` goal.  The Su
 [4,1,2,3]
 ```
 
-is displayed, and this appears to be the only solution.
+This appears to be the only solution.
 
 ### With CLP
 
