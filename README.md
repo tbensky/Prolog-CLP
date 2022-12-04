@@ -206,7 +206,7 @@ This appears to be the only solution.
 
 ### With CLP
 
-We can go for the 9x9 Sudoku solver, using CLP, which is always looking to prune the search space. This will solve a 9x9 Sudoku almost immediately.
+We can go for the 9x9 Sudoku solver, using CLP, which is always looking to prune the search space. This code will solve a 9x9 Sudoku almost immediately.
 
 ```Prolog
 :- use_module(library(clpfd)).
