@@ -2,10 +2,12 @@
 
 This repo is a record of my attempt to research and learn Prolog programming using Constraint Logic Programming (CLP).  The work here was greatly helped along by the [Power of Prolog](https://www.metalevel.at/prolog/optimization) series.
 
-CLP is a "new" addition to Prolog that didn't exist in Prolog as it existed in the late 1980s.
+CLP is a "new" (mid-2000s) addition to Prolog that didn't exist in Prolog in the late 1980s. I can (personally) see how it
+greatly enhances the power of logic programming.  It's a tough study though, because Prolog + CLP doesn't appear in any
+books on Prolog, so there's no unified source for learning about it. 
 
 
-## Project: Basic ideas
+## Project: Basic ideas of CLP
 
 Here is a simple Prolog program that tries to instantiate the variables `X`, `Y`, and `Z`.  
 
@@ -49,7 +51,7 @@ Y in 7..13,
 Z in 3..9.
 ```
 
-Which happily ran, acknowledging that X is 4, Y will be involved in $4+Z=Y$ and Z will be between 3 and 9. If the code continued,
+Which happily runs, acknowledging that X is 4, Y will be involved in $4+Z=Y$ and Z will be between 3 and 9. If the code continued,
 at some point Z might be nailed down, at which point, Prolog will be able to find Y as well.
 
 This is the basic idea of Prolog+CLP. Programs don't have to stop just becase variables are not known. It's happy to work
@@ -90,9 +92,13 @@ Z = 9.
 
 In CLP, *labeling* is when we force Prolog to come up with actual values for variables.
 
+# Learning Projects
+
+I'm not a puzzle person. I've never done a Sudoku or crossword puzzle. I also never really liked writing code to solve puzzles. But, since [this book](https://www.amazon.com/Art-Computer-Programming-Combinatorial-Algorithms/dp/0201038048/) came out, I became quickly convinced that puzzles are actually a good way of learning CLP. So OK, puzzles it'll be. Let's start with Sudoku.
+
 ## Project: Sudoku with and without CLP
 
-I never liked writing code to solve puzzles, but since [this book](https://www.amazon.com/Art-Computer-Programming-Combinatorial-Algorithms/dp/0201038048/) came out, I became quickly convinced that puzzles are actually a good way of learning CLP. So OK, puzzles it'll be. Let's start with Sudoku.
+Here, we'll study implementing Sudoku in Prolog using two methods, one with and without CLP.
 
 ### Without CLP
 
