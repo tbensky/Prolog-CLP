@@ -57,8 +57,10 @@ at some point Z might be nailed down, at which point, Prolog will be able to fin
 This is the basic idea of Prolog+CLP. Programs don't have to stop just becase variables are not known. It's happy to work
 with *constraints* on variables and continue.
 
-In the last example, if we run ``go(X,Y,Z), label([X,Y,Z])`` then Prolog will actually start spitting out solutions that
-meet our constraints, like
+### Labeling
+
+In this first CLP xample, if we run ``go(X,Y,Z), label([X,Y,Z])`` then Prolog will actually start emitting solutions that
+meet the given constraints. Here's the output:
 
 ```prolog
 ?- go(X,Y,Z), label([X,Y,Z]).
