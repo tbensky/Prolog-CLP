@@ -1,9 +1,10 @@
 # Learning Constraint Logic Programming with Prolog
 
-This repo is a record of my attempt to research and learn Prolog programming using Constraint Logic Programming (CLP).  The work here was greatly helped along by the [Power of Prolog](https://www.metalevel.at/prolog/optimization) series.
+This repo is a record of my attempt to research and learn Prolog programming using Constraint Logic Programming (CLP).  The work here was greatly inspired along by the [Power of Prolog](https://www.metalevel.at/prolog/optimization) series, reading throug [this code](https://github.com/triska/clpz/blob/master/clpz.pl), and [the SWI Prolog CLP page](https://www.swi-prolog.org/man/clpfd.html).
 
-CLP is a "new" (mid-2000s) addition to Prolog that didn't exist in Prolog in the late 1980s. I can (personally) see how it
-greatly enhances the power of logic programming.  It's a tough study though, because Prolog + CLP doesn't appear in any
+CLP is a "new" (mid-2000s) addition to Prolog that didn't exist in Prolog in the late 1980s (when I first dabbled with Prolog). I can (personally) see how CLP greatly enhances the power of logic programming. In sum, CLP allows Prolog searches to proceed with incomplete data, when in the old Prolog, they would fail and stop.
+
+At this point, it's tough to study up on, because Prolog + CLP doesn't appear in any
 books on Prolog, so there's no unified source for learning about it. 
 
 
