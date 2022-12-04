@@ -276,7 +276,9 @@ rules([
 
 Note the structure is very similar to the non-CLP Sudoko: set up a board, assign elements to variables, and apply the Sudoku rules (unique rows, columns, and now 4x4 blocks). 
 
-The difference now is two-fold. First, the `all_distinct` predicate is part of the CLP(Z) library. It store the fact that we want each variable in a given list to have a unique value. Second, the `X ins 1..9`. The `ins` predicate is also part of the CLP(Z) library. It sets the domain of each variable in the list `X` to be within 1 to 9 (`ins` is a clever help that maps the domain needs over all elements of a list. It is similar to the `maplist(domain,...)` call in the non-CLP solver.
+The difference now is two-fold. First, the `all_distinct` predicate is part of the CLPFD library. It stores the fact that we want each variable in a given list to have a unique value. 
+
+Second is the `X ins 1..9`. The `ins` predicate is also part of the CLPFD library. It sets the domain of each variable in the list `X` to be within 1 to 9 (`ins` is a clever help that maps the domain needs over all elements of a list. It is similar to the `maplist(domain,...)` call in the non-CLP solver).
 
 The following solution is produced.
 
