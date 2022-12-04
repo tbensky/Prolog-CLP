@@ -1,6 +1,8 @@
 # Learning Constraint Logic Programming with Prolog
 
-This page is a research record of my attempt to learn Prolog programming using Constraint Logic Programming (CLP).  The work here was greatly helped along by the [Power of Prolog](https://www.metalevel.at/prolog/optimization) series.
+This repo is a record of my attempt to research and learn Prolog programming using Constraint Logic Programming (CLP).  The work here was greatly helped along by the [Power of Prolog](https://www.metalevel.at/prolog/optimization) series.
+
+CLP is a "new" addition to Prolog that didn't exist in Prolog as it existed in the late 1980s.
 
 
 ## Project: Basic ideas
@@ -64,6 +66,7 @@ Z = 3 ;
 
 X = Z, Z = 4,
 Y = 8 ;
+
 X = 4,
 Y = 9,
 Z = 5 ;
@@ -85,15 +88,113 @@ Y = 13,
 Z = 9.
 ```
 
-In CLP, ***labeling*** is when we force Prolog to come up with actual values for variables.
+In CLP, *labeling* is when we force Prolog to come up with actual values for variables.
 
 ## Project: Sudoku with and without CLP
 
-I never liked writing code to solve puzzles, but since [this book](https://www.amazon.com/Art-Computer-Programming-Combinatorial-Algorithms/dp/0201038048/) came out, I became quickly convinced that puzzles are a good way of learning CLP. So OK, puzzles it is. Let's start with Sudoku.
+I never liked writing code to solve puzzles, but since [this book](https://www.amazon.com/Art-Computer-Programming-Combinatorial-Algorithms/dp/0201038048/) came out, I became quickly convinced that puzzles are actually a good way of learning CLP. So OK, puzzles it'll be. Let's start with Sudoku.
 
 ### Without CLP
 
+Solving a full 9x9, with a atomic "guess and check" backtracking solver (traditional Prolog), is not feasible. So, we have to do a 4x4 puzzle. Here's the code for it:
 
+```prolog
+sudoku([
+         A1, B1, C1, D1,
+         A2, B2, C2, D2,
+         A3, B3, C3, D3,
+         A4, B4, C4, D4
+         ] ) :-
+
+            
+         maplist(domain,[
+                           A1, B1, C1, D1,
+                           A2, B2, C2, D2,
+                           A3, B3, C3, D3,
+                           A4, B4, C4, D4
+                           ]),
+     
+         %columns
+         distinct([A1,A2,A3,A4]),
+         distinct([B1,B2,B3,B4]),
+         distinct([C1,C2,C3,C4]),
+         distinct([D1,D2,D3,D4]),
+
+         %rows
+         distinct([A1,B1,C1,D1]),
+         distinct([A2,B2,C2,D2]),
+         distinct([A3,B3,C3,D3]),
+         distinct([A4,B4,C4,D4]),
+
+         %blocks
+         distinct([A1,B1,A2,B2]),
+         distinct([A3,B3,A4,B4]),
+         distinct([C1,D1,C2,D2]),
+         distinct([C3,D3,C4,D4]).
+
+         
+   
+
+% sort removes duplicate elements upon the sort, so [4,3,3,2,1] will become [1,2,3,4].
+% do if length of sorted and unsorted list are the same, then the list must not have
+% duplicate elements.
+distinct(L) :- sort(L,L1), length(L,Len), length(L1,Len).
+
+ 
+%domains for the numbers
+domain(1).  
+domain(2).  
+domain(3).  
+domain(4).
+
+
+print_soln([]) :- nl.
+print_soln([A,B,C,D|T]) :- write([A,B,C,D]), nl, print_soln(T). 
+
+
+go(X) :- X = [
+               1,4,_,_,
+               _,_,4,_,
+               2,_,_,_,
+               _,_,_,3
+            ],
+
+         sudoku(X),
+         print_soln(X).
+```
+
+Down in the ```go``` pedicate, we initialize a Sudoku board as needed into variable ```X```. Then we make a call to the solver in ```sudoku(X)```. The header
+
+```prolog
+sudoku([
+         A1, B1, C1, D1,
+         A2, B2, C2, D2,
+         A3, B3, C3, D3,
+         A4, B4, C4, D4
+         ] )
+```
+
+maps the incoming Sudoku board into discrete variables.
+
+Next, the code
+
+```prolog
+ maplist(domain,[
+                           A1, B1, C1, D1,
+                           A2, B2, C2, D2,
+                           A3, B3, C3, D3,
+                           A4, B4, C4, D4
+                           ]),
+```
+
+chooses a value for each variable by applying each to the `domain` goal.  The Sudoku rules of 1) unique columns, 2) unique rows, and 3) unique 2x2 blocks is enforced. We let it go using `go(X).`, and sure enough after about 3 seconds (3 GHz Intel iMac), we'll get the solution of:
+
+```prolog
+[1,4,3,2]
+[3,2,4,1]
+[2,3,1,4]
+[4,1,2,3]
+```
 
 ### With CLP
 
