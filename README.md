@@ -96,7 +96,12 @@ I never liked writing code to solve puzzles, but since [this book](https://www.a
 
 ### Without CLP
 
-Solving a full 9x9, with a atomic "guess and check" backtracking solver (traditional Prolog), is not feasible. So, we have to do a 4x4 puzzle. Here's the code for it:
+Solving a full 9x9, with a atomic "guess and check" backtracking solver (traditional Prolog), is not feasible. As [Norvig]() said:
+
+> First, we could try a brute force approach. Suppose we have a very efficient program that takes only one instruction to evaluate a position, and that we have access to the next-generation computing technology, let's say a 10GHz processor with 1024 cores, and let's say we could afford a million of them, and while we're shopping, let's say we also pick up a time machine and go back 13 billion years to the origin of the universe and start our program running. We can then compute that we'd be almost 1% done with this one puzzle by now.
+
+
+So, we have to do a 4x4 puzzle. Here's the code for it:
 
 ```prolog
 sudoku([
@@ -188,6 +193,8 @@ chooses a value for each variable by applying each to the `domain` goal.  The Su
 [2,3,1,4]
 [4,1,2,3]
 ```
+
+is displayed.
 
 ### With CLP
 
