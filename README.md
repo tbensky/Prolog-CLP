@@ -327,6 +327,21 @@ and
 The idea is to find values for all variables so that the sums hold. We also have the constrains that there are no leading zeros in the
 solution, and all digits of the addends are distinct.
 
+Here, we'll do the TWO+TWO=FOUR puzzle. Our technique is easily applied to the SEND+MORE=MONEY problem as well.
+
+### Grade school addition
+
+Remmebering how to do these stacked "grade school" addition: Start with the rightmost column of digits.  Add the two digits. If the sum is less than 10, we write the digit under the two and go
+to the next column to the left and repeat. If the sum is ever larger than 10, we write the ones digit under the two digits, and "carry" the one, which means add it to the sum of the next
+left column.
+
+In terms of code, we'll do this
+
+* Add two digits and the sum "mod 10" will be written under the two.
+
+* Check the sum and see if it's larger than 10. If so, add a 1 to the next left column.
+
+* We have a predicate called `carry` that will give us a 1 or 0 to add onto the current column we're working on, based on the sum of the previous (right) column.
 
 ### Without CLP
 
