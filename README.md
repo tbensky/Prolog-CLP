@@ -331,17 +331,19 @@ Here, we'll do the TWO+TWO=FOUR puzzle. Our technique is easily applied to the S
 
 ### Grade school addition
 
-Remebering how to do these stacked "grade school" addition problems: Start with the rightmost column of digits.  Add the two digits. If the sum is less than 10, we write the digit under the two and go
+Remembering how to do these stacked "grade school" addition problems: Start with the rightmost column of digits.  Add the two digits. If the sum is less than 10, we write the sum under the two and go
 to the next column to the left and repeat. If the sum is ever larger than 10, we write the ones digit under the two digits, and "carry" the one, which means add it to the sum of the next
 left column.
 
 In terms of code, we'll do this
 
-* Add two digits and the sum "mod 10" will be written under the two.
+* Add two digits. The sum "mod 10" will be written under the two.
 
 * Check the sum and see if it's larger than 10. If so, add a 1 to the next left column.
 
 * We have a predicate called `carry` that will give us a 1 or 0 to add onto the current column we're working on, based on the sum of the previous (right) column.
+
+This problem also has a constraint that $F\ne 0$.
 
 ### Without CLP
 
@@ -371,5 +373,87 @@ solve([F,O,U,R,T,W,O]) :-
 
 carry(S,1) :- S #>= 10.
 carry(S,0).
+
 go([F,O,U,R,T,W,O]) :- solve([F,O,U,R,T,W,O]), label([F,O,U,R,T,W,O]).
+```
+
+There seems to be many solutions to this problem, noting the list gives the values of F, O, U, and R, then T, W, then O.
+
+```prolog
+L = [1, 5, 3, 0, 7, 6, 5] ;
+L = [1, 5, 7, 0, 7, 8, 5] ;
+L = [1, 5, 9, 0, 7, 9, 5] ;
+L = [1, 7, 1, 4, 8, 5, 7] ;
+L = [1, 7, 3, 4, 8, 6, 7] ;
+L = [1, 7, 9, 4, 8, 9, 7] ;
+L = [1, 6, 1, 2, 8, 0, 6] ;
+L = [1, 6, 1, 2, 8, 5, 6] ;
+L = [1, 6, 3, 2, 8, 1, 6] ;
+L = [1, 6, 5, 2, 8, 2, 6] ;
+L = [1, 6, 5, 2, 8, 7, 6] ;
+L = [1, 6, 7, 2, 8, 3, 6] ;
+L = [1, 6, 9, 2, 8, 4, 6] ;
+L = [1, 6, 9, 2, 8, 9, 6] ;
+L = [1, 8, 1, 6, 9, 0, 8] ;
+L = [1, 8, 1, 6, 9, 5, 8] ;
+L = [1, 8, 3, 6, 9, 1, 8] ;
+L = [1, 8, 3, 6, 9, 6, 8] ;
+L = [1, 8, 5, 6, 9, 2, 8] ;
+L = [1, 8, 5, 6, 9, 7, 8] ;
+L = [1, 8, 7, 6, 9, 3, 8] ;
+L = [1, 8, 9, 6, 9, 4, 8] ;
+L = [1, 1, 2, 2, 5, 6, 1] ;
+L = [1, 1, 4, 2, 5, 7, 1] ;
+L = [1, 1, 6, 2, 5, 8, 1] ;
+L = [1, 1, 8, 2, 5, 9, 1] ;
+L = [1, 3, 0, 6, 6, 5, 3] ;
+L = [1, 3, 4, 6, 6, 7, 3] ;
+L = [1, 3, 6, 6, 6, 8, 3] ;
+L = [1, 3, 8, 6, 6, 9, 3] ;
+L = [1, 5, 2, 0, 7, 6, 5] ;
+L = [1, 5, 6, 0, 7, 8, 5] ;
+L = [1, 5, 8, 0, 7, 9, 5] ;
+L = [1, 7, 0, 4, 8, 5, 7] ;
+L = [1, 7, 2, 4, 8, 6, 7] ;
+L = [1, 7, 8, 4, 8, 9, 7] ;
+L = [1, 0, 2, 0, 5, 1, 0] ;
+L = [1, 0, 2, 0, 5, 6, 0] ;
+L = [1, 0, 4, 0, 5, 2, 0] ;
+L = [1, 0, 4, 0, 5, 7, 0] ;
+L = [1, 0, 6, 0, 5, 3, 0] ;
+L = [1, 0, 6, 0, 5, 8, 0] ;
+L = [1, 0, 8, 0, 5, 4, 0] ;
+L = [1, 0, 8, 0, 5, 9, 0] ;
+L = [1, 2, 0, 4, 6, 0, 2] ;
+L = [1, 2, 0, 4, 6, 5, 2] ;
+L = [1, 2, 2, 4, 6, 1, 2] ;
+L = [1, 2, 4, 4, 6, 7, 2] ;
+L = [1, 2, 6, 4, 6, 3, 2] ;
+L = [1, 2, 6, 4, 6, 8, 2] ;
+L = [1, 2, 8, 4, 6, 4, 2] ;
+L = [1, 2, 8, 4, 6, 9, 2] ;
+L = [1, 4, 0, 8, 7, 0, 4] ;
+L = [1, 4, 0, 8, 7, 5, 4] ;
+L = [1, 4, 2, 8, 7, 1, 4] ;
+L = [1, 4, 2, 8, 7, 6, 4] ;
+L = [1, 4, 4, 8, 7, 2, 4] ;
+L = [1, 4, 6, 8, 7, 3, 4] ;
+L = [1, 4, 6, 8, 7, 8, 4] ;
+L = [1, 4, 8, 8, 7, 9, 4] ;
+L = [1, 6, 0, 2, 8, 0, 6] ;
+L = [1, 6, 0, 2, 8, 5, 6] ;
+L = [1, 6, 2, 2, 8, 1, 6] ;
+L = [1, 6, 4, 2, 8, 2, 6] ;
+L = [1, 6, 4, 2, 8, 7, 6] ;
+L = [1, 6, 6, 2, 8, 3, 6] ;
+L = [1, 6, 8, 2, 8, 4, 6] ;
+L = [1, 6, 8, 2, 8, 9, 6] ;
+L = [1, 8, 0, 6, 9, 0, 8] ;
+L = [1, 8, 0, 6, 9, 5, 8] ;
+L = [1, 8, 2, 6, 9, 1, 8] ;
+L = [1, 8, 2, 6, 9, 6, 8] ;
+L = [1, 8, 4, 6, 9, 2, 8] ;
+L = [1, 8, 4, 6, 9, 7, 8] ;
+L = [1, 8, 6, 6, 9, 3, 8] ;
+L = [1, 8, 8, 6, 9, 4, 8] ;
 ```
