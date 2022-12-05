@@ -110,7 +110,7 @@ Solving a full 9x9, with a atomic "guess and check" backtracking Sudoku solver (
 > First, we could try a brute force approach. Suppose we have a very efficient program that takes only one instruction to evaluate a position, and that we have access to the next-generation computing technology, let's say a 10GHz processor with 1024 cores, and let's say we could afford a million of them, and while we're shopping, let's say we also pick up a time machine and go back 13 billion years to the origin of the universe and start our program running. We can then compute that we'd be almost 1% done with this one puzzle by now.
 
 
-So, we have to do a 4x4 puzzle instead. Here's the code for it (inspired by the one in [this book](https://www.amazon.com/Thinking-Computation-First-Course-Press/dp/0262534746/)):
+So, we have to do a 4x4 puzzle instead. Here's the code for it (inspired by the one in [this book](https://www.amazon.com/Thinking-Computation-First-Course-Press/dp/0262534746/)). Our notation here is that columns are labeled A..D and rows are labeled 1..4.
 
 ```prolog
 sudoku([
@@ -207,7 +207,7 @@ This appears to be the only solution.
 
 ### With CLP
 
-We can go for the 9x9 Sudoku solver, using CLP, which is always looking to prune the search space. This code will solve a 9x9 Sudoku almost immediately.
+We can go for the 9x9 Sudoku solver, using CLP, which is always looking to prune the search space. This code will solve a 9x9 Sudoku almost immediately. Our notation here is that columns are labeled A..I and rows are labeled 1..9.
 
 ```Prolog
 :- use_module(library(clpfd)).
@@ -301,4 +301,60 @@ The following solution is produced.
 [8,3,1,5,4,9,7,6,2]
 [6,9,7,1,2,3,5,8,4]
 [2,4,5,6,7,8,1,3,9]
+```
+
+
+## Project: Crypto-arithmetic puzzle
+
+There are some famous puzzles like finding values for all variables such that
+
+```
+   SEND
++  MORE
+--------
+  MONEY
+```
+
+and
+
+```
+   TWO
++  TWO
+------
+  FOUR
+```
+
+The idea is to find values for all variables so that the sums hold. We also have the constrains that there are no leading zeros in the
+solution, and all digits of the addends are distinct.
+
+
+### Without CLP
+
+
+### With CLP
+
+```prolog
+:- use_module(library(clpfd)).
+
+solve([F,O,U,R,T,W,O]) :-
+        R #= (O + O) mod 10,
+        carry(O + O,Rc),
+
+        U #= (W + W + Rc) mod 10,
+        carry(W + W + Rc,Uc),
+
+        O #= (T + T + Uc) mod 10,
+        carry(T + T + Uc,Oc),
+        
+        F #= Oc,
+
+        F #\= 0,
+
+        [F,O,U,R,T,W,O] ins 0..9,
+
+        all_distinct([T,W,O]).
+
+carry(S,1) :- S #>= 10.
+carry(S,0).
+go([F,O,U,R,T,W,O]) :- solve([F,O,U,R,T,W,O]), label([F,O,U,R,T,W,O]).
 ```
