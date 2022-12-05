@@ -581,3 +581,5 @@ carry(S,0).
 
 go([A, E, L, N, O, P, R, S, T, U]) :- solve([A, E, L, N, O, P, R, S, T, U]), label([A, E, L, N, O, P, R, S, T, U]), write([A, E, L, N, O, P, R, S, T, U]).
 ```
+
+We note that insisting all variables are distinct will not yield a solution.
