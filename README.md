@@ -377,7 +377,8 @@ carry(S,0).
 go([F,O,U,R,T,W,O]) :- solve([F,O,U,R,T,W,O]), label([F,O,U,R,T,W,O]).
 ```
 
-There seems to be many solutions to this problem, noting the list gives the values of F, O, U, and R, then T, W, then O.
+There seems to be many solutions to this problem, noting the list gives the values of F, O, U, and R, then T, W, then O. (So the first line
+below says that 765+765=1530, which is true.)
 
 ```prolog
 L = [1, 5, 3, 0, 7, 6, 5] ;
