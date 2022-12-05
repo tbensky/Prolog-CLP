@@ -304,7 +304,7 @@ The following solution is produced.
 ```
 
 
-## Project: Crypto-arithmetic puzzle
+## Project: Crypto-arithmetic puzzles
 
 There are some famous puzzles like finding values for all variables such that
 
