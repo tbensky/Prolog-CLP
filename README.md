@@ -363,12 +363,9 @@ solve([F,O,U,R,T,W,O]) :-
         O #= (T + T + Uc) mod 10,
         carry(T + T + Uc,Oc),
         
-        F #= Oc,
-
-        F #\= 0,
+        F #= Oc, F #\= 0,
 
         [F,O,U,R,T,W,O] ins 0..9,
-
         all_distinct([T,W,O]).
 
 carry(S,1) :- S #>= 10.
