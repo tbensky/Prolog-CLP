@@ -327,7 +327,7 @@ and
 The idea is to find values for all variables so that the sums hold. We also have the constrains that there are no leading zeros in the
 solution, and all digits of the addends are distinct.
 
-Here, we'll do the TWO+TWO=FOUR puzzle. Our technique is easily applied to the SEND+MORE=MONEY problem as well.
+Here, we'll do the TWO+TWO=FOUR puzzle. Looks tricky to do by hand since the "O" is both in the addends and the sum. Our technique can be applied to the SEND+MORE=MONEY problem as well.
 
 ### Grade school addition
 
