@@ -347,8 +347,62 @@ This problem also has a constraint that $F\ne 0$.
 
 ### Without CLP
 
+Without CLP, we are starting to see a pattern emerge in the Prolog code for these constrained searches. The pattern is 1) assign variables, 2) apply and rules to be followed 3) then apply the constraints. This is outlined on p. 89 of Levesque, "Thinking as Computation." Here, we proceed as follows.
+
+First, we allow Prolog to find values for needed variables. These are drawn from some predicate that reflects the domain needed for the variables. Here, T, W, and O are assigned values from the `value` predicate.
+
+Next, more variable assignment are made as per the rules of the problem. In this case, the grade school addition, which will assign values to R, U, O, and F, taking any carries into account.
+
+Lastly, constrains are applied, in this case that T, W, and O are all not equal, and $F\ne 0$.
+
+```prolog
+
+solve([F,O,U,R,T,W,O]) :-
+
+        % assign variables
+        value(T),
+        value(W),
+        value(O),
+
+        %rules of this problem
+        R is (O + O) mod 10,
+        carry(O + O,Rc),
+
+        U is (W + W + Rc) mod 10,
+        carry(W + W + Rc,Uc),
+
+        O is (T + T + Uc) mod 10,
+        carry(T + T + Uc,Oc),
+        
+        % constraints
+        F is Oc, F =\= 0,
+
+        T =\= W, T =\= O,
+        W =\= O.
+
+
+carry(S,1) :- S >= 10.
+carry(S,0).
+
+
+value(0).
+value(1).
+value(2).
+value(3).
+value(4).
+value(5).
+value(6).
+value(7).
+value(8).
+value(9).
+
+go([F,O,U,R,T,W,O]) :- solve([F,O,U,R,T,W,O]).
+```
+
 
 ### With CLP
+
+Same basic plan and structure as the non-CLP version above.  We instead use `#=` for assignment nad `#\=` for inequality testing. The program structure is a bit different now, since CLP's ``#=`` won't fail if variables are not yet defined. Hence, we can do some variable assignments first, then apply the rules, then set the variable domain later using the ``ins 0..9`` line. We found that the `[T,W,O] ins 0..9.` and `all_distinct([T,W,O])` lines can go anywhere in the `solve` predicate.
 
 ```prolog
 :- use_module(library(clpfd)).
@@ -365,7 +419,7 @@ solve([F,O,U,R,T,W,O]) :-
         
         F #= Oc, F #\= 0,
 
-        [F,O,U,R,T,W,O] ins 0..9,
+        [T,W,O] ins 0..9,
         all_distinct([T,W,O]).
 
 carry(S,1) :- S #>= 10.
