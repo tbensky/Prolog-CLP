@@ -331,15 +331,15 @@ Here, we'll do the TWO+TWO=FOUR puzzle. Looks tricky to do by hand since the "O"
 
 ### Grade school addition
 
-Remembering how to do these stacked "grade school" addition problems: Start with the rightmost column of digits.  Add the two digits. If the sum is less than 10, we write the sum under the two and go
+Remembering how to do these stacked "grade school" addition problems: Start with the rightmost column of digits.  Add the two digits. If the sum is less than 10, we write the sum under the two digits and go
 to the next column to the left and repeat. If the sum is ever larger than 10, we write the ones digit under the two digits, and "carry" the one, which means add it to the sum of the next
 left column.
 
 In terms of code, we'll do this
 
-* Add two digits. The sum "mod 10" will be written under the two.
+* Add two digits. The sum "mod 10" will be written under the two digits.
 
-* Check the sum and see if it's larger than 10. If so, add a 1 to the next left column.
+* Check the sum and see if it's larger than 10. If so, add a 1 to the next column on the left.
 
 * We have a predicate called `carry` that will give us a 1 or 0 to add onto the current column we're working on, based on the sum of the previous (right) column.
 
@@ -351,7 +351,7 @@ Without CLP, we are starting to see a pattern emerge in the Prolog code for thes
 
 First, we allow Prolog to find values for needed variables. These are drawn from some predicate that reflects the domain needed for the variables. Here, T, W, and O are assigned values from the `value` predicate.
 
-Next, more variable assignment are made as per the rules of the problem. In this case, the grade school addition, which will assign values to R, U, O, and F, taking any carries into account.
+Next, more variable assignments are made as per the rules of the problem. In this case, the grade school addition, which will assign values to R, U, O, and F, taking any carries into account.
 
 Lastly, constrains are applied, in this case that T, W, and O are all not equal, and $F\ne 0$.
 
