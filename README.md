@@ -304,7 +304,7 @@ The following solution is produced.
 ```
 
 
-## Project: Crypto-arithmetic puzzles
+## Project: Crypto-arithmetic (or alphametics) puzzles
 
 There are some famous puzzles like finding values for all variables such that
 
@@ -347,7 +347,9 @@ This problem also has a constraint that $F\ne 0$.
 
 ### Without CLP
 
-Without CLP, we are starting to see a pattern emerge in the Prolog code for these constrained searches. The pattern is 1) assign variables, 2) apply and rules to be followed 3) then apply the constraints. This is outlined on p. 89 of Levesque, "Thinking as Computation." Here, we proceed as follows.  Another contraint to the pattern is to be sure all variables are assigned before they are later referenced (which is a much looser constraint in the CLP mode).
+Without CLP, we are starting to see a pattern emerge in the Prolog code for these constrained searches. The pattern is 1) assign variables, 2) apply and rules to be followed 3) then apply the constraints. This is outlined on p. 89 of Levesque, "Thinking as Computation." Here, we proceed as follows.  
+
+Another contraint to the pattern ("classic 1980s Prolog") is to be sure all variables are assigned before they are later referenced (which is a much looser constraint in the CLP mode).
 
 First, we allow Prolog to find values for needed variables. These are drawn from some predicate that reflects the domain needed for the variables. Here, T, W, and O are assigned values from the `value` predicate.
 
@@ -508,4 +510,74 @@ L = [1, 8, 4, 6, 9, 2, 8] ;
 L = [1, 8, 4, 6, 9, 7, 8] ;
 L = [1, 8, 6, 6, 9, 3, 8] ;
 L = [1, 8, 8, 6, 9, 4, 8] ;
+```
+
+
+## Project: One more alphametric
+
+Knuth (4A, p. 346, #24) has a few more of these puzzles proposed. Let's do do one more, which is
+
+```
+  SATURN
+  URANUS
+ NEPTUNE
++  PLUTO
+---------
+ PLANETS
+```
+
+
+### Without CLP
+We immediately notice that in the second column, computing T depends on T itself. Thus, a non-CLP Prolog implementation will not work.
+
+### With CLP
+Here is our CLP implementation.
+
+
+```prolog
+/*
+  SATURN
+  URANUS
+ NEPTUNE
++  PLUTO
+---------
+ PLANETS
+*/
+
+:- use_module(library(clpfd)).
+
+% these are the unique letters in the puzzle
+solve([A, E, L, N, O, P, R, S, T, U]) :-
+
+        %rules of this problem
+        S #= (N + S + E + O) mod 10,
+        carry(N + S + E + O,Sc),
+
+        T #= (R + U + N + T) mod 10,
+        carry(R + U + N + T + Sc,Tc),
+
+        E #= (U + N + U + Tc) mod 10,
+        carry(U + N + U + U + Tc,Ec),
+        
+        N #= (T + A + T + L + Ec) mod 10,
+        carry(T + A + T + L + Ec,Nc),
+
+        A #= (A + R + P + P + Nc),
+        carry(A + R + P + P + Nc,Ac),
+
+        L #= (S + U + E + Ac) mod 10,
+        carry(S + U + E + Ac,Lc),
+
+        P #= (N + Lc) mod 10,
+
+        % constraints
+        %all_distinct([A, E, L, N, O, P, R, S, T, U]),
+        [A, E, L, N, O, P, R, S, T, U] ins 0..9.
+
+        
+
+carry(S,1) :- S #>= 10.
+carry(S,0).
+
+go([A, E, L, N, O, P, R, S, T, U]) :- solve([A, E, L, N, O, P, R, S, T, U]), label([A, E, L, N, O, P, R, S, T, U]), write([A, E, L, N, O, P, R, S, T, U]).
 ```
