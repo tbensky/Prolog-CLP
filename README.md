@@ -331,7 +331,7 @@ Here, we'll do the TWO+TWO=FOUR puzzle. Our technique is easily applied to the S
 
 ### Grade school addition
 
-Remmebering how to do these stacked "grade school" addition: Start with the rightmost column of digits.  Add the two digits. If the sum is less than 10, we write the digit under the two and go
+Remebering how to do these stacked "grade school" addition problems: Start with the rightmost column of digits.  Add the two digits. If the sum is less than 10, we write the digit under the two and go
 to the next column to the left and repeat. If the sum is ever larger than 10, we write the ones digit under the two digits, and "carry" the one, which means add it to the sum of the next
 left column.
 
