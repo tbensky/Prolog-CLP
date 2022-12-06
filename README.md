@@ -515,7 +515,7 @@ L = [1, 8, 8, 6, 9, 4, 8] ;
 
 ## Project: One more alphametric
 
-Knuth (4A, p. 346, #24) has a few more of these puzzles proposed. Let's do do one more, which is
+Knuth (4A, p. 346, #24) has a few more of these puzzles proposed. Let's do do one more he suggests, which is
 
 ```
   SATURN
@@ -528,7 +528,7 @@ Knuth (4A, p. 346, #24) has a few more of these puzzles proposed. Let's do do on
 
 
 ### Without CLP
-We immediately notice that in the second column, computing T depends on T itself. Thus, a non-CLP Prolog implementation will not work.
+We immediately notice that in the first column, S=N+S+E+O, which means computing S depends on S itself. The second column has the same issue with T. Thus, a non-CLP Prolog implementation will not work. (Note: I wonder if assigning these "downstream" Ts to temporary variables, the forcing them to be equal later on would work?)
 
 ### With CLP
 Here is our CLP implementation.
@@ -547,42 +547,78 @@ Here is our CLP implementation.
 :- use_module(library(clpfd)).
 
 % these are the unique letters in the puzzle
-solve([A, E, L, N, O, P, R, S, T, U]) :-
+solve([A, E, L, N, O, P, R, S, T, U, Leading]) :-
 
         %rules of this problem
-        S #= (N + S + E + O) mod 10,
-        carry(N + S + E + O,Sc),
+        S1 #= N + S + E + O,
+        S #= S1 mod 10,
+        carry(S1,Sc),
 
-        T #= (R + U + N + T) mod 10,
-        carry(R + U + N + T + Sc,Tc),
+        T1 #= R + U + N + T + Sc,
+        T #= T1 mod 10,
+        carry(T1,Tc),
 
-        E #= (U + N + U + Tc) mod 10,
-        carry(U + N + U + U + Tc,Ec),
+        E1 #= U + N + U + U + Tc,
+        E #= E1 mod 10,
+        carry(E1,Ec),
         
-        N #= (T + A + T + L + Ec) mod 10,
-        carry(T + A + T + L + Ec,Nc),
+        N1 #= T + A + T + L + Ec,
+        N #=  N1 mod 10,
+        carry(N1,Nc),
 
-        A #= (A + R + P + P + Nc),
-        carry(A + R + P + P + Nc,Ac),
+        A1 #= A + R + P + P + Nc,
+        A #= A1 mod 10,
+        carry(A1,Ac),
 
-        L #= (S + U + E + Ac) mod 10,
-        carry(S + U + E + Ac,Lc),
+        L1 #= S + U + E + Ac,
+        L #= L1 mod 10,
+        carry(L1,Lc),
 
-        P #= (N + Lc) mod 10,
+        P1 #= N + Lc,
+        P #= P1 mod 10,
+        carry(P1,Leading),
 
         % constraints
         %all_distinct([A, E, L, N, O, P, R, S, T, U]),
         [A, E, L, N, O, P, R, S, T, U] ins 0..9.
+      
 
-        
+carry(S,0) :- S #=< 9.  
+carry(S,1) :- S #>= 10, S #=< 19.
+carry(S,2) :- S #>= 20, S #=< 29.
+carry(S,3) :- S #>= 30, S #=< 39.
+carry(S,4) :- S #>= 40, S #=< 49.
+carry(S,5) :- S #>= 50, S #=< 59.
 
-carry(S,1) :- S #>= 10.
-carry(S,0).
-
-go([A, E, L, N, O, P, R, S, T, U]) :- 
-                                solve([A, E, L, N, O, P, R, S, T, U]), 
-                                label([A, E, L, N, O, P, R, S, T, U]), 
-                                write([A, E, L, N, O, P, R, S, T, U]).
+go([A, E, L, N, O, P, R, S, T, U, Leading]) :- 
+                solve([A, E, L, N, O, P, R, S, T, U, Leading]), 
+                label([A, E, L, N, O, P, R, S, T, U, Leading]),
+                write([A, E, L, N, O, P, R, S, T, U, Leading]),
+                 format("\n\n~w + ~w + ~w + ~w = ~w\n",[[S,A,T,U,R,N],[U,R,A,N,U,S],[N,E,P,T,U,N,E],[P,L,U,T,O],[Leading,P,L,A,N,E,T,S]]).
 ```
 
-We note that insisting all variables are distinct will not yield a solution.
+It looks like there's a lot of answers. Here's a few:
+
+```
+[0,0,0,0,0,0] + [0,0,0,0,0,0] + [0,0,0,0,0,0,0] + [0,0,0,0,0] = [0,0,0,0,0,0,0,0]
+
+[7,0,4,3,7,0] + [3,7,0,0,3,7] + [0,0,1,4,3,0,0] + [1,1,3,4,0] = [0,1,1,0,0,0,4,7]
+
+[9,0,3,3,7,0] + [3,7,0,0,3,9] + [0,0,1,3,3,0,0] + [1,3,3,3,0] = [0,1,3,0,0,0,3,9]
+
+[6,1,4,3,7,0] + [3,7,1,0,3,6] + [0,0,1,4,3,0,0] + [1,0,3,4,0] = [0,1,0,1,0,0,4,6]
+
+[8,1,3,3,7,0] + [3,7,1,0,3,8] + [0,0,1,3,3,0,0] + [1,2,3,3,0] = [0,1,2,1,0,0,3,8]
+
+[7,2,3,3,7,0] + [3,7,2,0,3,7] + [0,0,1,3,3,0,0] + [1,1,3,3,0] = [0,1,1,2,0,0,3,7]
+
+[9,2,2,3,7,0] + [3,7,2,0,3,9] + [0,0,1,2,3,0,0] + [1,3,3,2,0] = [0,1,3,2,0,0,2,9]
+
+[6,3,3,3,7,0] + [3,7,3,0,3,6] + [0,0,1,3,3,0,0] + [1,0,3,3,0] = [0,1,0,3,0,0,3,6]
+
+[8,3,2,3,7,0] + [3,7,3,0,3,8] + [0,0,1,2,3,0,0] + [1,2,3,2,0] = [0,1,2,3,0,0,2,8]
+
+[7,4,2,3,7,0] + [3,7,4,0,3,7] + [0,0,1,2,3,0,0] + [1,1,3,2,0] = [0,1,1,4,0,0,2,7]
+```
+
+
