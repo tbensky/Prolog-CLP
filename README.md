@@ -7,7 +7,7 @@ CLP is a "new" (mid-2000s) addition to Prolog that didn't exist in Prolog in the
 In the case of CLP, Prolog's search happily continues with incomplete conclusions, hoping to firm up such (later), as part of the overall search.
 
 At this point, it is a bit tough to study up on, because Prolog + CLP doesn't appear in any
-books on Prolog, so there's no unified source for learning or reading about it. It seems it's best just to jump in and start messing with it, which is what I'm doing here.
+books on Prolog, so there's no unified source for learning or reading about it. It seems best to just jump in and start experienting with it, which is what I'm doing here.
 
 
 ## Project: Basic ideas of CLP
