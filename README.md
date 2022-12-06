@@ -515,7 +515,7 @@ L = [1, 8, 8, 6, 9, 4, 8] ;
 
 ## Project: One more alphametric
 
-Knuth (4A, p. 346, #24) has a few more of these puzzles proposed. Let's do do one more he suggests, which is
+Knuth (4A, p. 346, #24) has a few more of these puzzles proposed. Let's do one more he suggests, which is
 
 ```
   SATURN
