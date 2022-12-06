@@ -530,7 +530,7 @@ Knuth (4A, p. 346, #24) has a few more of these puzzles proposed. Let's do one m
 ### Without CLP
 We immediately notice that in the first column, S=N+S+E+O, which means computing S depends on S itself. The second column has the same issue with T. Thus, a non-CLP Prolog implementation will not work without proposing values for some of these variables first. 
 
-We also have to be prepared for larger carry digits, and 9+9+9+9 (+9 for a carry) is possible. This 9x5=45, so our carry predicate has been extended.
+We also have to be prepared for larger carry digits, and 9+9+9+9 (+9 for a carry) is possible. This 9x5=45, so our carry predicate has been extended. We also defined the variable `Leading`, which will be the leading digit of the sum.  P is still constrained to 0..9, but in the leftmost column, there might be a carry to add to N which may make that last sum larger than 10.
 
 ### With CLP
 Here is our CLP implementation.
@@ -596,7 +596,7 @@ go([A, E, L, N, O, P, R, S, T, U, Leading]) :-
                 solve([A, E, L, N, O, P, R, S, T, U, Leading]), 
                 label([A, E, L, N, O, P, R, S, T, U, Leading]),
                 write([A, E, L, N, O, P, R, S, T, U, Leading]),
-                 format("\n\n~w + ~w + ~w + ~w = ~w\n",[[S,A,T,U,R,N],[U,R,A,N,U,S],[N,E,P,T,U,N,E],[P,L,U,T,O],[Leading,P,L,A,N,E,T,S]]).
+                format("\n\n~w + ~w + ~w + ~w = ~w\n",[[S,A,T,U,R,N],[U,R,A,N,U,S],[N,E,P,T,U,N,E],[P,L,U,T,O],[Leading,P,L,A,N,E,T,S]]).
 ```
 
 It looks like there's a lot of answers. Here's the first few:
