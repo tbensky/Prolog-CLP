@@ -528,7 +528,7 @@ Knuth (4A, p. 346, #24) has a few more of these puzzles proposed. Let's do one m
 
 
 ### Without CLP
-We immediately notice that in the first column, S=N+S+E+O, which means computing S depends on S itself. The second column has the same issue with T. Thus, a non-CLP Prolog implementation will not work. (Note: I wonder if assigning these "downstream" Ts to temporary variables, the forcing them to be equal later on would work?)
+We immediately notice that in the first column, S=N+S+E+O, which means computing S depends on S itself. The second column has the same issue with T. Thus, a non-CLP Prolog implementation will not work. (Note: I wonder if assigning these "downstream" Ts to temporary variables, the forcing them to be equal later on would work?) We also have to be prepared for larger carry digits, and 9+9+9+9 (+9 for a carry) is possible. This 9x5=45, so our carry predicate has been extended.
 
 ### With CLP
 Here is our CLP implementation.
