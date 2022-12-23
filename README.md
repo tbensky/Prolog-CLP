@@ -729,4 +729,43 @@ val(3).
 val(4).
 ```
 
+There are two solutions for n=4, which the computer finds readily in under a second. There is no solution for n=5 or n=6, and 26 for n=7, so let's expand the code above for n=7, which is:
+
+```prolog
+langford(Final) :-
+
+  Final = [A,B,C,D,E,F,G,H,I,J,K,L,M,N],
+  
+  val(A), val(B), val(C), val(D), val(E), val(F), val(G), 
+  val(H), val(I), val(J), val(K), val(L), val(M), val(N),
+  
+  rule(Final,1),
+  rule(Final,2),
+  rule(Final,3),
+  rule(Final,4),
+  rule(Final,5),
+  rule(Final,6),
+  rule(Final,7). 
+
+  
+rule(L,K) :-  count2(L,K),
+                nth1(I,L,K),
+                J is I + K + 1,
+                nth1(J,L,K).
+  
+  
+ count2(L, E) :-
+    include(=(E), L, L2), 
+    length(L2, 2).
+  
+
+val(1). 
+val(2).
+val(3).
+val(4).
+val(5).
+val(6).
+val(7).
+```
+
 
