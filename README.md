@@ -692,7 +692,7 @@ val(4).
 
 The code can be shortened using a predicate called `rule` that enforces the Langford rules, on a list `L` for a number `K`, which is
 
-```
+```prolog
 rule(L,K) :-  nth1(I,L,K),
                 J is I + K + 1,
                 nth1(J,L,K), 
