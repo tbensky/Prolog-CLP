@@ -646,7 +646,7 @@ Index12 is Index11 + 2,
 nth1(Index12,L,1), 
 ```
 
-which work as follows. First, find where a 1 appears in list `L` and put its position into `Index11`. Next, make `Index21` points 2 elements away, and look at position `Index21` with the second `nth1` call to see if it also contains a 1. (Note: looking 2 elements away leave 1 list elements between the two 1s.)
+which work as follows. First, find where a 1 appears in list `L` and put its position into `Index11`. Next, make `Index12` points 2 elements away, and look at position `Index12` with the second `nth1` call to see if it also contains a 1. (Note: looking 2 elements away leave 1 list elements between the two 1s.)
 
 A block like this appears for all digits 1 to 4.
 
