@@ -632,11 +632,9 @@ Knuth begins Volume 4A with "Langford Pairs" (They're literally mentioned in sen
 
 As an example, for the set {1,1,2,2,3,3,4,4}, the Langford pairing is {2,3,4,2,1,3,1,4}. The job here is to formulate the search for a Langford pairing of a set of numbers.
 
-This was a tough problems for us to formulate. After coming up with a basic n=4 code below though, things started to make more sense
+This was a tough problems for us to formulate. After coming up with a basic n=4 code below though, things started to make more sense.  The key part of this logic is again, freeing our minds from procedural coding, and realizing that Prolog predicates can be called with any comibination of input instantiated.  Here for example, the ```nth1``` predicate can not only retrieve a given list element at some position, but it will also search a list for an element and return its position. 
 
 ### Without CLP
-
-The key part of this logic is again, freeing our minds from procedural coding, and realizing that Prolog predicates can be called with any comibination of input instantiated.  Here for example, the ```nth1``` predicate can not only retrieve a given list element at some position, but it will also search a list for an element and return its position. 
 
 We start here by setting up the basic structure into list ```L``` (an 8-element list), then select values for all elements using the ```val``` predicate, which contain the domain needed here (numbers from 1 to 4).
 
