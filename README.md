@@ -664,9 +664,14 @@ langford(L) :-
   count2(L,3),
   count2(L,4).
   
- count2(L, E) :-
+count2(L, E) :-
     include(=(E), L, L2), 
     length(L2, 2).
+
+val(1). 
+val(2).
+val(3).
+val(4).
   
 ```
 
