@@ -646,11 +646,9 @@ Index12 is Index11 + 2,
 nth1(Index12,L,1), 
 ```
 
-which work as follows. First, find where a 1 appears in list `L` and put its position into `Index11`. Next, make `Index12` point 2 elements away, and look at position `Index12` with the second call to `nth1` and see if it also contains a 1. (Note: looking 2 elements away leaves 1 list elements between the two 1s, as needed.)
+which work as follows. First, find where a 1 appears in list `L` and put its position into `Index11`. Next, make `Index12` point 2 elements away, and look at position `Index12` with the second call to `nth1` and see if it also contains a 1. (Note: looking 2 elements away leaves 1 list element between the two 1s, as needed.)  A block like this appears for all digits 1 to 4.
 
-A block like this appears for all digits 1 to 4.
-
-Lasly, using the `count2` calls, we ensure each digit appears exacty twice in the final Langford list.
+Lasly, using the `count2` calls, we ensure each digit appears exacty twice in the final Langford list. Here's the code:
 
 
 ```prolog
