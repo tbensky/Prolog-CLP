@@ -700,7 +700,7 @@ rule(L,K) :-  count2(L,K),
                
 ```
 
-Here, we moved the `count2` to the start of the body, to forces `rule` to fail if there aren't 2 of a given number in the list (no reason to do the searching with the `nth1` clauses otherwise).  So, the shorter code becomes:
+Here, we moved the `count2` to the start of the body, to force `rule` to fail if there aren't 2 of a given number in the list (no reason to do the searching with the `nth1` clauses otherwise).  So, the shorter code becomes:
 
 ```prolog
 langford(L) :-
