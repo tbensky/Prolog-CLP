@@ -768,4 +768,9 @@ val(6).
 val(7).
 ```
 
+What we notice right away that we have a "real" combinatorics problem here: the computer can't seem to find a Langford solution for n=7. The search space is too large. 
+
+We investigated a bit and found that even if we change the `rule(L,K)` body to `rule(L,K) :- count2(L,K).`, in other words, to just look for sequences where each digit appears twice, the computer still cannot even find one of these in any short amount of time. This tell us: never mind the Langford spacings, we need to get better at generating test sequences alone, that just have each digit appear twice. Our search algorithm is too random right now.
+
+
 
