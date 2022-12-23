@@ -696,11 +696,11 @@ The code can be shortened using a predicate called `rule` that enforces the Lang
 rule(L,K) :-  count2(L,K),
                 nth1(I,L,K),
                 J is I + K + 1,
-                nth1(J,L,K), 
+                nth1(J,L,K).
                
 ```
 
-So, the shorter code becomes:
+Here, we moved the `count2` to the start of the body, to forces `rule` to fail if there aren't 2 of a given number in the list (no reason to do the searching with the `nth1` clauses otherwise).  So, the shorter code becomes:
 
 ```prolog
 langford(L) :-
@@ -714,11 +714,11 @@ langford(L) :-
     rule(L,4).
 
 
-rule(L,K) :-  nth1(I,L,K),
+rule(L,K) :-  count2(L,K),
+                nth1(I,L,K),
                 J is I + K + 1,
-                nth1(J,L,K), 
-                count2(L,K).  
-  
+                nth1(J,L,K).
+               
 count2(L, E) :-
     include(=(E), L, L2), 
     length(L2, 2).
