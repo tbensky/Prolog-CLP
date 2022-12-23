@@ -699,6 +699,7 @@ rule(L,K) :-  nth1(I,L,K),
                 count2(L,K). 
 ```
 
+So, the shorter code becomes:
 
 ```prolog
 langford(L) :-
