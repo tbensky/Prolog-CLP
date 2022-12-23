@@ -628,7 +628,7 @@ It looks like there's a lot of answers. Here's the first few:
 ## Project: Langford Pairs
 
 
-Knuth begins Volume 4A with "Langford Pairs" (They're literally mentioned in sentence #2 on p. 1).  Langford pairs are a way of combining pairs of numbers, like {1,1,2,3,3,...,n,n}.  The combination is to contain all of these numbers in such a way that for a given pair of numbers k (like k=1, so 1 and 1, or k=2, so 2 and 2), k other digits appear between the pair. So, for the pair of 1s, one other digit should appear between the 1 and 1. For the 3, 3 other digits should appear between the two 3s, etc.
+Knuth begins Volume 4A with "Langford Pairs" (They're literally mentioned in sentence #3 on p. 1).  Langford pairs are a way of combining pairs of numbers, like {1,1,2,3,3,...,n,n}.  The combination is to contain all of these numbers in such a way that for a given pair of numbers k (like k=1, so 1 and 1, or k=2, so 2 and 2), k other digits appear between the pair. So, for the pair of 1s, one other digit should appear between the 1 and 1. For the 3, 3 other digits should appear between the two 3s, etc.
 
 As an example, for the set {1,1,2,2,3,3,4,4}, the Langford pairing is {2,3,4,2,1,3,1,4}. The job here is to formulate the search for a Langford pairing of a set of numbers.
 
@@ -638,7 +638,19 @@ This was a tough problems for us to formulate. After coming up with a basic n=4 
 
 We start here by setting up the basic structure into list ```L``` (an 8-element list), then select values for all elements using the ```val``` predicate, which contain the domain needed here (numbers from 1 to 4).
 
+Then we apply to Langford constraints, using blocks like this:
+
+```prolog
+nth1(Index11,L,1),
+Index12 is Index11 + 2,
+nth1(Index12,L,1), 
 ```
+
+which work as follows. First, find where a 1 appears in list `L` and put its position into `Index11`. Next, make `Index21` points 2 elements away, and look at position `Index21` with the second `nth1` call to see if it also contains a 1. (Note: looking 2 elements away leave 1 list elements between the two 1s.)
+
+A block like this appears for all digits 1 to 4.
+
+```prolog
 langford(L) :-
   L = [A,B,C,D,E,F,G,I],
   val(A), val(B), val(C), val(D), val(E), val(F), val(G), val(I),
