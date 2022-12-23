@@ -14,10 +14,10 @@ langford(Final) :-
   rule(Final,7). 
 
   
-rule(L,K) :-  nth1(I,L,K),
-              J is I + K + 1,
-              nth1(J,L,K), 
-              count2(L,K). 
+rule(L,K) :-  count2(L,K),
+                nth1(I,L,K),
+                J is I + K + 1,
+                nth1(J,L,K).
   
   
  count2(L, E) :-
