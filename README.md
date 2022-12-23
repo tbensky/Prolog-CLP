@@ -625,4 +625,51 @@ It looks like there's a lot of answers. Here's the first few:
 [7,4,2,3,7,0] + [3,7,4,0,3,7] + [0,0,1,2,3,0,0] + [1,1,3,2,0] = [0,1,1,4,0,0,2,7]
 ```
 
+## Project: Langford Pairs
+
+
+Knuth begins Volume 4A with "Langford Pairs" (They're literally mentioned in sentence #2 on p. 1).  Langford pairs are a way of combining pairs of numbers, like {1,1,2,3,3,...,n,n}.  The combination is to contain all of these numbers in such a way that for a given pair of numbers k (like k=1, so 1 and 1, or k=2, so 2 and 2), k other digits appear between the pair. So, for the pair of 1s, one other digit should appear between the 1 and 1. For the 3, 3 other digits should appear between the two 3s, etc.
+
+As an example, for the set {1,1,2,2,3,3,4,4}, the Langford pairing is {2,3,4,2,1,3,1,4}. The job here is to formulate the search for a Langford pairing of a set of numbers.
+
+This was a tough problems for us to formulate. After coming up with a basic n=4 code below though, things started to make more sense
+
+### Without CLP
+
+The key part of this logic is again, freeing our minds from procedural coding, and realizing that Prolog predicates can be called with any comibination of input instantiated.  Here for example, the ```nth1``` predicate can not only retrieve a given list element at some position, but it will also search a list for an element and return its position. 
+
+We start here by setting up the basic structure into list ```L``` (an 8-element list), then select values for all elements using the ```val``` predicate, which contain the domain needed here (numbers from 1 to 4).
+
+```
+langford(L) :-
+  L = [A,B,C,D,E,F,G,I],
+  val(A), val(B), val(C), val(D), val(E), val(F), val(G), val(I),
+  
+  nth1(Index11,L,1),
+  Index12 is Index11 + 2,
+  nth1(Index12,L,1), 
+    
+  nth1(Index21,L,2),
+  Index22 is Index21 + 3,
+  nth1(Index22,L,2),
+    
+  nth1(Index31,L,3),
+  Index32 is Index31 + 4,
+  nth1(Index32,L,3),
+  
+  nth1(Index41,L,4),
+  Index42 is Index41 + 5,
+  nth1(Index42,L,4),
+    
+  count2(L,1),
+  count2(L,2),
+  count2(L,3),
+  count2(L,4).
+  
+ count2(L, E) :-
+    include(=(E), L, L2), 
+    length(L2, 2).
+  
+```
+
 
