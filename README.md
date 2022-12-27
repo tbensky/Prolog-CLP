@@ -6,8 +6,9 @@ CLP is a "new" (mid-2000s) addition to Prolog that didn't exist in Prolog in the
 
 In the case of CLP, Prolog's search happily continues with incomplete conclusions, hoping to firm up such (later), as part of the overall search.
 
-At this point, Prolog + CLP is a bit tough to study because it doesn't appear in any
-books on Prolog, so there's no unified source for learning or reading about it. It seems best to just jump in and start experimenting with it, which is what I'm doing here.
+At this point, Prolog + CLP is a bit tough to study. Outside of Bratko, in the 4th edition of ["Prolog Programming for Artificial Intelligence"](https://www.amazon.com/Programming-Artificial-Intelligence-International-Computer/dp/0321417461/) (chapters 7 and 14), there isn't really any books on Prolog + CLP, so there's no unified source for learning or reading about it. (I'm old fashioned too; I learn things best from books.)
+
+It seems best then to just jump in and start experimenting with it, which is what I'm doing here. (Maybe this repo will be a book someday?)
 
 
 ## Project: Basic ideas of CLP
@@ -772,5 +773,94 @@ What we notice right away that we have a "real" combinatorics problem here: the 
 
 We investigated a bit and found that even if we change the `rule(L,K)` body to `rule(L,K) :- count2(L,K).`, in other words, to just look for sequences where each digit appears twice, the computer still cannot even find one of these in any short amount of time. This tell us: never mind the Langford spacings, we need to get better at generating test sequences alone, that just have each digit appear twice. Our search algorithm is too random right now.
 
+#### A more "intelligent" domain
 
+The domain selection above isn't very helpful.  We essentially tell Prolog to get a number from 1..7, and try to place it (and others) to meet the Langford rules. It's essentially a random search.  What if we got more clever about the domain selection to guide Prolog to a *Langford* solution?
+
+Here, make our domain a little more restrictive at the onset. Instead of choosing a number, let's choose a number and pre-calculate the two positions in the final solution the number must appear. For example, if we choose a 1, we know it has to apppear at index $n_1$ and index $n_1+1+1$. Or, more generally, number $k$ has to appear at index $n_1$ and $n_1+k+1$.  
+
+Here's this approach for the ${11,22,33,44}$ set.
+
+```prolog
+langford(L,L) :- length(L,4).
+
+langford(L0,Soln) :-
+            domain(8,K,N1,N2),
+        
+            \+ member([K,_,_],L0),
+            \+ member([_,N1,_],L0),
+            \+ member([_,_,N2],L0),
+            \+ member([_,N2,_],L0),
+            \+ member([_,_,N1],L0),
+
+            langford([[K,N1,N2]|L0],Soln).
+
+
+domain(Len,K,N1,N2) :-
+        val(K),
+        aindex(N1),
+        N1max is Len - (K + 1), 
+        N1 =< N1max,
+        N2 is N1 + (K + 1).
+
+
+val(1).
+val(2).
+val(3).
+val(4).
+
+aindex(1).
+aindex(2).
+aindex(3).
+aindex(4).
+aindex(5).
+aindex(6).
+```
+
+For the ${1,1,2,2,3,3,4,4,5,5,6,6,7,7}$ set, the following gives a solution instantly:
+
+```prolog
+langford(L,L) :- length(L,7).
+
+langford(L0,Soln) :-
+            domain(14,K,N1,N2),
+        
+            \+ member([K,_,_],L0),
+            \+ member([_,N1,_],L0),
+            \+ member([_,_,N2],L0),
+            \+ member([_,N2,_],L0),
+            \+ member([_,_,N1],L0),
+
+            langford([[K,N1,N2]|L0],Soln).
+
+
+domain(Len,K,N1,N2) :-
+        val(K),
+        aindex(N1),
+        N1max is Len - (K + 1), 
+        N1 =< N1max,
+        N2 is N1 + (K + 1).
+
+
+val(1).
+val(2).
+val(3).
+val(4).
+val(5).
+val(6).
+val(7).
+
+aindex(1).
+aindex(2).
+aindex(3).
+aindex(4).
+aindex(5).
+aindex(6).
+aindex(7).
+aindex(8).
+aindex(9).
+aindex(10).
+aindex(11).
+aindex(12).
+```
 
