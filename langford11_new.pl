@@ -1,7 +1,7 @@
 langford(L,L) :- length(L,22).
 
 langford(L0,Soln) :-
-            domain(14,K,N1,N2),
+            domain(22,K,N1,N2),
         
             \+ member([K,_,_],L0),
             \+ member([_,N1,_],L0),

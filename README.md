@@ -817,7 +817,25 @@ aindex(5).
 aindex(6).
 ```
 
-For the ${1,1,2,2,3,3,4,4,5,5,6,6,7,7}$ set, the following gives a solution instantly:
+For the ${1,1,2,2,3,3,4,4,5,5,6,6,7,7}$ set, the following gives a solution instantly, by calling:
+
+```prolog
+langford([],L).
+```
+
+One will get:
+
+```
+L = [[7, 2, 10], [6, 6, 13], [5, 5, 11], [4, 9, 14], [3, 8, 12], [2, 4, 7], [1, 1, 3]] 
+```
+
+telling us that 7 goes into places 2 and 10 6 goes into places 6 and 13, 5 into 5 and 11, etc.
+
+Here's another solution:
+
+```
+L = [[7, 2, 10], [5, 8, 14], [3, 9, 13], [6, 5, 12], [4, 6, 11], [2, 4, 7], [1, 1, 3]] 
+```
 
 ```prolog
 langford(L,L) :- length(L,7).
