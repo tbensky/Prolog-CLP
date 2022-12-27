@@ -791,10 +791,12 @@ The return values returned from `domain` need to be checked using the `member` s
 * Make sure position `N1` has not already been used by some other number: `\+ member([_,N1,_],L0)` and ` \+ member([_,_,N1],L0)`
 * Make sure position `N2` has not already been used by some other number: ` \+ member([_,_,N2],L0)` and `  \+ member([_,N2,_],L0)`
 
-Then we call `langford` recursively using `langford([[K,N1,N2]|L0],Soln)`. This prepends the sub-list that passes all Langford tests to
+Then we call `langford` recursively using `langford([[K,N1,N2]|L0],Soln)`. This prepends the latest sub-list that passes all Langford tests to
 running list `L0` via the `[[K,N1,N2]|L0]` construct, and hangs onto variable `Soln` to present the final solution. The terminal case
-is when the Langford sub-lists reach a length of the maximum number in the set. (Recall each sub-lists holds the number and its two
-positions.)
+is when the Langford sub-lists reach a length of the maximum number in the set.  (Recall each sub-lists holds the number and its two
+positions.) It'll instantiate the latest solution to the 2nd variable passed into the `langford` call. 
+
+(Note: using a list as an accumulator like this is a bit of a triumph for us; accumulators in Prolog take a bit of getting used to.)
 
 Here's this approach for the ${11,22,33,44}$ set. It can be called with:
 
