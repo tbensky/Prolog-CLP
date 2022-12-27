@@ -1,4 +1,4 @@
-langford(L,L) :- length(L,22).
+langford(L,L) :- length(L,11).
 
 langford(L0,Soln) :-
             domain(22,K,N1,N2),

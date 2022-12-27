@@ -775,11 +775,32 @@ We investigated a bit and found that even if we change the `rule(L,K)` body to `
 
 #### A more "intelligent" domain
 
-The domain selection above isn't very helpful.  We essentially tell Prolog to get a number from 1..7, and try to place it (and others) to meet the Langford rules. It's essentially a random search.  What if we got more clever about the domain selection to guide Prolog to a *Langford* solution?
+The domain selection above isn't very helpful.  We essentially tell Prolog to get a number from 1..7, and try to place it (and others) to meet the Langford rules. It's essentially a random search.  What if we got more clever about the domain selection to guide Prolog to the *Langford* sequence we seek?
 
-Here, make our domain a little more restrictive at the onset. Instead of choosing a number, let's choose a number and pre-calculate the two positions in the final solution the number must appear. For example, if we choose a 1, we know it has to apppear at index $n_1$ and index $n_1+1+1$. Or, more generally, number $k$ has to appear at index $n_1$ and $n_1+k+1$.  
+Here, make our domain a little more restrictive at the onset. Instead of choosing a number, let's choose a number and pre-calculate the two positions in the final solution the number must appear. For example, if we choose a 1, we know it has to apppear at index $n_1$ and index $n_1+1+1$. Or, more generally, number $k$ has to appear at index $n_1$ and $n_1+k+1$.  This is what the `domain(Len,K,N1,N2)` clause does.
 
-Here's this approach for the ${11,22,33,44}$ set.
+It assumes it has `Len` spots to fill in the Langford sequence. (Here spot also means index or position in the Langford sequence.) It finds a number `K` from `val(K)` then chooses a possible index for it (in the Langford sequence). We note the domain of `aindex` is always 2 less than the maximum length of the Langford sequence, because at minimum a `1_1` sequence might be squeeze onto the last 3 positions.
+
+So, `domain` instantiates a number, `K` and the two positions in the Langford sequence it is proposed to go (`N1` and `N2`).
+
+We are maintaining our Langford sequence in a list of lists.  Each sub-list has 3 elements: the number and two positions it should appear. So if a sub-list is `[1,2,4]`, this means `1` should appear at position `2` and `4`.
+
+The return values returned from `domain` need to be checked using the `member` sequences.
+
+* Make sure the number `K` hasn't already been placd: `\+ member([K,_,_],L0)`
+* Make sure position `N1` has not already been used by some other number: `\+ member([_,N1,_],L0)` and ` \+ member([_,_,N1],L0)`
+* Make sure position `N2` has not already been used by some other number: ` \+ member([_,_,N2],L0)` and `  \+ member([_,N2,_],L0)`
+
+Then we call `langford` recursively using `langford([[K,N1,N2]|L0],Soln)`. This prepends the sub-list that passes all Langford tests to
+running list `L0` via the `[[K,N1,N2]|L0]` construct, and hangs onto variable `Soln` to present the final solution. The terminal case
+is when the Langford sub-lists reach a length of the maximum number in the set. (Recall each sub-lists holds the number and its two
+positions.)
+
+Here's this approach for the ${11,22,33,44}$ set. It can be called with:
+
+```prolog
+langford([],L).
+```
 
 ```prolog
 langford(L,L) :- length(L,4).
@@ -829,7 +850,7 @@ One will get:
 L = [[7, 2, 10], [6, 6, 13], [5, 5, 11], [4, 9, 14], [3, 8, 12], [2, 4, 7], [1, 1, 3]] 
 ```
 
-telling us that 7 goes into places 2 and 10 6 goes into places 6 and 13, 5 into 5 and 11, etc.
+telling us that 7 goes into places 2 and 10, 6 goes into places 6 and 13, 5 into 5 and 11, etc.
 
 Here's another solution:
 
