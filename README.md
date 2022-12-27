@@ -779,7 +779,7 @@ The domain selection above isn't very helpful.  We essentially tell Prolog to ge
 
 Here, make our domain a little more restrictive at the onset. Instead of choosing a number, let's choose a number and pre-calculate the two positions in the final solution the number must appear. For example, if we choose a 1, we know it has to apppear at index $n_1$ and index $n_1+1+1$. Or, more generally, number $k$ has to appear at index $n_1$ and $n_1+k+1$.  This is what the `domain(Len,K,N1,N2)` clause does.
 
-It assumes it has `Len` spots to fill in the Langford sequence. (Here spot also means index or position in the Langford sequence.) It finds a number `K` from `val(K)` then chooses a possible index for it (in the Langford sequence). We note the domain of `aindex` is always `Len-2`, because at minimum a `1_1` sequence might be squeezed into the last 3 positions.
+It assumes it has `Len` spots to fill in the Langford sequence. (Here spot also means index or position in the Langford sequence.) It finds a number `K` from `val(K)` then chooses a possible index for it (in the Langford sequence). We note the domain of `aindex` is always `1..Len-2`, because at minimum a `1_1` sequence might be squeezed into the last 3 positions.
 
 So, `domain` instantiates a number, `K` and the two positions in the Langford sequence it is proposed to go (`N1` and `N2`).
 
