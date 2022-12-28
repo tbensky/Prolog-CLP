@@ -933,7 +933,7 @@ aindex(11).
 aindex(12).
 ```
 
-We were also able to run it for `n=11`, and got a solution after 90 minutes. Here's one of the solutions that popped up after: `58,842,480,119 inferences, 5394.525 CPU in 5402.777 seconds (100% CPU, 10907815 Lips).` This was found by running `time(langford([],L)).`
+We were also able to run it for `n=11`, by running `time(langford([],L)).` A solution popped out after 90 minutes or `58,842,480,119 inferences, 5394.525 CPU in 5402.777 seconds (100% CPU, 10907815 Lips).`
 
 ```prolog
 L = [[10, 8, 19], [11, 4, 16], [9, 7, 17], [8, 11, 20], [7, 13, 21], [6, 15, 22], [5, 12, 18], [4, 9, 14], [3, 6, 10], [2, 2, 5], [1, 1, 3]]
