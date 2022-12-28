@@ -631,7 +631,7 @@ It looks like there's a lot of answers. Here's the first few:
 
 Knuth begins Volume 4A with "Langford Pairs" (They're literally mentioned in sentence #3 on p. 1).  Langford pairs are a way of combining pairs of numbers, like {1,1,2,3,3,...,n,n}.  The combination is to contain all of these numbers in such a way that for a given pair of numbers k (like k=1, so 1 and 1, or k=2, so 2 and 2), k other digits appear between the pair. So, for the pair of 1s, one other digit should appear between the 1 and 1. For the 3, 3 other digits should appear between the two 3s, etc.
 
-As an example, for the set {1,1,2,2,3,3,4,4}, the Langford pairing is {2,3,4,2,1,3,1,4}. The job here is to formulate the search for a Langford pairing of a set of numbers.
+As an example, for the set {1,1,2,2,3,3,4,4}, the Langford pairing is {2,3,4,2,1,3,1,4}. The job here is to formulate the search for a Langford pairing of a set of numbers. Here's an [interesting write-up](https://dialectrix.com/langford/OnLangfordsProblem.pdf).
 
 This was a tough problems for us to formulate. After coming up with a basic n=4 code below though, things started to make more sense.  The key part of this logic is again, freeing our minds from procedural coding, and realizing that Prolog predicates can be called with any combination of their inputs instantiated.  Here for example, the ```nth1``` predicate can not only retrieve a given list element at some position, but it will also search a list for an element and return its position. 
 
