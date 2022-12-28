@@ -942,6 +942,7 @@ L = [[10, 8, 19], [11, 4, 16], [9, 7, 17], [8, 11, 20], [7, 13, 21], [6, 15, 22]
 This solution is: `1,2,1,11,2,3,9,10,4,3,8,5,7,4,6,11,9,5,10,8,7,6`.
 
 Here's the code. Note the changes are: 1) the `11` in the `length(L,11)` clause, 2) the `22` in the `domain(22,K,N1,N2)` clause 3) extending the `val` facts up to 11, 4) extending the `aindex` facts up to `20`. 
+
 ```prolog
 langford(L,L) :- length(L,11).
 
