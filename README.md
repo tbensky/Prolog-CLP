@@ -911,7 +911,7 @@ We were also able to run it for `n=11` too. Here's one of the solutions that pop
 L = [[10, 8, 19], [11, 4, 16], [9, 7, 17], [8, 11, 20], [7, 13, 21], [6, 15, 22], [5, 12, 18], [4, 9, 14], [3, 6, 10], [2, 2, 5], [1, 1, 3]]
 ```
 
-This solutions is: `1,2,1,11,2,3,9,10,4,3,8,5,7,4,6,11,9,5,10,8,7,6`.
+This solution is: `1,2,1,11,2,3,9,10,4,3,8,5,7,4,6,11,9,5,10,8,7,6`.
 
 Here's the code. Note the changes are: 1) the `11` in the `length(L,11)` clause, 2) the `22` in the `domain(22,K,N1,N2)` clause 3) extending the `val` facts up to 11, 4) extending the `aindex` facts up to `20`. 
 ```prolog
