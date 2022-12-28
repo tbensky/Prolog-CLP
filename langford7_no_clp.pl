@@ -4,6 +4,8 @@ langford(Final) :-
   
   val(A), val(B), val(C), val(D), val(E), val(F), val(G), 
   val(H), val(I), val(J), val(K), val(L), val(M), val(N),
+
+  write(Final), nl,
   
   rule(Final,1),
   rule(Final,2),

@@ -771,7 +771,35 @@ val(7).
 
 What we notice right away that we have a "real" combinatorics problem here: the computer can't seem to find a Langford solution for n=7. The search space is too large. 
 
-We investigated a bit and found that even if we change the `rule(L,K)` body to `rule(L,K) :- count2(L,K).`, in other words, to just look for sequences where each digit appears twice, the computer still cannot even find one of these in any short amount of time. This tell us: never mind the Langford spacings, we need to get better at generating test sequences alone, that just have each digit appear twice. Our search algorithm is too random right now.
+We investigated a bit and found that even if we change the `rule(L,K)` body to `rule(L,K) :- count2(L,K).`, in other words, to just look for sequences where each digit appears twice, the computer still cannot even find one of these in any short amount of time. 
+
+Inserting a `write` statement revealed the search is merely iterating through all possible 14-digit values. Here are the first few test solutions:
+
+```
+[1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+[1,1,1,1,1,1,1,1,1,1,1,1,1,2]
+[1,1,1,1,1,1,1,1,1,1,1,1,1,3]
+[1,1,1,1,1,1,1,1,1,1,1,1,1,4]
+[1,1,1,1,1,1,1,1,1,1,1,1,1,5]
+[1,1,1,1,1,1,1,1,1,1,1,1,1,6]
+[1,1,1,1,1,1,1,1,1,1,1,1,1,7]
+[1,1,1,1,1,1,1,1,1,1,1,1,2,1]
+[1,1,1,1,1,1,1,1,1,1,1,1,2,2]
+[1,1,1,1,1,1,1,1,1,1,1,1,2,3]
+[1,1,1,1,1,1,1,1,1,1,1,1,2,4]
+[1,1,1,1,1,1,1,1,1,1,1,1,2,5]
+[1,1,1,1,1,1,1,1,1,1,1,1,2,6]
+[1,1,1,1,1,1,1,1,1,1,1,1,2,7]
+[1,1,1,1,1,1,1,1,1,1,1,1,3,1]
+[1,1,1,1,1,1,1,1,1,1,1,1,3,2]
+[1,1,1,1,1,1,1,1,1,1,1,1,3,3]
+[1,1,1,1,1,1,1,1,1,1,1,1,3,4]
+[1,1,1,1,1,1,1,1,1,1,1,1,3,5]
+[1,1,1,1,1,1,1,1,1,1,1,1,3,6]
+[1,1,1,1,1,1,1,1,1,1,1,1,3,7]
+```
+
+This tell us: never mind the Langford spacings, we need to get better at generating test sequences alone, that just have each digit appear twice. Our search algorithm is too random right now.
 
 #### A more "intelligent" domain
 
