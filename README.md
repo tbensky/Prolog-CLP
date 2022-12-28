@@ -811,7 +811,7 @@ The `domain(Len,K,N1,N2)` clause assumes it has `Len` spots to fill in the Langf
 
 So, `domain` instantiates a number, `K` and the two positions in the Langford sequence it is proposed to go (`N1` and `N2`).
 
-We are maintaining our proposed Langford sequence in a single list of sub-lists.  Each sub-list has 3 elements: the number and the two positions in which it should appear in the final sequence. So if a sub-list is `[1,2,4]`, this means `1` should appear at position `2` and `4`.
+As the code runs, we are maintaining our proposed Langford sequence in a single list of sub-lists.  Each sub-list has 3 elements: the number and the two positions in which it should appear in the final sequence. So if a sub-list is `[1,2,4]`, this means `1` should appear at position `2` and `4`.
 
 The return values returned from `domain` need to be checked using the `member` sequences.
 
