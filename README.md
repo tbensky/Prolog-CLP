@@ -905,3 +905,66 @@ aindex(11).
 aindex(12).
 ```
 
+We were also able to run it for `n=11` too. Here's one of the solutions that popped up after: `58,842,480,119 inferences, 5394.525 CPU in 5402.777 seconds (100% CPU, 10907815 Lips).` This was found by running `time(langford([],L)).`
+
+```prolog
+L = [[10, 8, 19], [11, 4, 16], [9, 7, 17], [8, 11, 20], [7, 13, 21], [6, 15, 22], [5, 12, 18], [4, 9, 14], [3, 6, 10], [2, 2, 5], [1, 1, 3]]
+```
+
+Here's the code:
+```prolog
+langford(L,L) :- length(L,11).
+
+langford(L0,Soln) :-
+            domain(22,K,N1,N2),
+        
+            \+ member([K,_,_],L0),
+            \+ member([_,N1,_],L0),
+            \+ member([_,_,N2],L0),
+            \+ member([_,N2,_],L0),
+            \+ member([_,_,N1],L0),
+
+            langford([[K,N1,N2]|L0],Soln).
+
+
+domain(Len,K,N1,N2) :-
+        val(K),
+        aindex(N1),
+        N1max is Len - (K + 1), 
+        N1 =< N1max,
+        N2 is N1 + (K + 1).
+
+
+val(1).
+val(2).
+val(3).
+val(4).
+val(5).
+val(6).
+val(7).
+val(8).
+val(9).
+val(10).
+val(11).
+
+aindex(1).
+aindex(2).
+aindex(3).
+aindex(4).
+aindex(5).
+aindex(6).
+aindex(7).
+aindex(8).
+aindex(9).
+aindex(10).
+aindex(11).
+aindex(12).
+aindex(13).
+aindex(14).
+aindex(15).
+aindex(16).
+aindex(17).
+aindex(18).
+aindex(19).
+aindex(20).
+```
