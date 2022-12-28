@@ -815,7 +815,7 @@ As the code runs, we are maintaining our proposed Langford sequence in a single 
 
 The return values returned from `domain` need to be checked using the `member` sequences.
 
-* Make sure the number `K` hasn't already been placd: `\+ member([K,_,_],L0)`
+* Make sure the number `K` hasn't already been placed: `\+ member([K,_,_],L0)`
 * Make sure position `N1` has not already been used by some other number: `\+ member([_,N1,_],L0)` and ` \+ member([_,_,N1],L0)`
 * Make sure position `N2` has not already been used by some other number: ` \+ member([_,_,N2],L0)` and `  \+ member([_,N2,_],L0)`
 
