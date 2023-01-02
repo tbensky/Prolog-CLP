@@ -869,7 +869,7 @@ aindex(6).
 ```
 
 ##### Turbo Prolog
-Just for fun, we thought we'd try to get this programing running on Turbo Prolog (yes, the 1980s Borland Software). Here it is (running in a Dosbox on macOS):
+Just for fun (and as a tribute to what got us started in Prolog), we thought we'd try to get this programing running on Turbo Prolog (yes, the 1980s Borland software). Here it is (running in a Dosbox on macOS):
 
 ![Turbo Prolog Langford](https://github.com/tbensky/Prolog-CLP/blob/main/turbo_prolog.png)
 
