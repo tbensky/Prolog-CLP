@@ -871,7 +871,7 @@ aindex(6).
 ##### Turbo Prolog
 Just for fun (and as a tribute to what got us started in Prolog), we thought we'd try to get this programing running on Turbo Prolog (yes, the 1980s Borland software). Here it is (running in a Dosbox on macOS):
 
-![Turbo Prolog Langford](https://github.com/tbensky/Prolog-CLP/blob/main/turbo_prolog.png)
+![Turbo Prolog Langford](https://github.com/tbensky/Prolog-CLP/blob/main/src/turbo_prolog.png)
 
 We had to make several modifications to the code, including Turbo Prolog's `domains`, `predicates`, and `clauses` sections. Also, a compound list (lists within a list)
 had to be handled as per p. 202 of the Turbo Prolog 2.0 User's Guide (that we bought on ebay); see the `llist` and `list` definitions in the `domains` section, and all the `l()` and `i()` wrappers throughout (`l` means list and `i` means integer).  The `\+` for not is now handled with `not()`.
