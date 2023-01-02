@@ -868,13 +868,14 @@ aindex(5).
 aindex(6).
 ```
 
-Just for fun, we thought we'd try to get this programing running on Turbo Prolog (yes, the 1980s Borland Software). Here it is,
-running in a Dosbox:
+Just for fun, we thought we'd try to get this programing running on Turbo Prolog (yes, the 1980s Borland Software). Here it is (running in a Dosbox on macOS):
 
 ![Turbo Prolog Langford](https://github.com/tbensky/Prolog-CLP/blob/main/turbo_prolog.png)
 
-We had to
-re-write it some, incl
+We had to make several modifications to the code, including Turbo Prolog's domains, predicates, and clauses sections. Also, a compound list (lists within a list)
+had to be handled as per p. 202 of the Turbo Prolog 2.0 Users' Guide (see llist and list in the domains section, and all the `l()` and `i()` wrappers throughout.
+
+Nonetheless, you can see a solution in the "Dialog" window, noteably `[i(4),i(1),i(6)]....` indicating that 4 is to be at positions 1 and 6, and so on.
 
 ```prolog
 % Turbo Prolog (yes, the 1980s software) implementation
