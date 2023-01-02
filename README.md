@@ -873,10 +873,10 @@ Just for fun (and as a tribute to what got us started in Prolog), we thought we'
 
 ![Turbo Prolog Langford](https://github.com/tbensky/Prolog-CLP/blob/main/turbo_prolog.png)
 
-We had to make several modifications to the code, including Turbo Prolog's domains, predicates, and clauses sections. Also, a compound list (lists within a list)
-had to be handled as per p. 202 of the Turbo Prolog 2.0 Users' Guide (see llist and list in the domains section, and all the `l()` and `i()` wrappers throughout.
+We had to make several modifications to the code, including Turbo Prolog's `domains`, `predicates`, and `clauses` sections. Also, a compound list (lists within a list)
+had to be handled as per p. 202 of the Turbo Prolog 2.0 Users' Guide (that we bought on ebay); see the `llist` and `list` definitions in the `domains` section, and all the `l()` and `i()` wrappers throughout (`l` means list and `i` means integer).
 
-Nonetheless, you can see a solution in the "Dialog" window, noteably `[i(4),i(1),i(6)]....` indicating that 4 is to be at positions 1 and 6, and so on.
+Nonetheless, you can see a solution in the "Dialog" window, noteably `[i(4),i(1),i(6)]....` indicating that 4 is to be at positions 1 and 6, and so on. Here's the code:
 
 ```prolog
 % Turbo Prolog (yes, the 1980s software) implementation
@@ -938,6 +938,7 @@ goal
 	langford([],L), write(L), nl.
 ```
 
+#### Back at it
 For the ${1,1,2,2,3,3,4,4,5,5,6,6,7,7}$ set, the following gives a solution instantly, by calling:
 
 ```prolog
