@@ -1336,7 +1336,7 @@ which spits out
 L = [6, 3, 1, 4, 7, 9, 8, 5, 2].
 ```
 
-Meaning:
+Meaning, given out initial variable list was `[Vixen, Rudolph, Prancer, Dasher, Comet, Dancer, Donder, Blitzen, Cupid]`:
 
 ```prolog
         Blitzen = 5,
