@@ -61,15 +61,15 @@ at some point Z might be nailed down, at which point, Prolog will be able to fin
 This is the basic idea of Prolog+CLP. Programs don't have to stop just becase variables are not known. It's happy to work
 with *constraints* on variables and continue.
 
-As another example, you may have heard of these funny holiday logic-puzzles like this:
+As another example, you may have heard of, is a funny holiday logic-puzzle:
 
 > Vixen should be behind Rudolph, Prancer and Dasher, whilst Vixen should be in front of Dancer and Comet. Dancer should be ...
 
 The problem says something like "find the order of Santa's reindeer." 
 
-It might be good to somehow enumerate all reindeer names, so we can get order numbers for all of them.  So, we can start interpreting the puzzle.
+It might be good to somehow enumerate all reindeer names, so we can get order numbers for all of them.  Then, we can start interpreting the puzzle.
 
-"Vixen should be behind Rudolph, Prancer and Dasher" might mean whatever order Vixen ends up being in, it should greater in number than that of "Rudolph, Prancer and Dasher."  So we might write
+"Vixen should be behind Rudolph, Prancer and Dasher" might mean whatever order Vixen ends up being in, it should a larger number than that of "Rudolph, Prancer and Dasher."  So we might write
 
 ```
 Vixen > Rudolph
@@ -84,15 +84,15 @@ Vixen < Dancer
 Vixen < Comet
 ```
 
-Now this is all very nice, but you must see how stuck this might feel: for whatever order Vixen ends up being in, it'll be a number bigger than that for Rudolph, Prancer, and Dasher, but less than that for Dancer and Comet.  And we can't say anything more about Vixen until we can "solve" for the ordering of the other reigndeer. 
+Now this is all very nice, but you must see how stuck this feels: for whatever order Vixen ends up being in, it'll be a number bigger than that for Rudolph, Prancer, and Dasher, but less than that for Dancer and Comet.  And we can't say anything more about Vixen until we can "solve" for the ordering of the other reigndeer. 
 
-At this level, classical Prolog won't help, since we can't just tell it `Vixen > Rudolph`, as it will fail since it doesn't know anything about Rudolph.  Using Prolog+CLP however, we can state
+At this level, classical Prolog won't help, since we can't just tell it `Vixen > Rudolph`, as it will fail since it doesn't know anything about Rudolph. (Note: this puzzle can be solved with classical Prolog, just not so directly has stated). Using Prolog+CLP however, we can just state
 
 ```
 Vixen #< Dancer
 ```
 
-as a *constraint* to be resolved later on. Prolog will happily continue, and if enough constraints are put forth, will provide a solution. This problem is solved below.
+as a *constraint* to be resolved later on. Prolog will happily continue, and if enough constraints are put forth, will provide a solution. This problem is solved below with both a CLP and non-CLP approach.
 
 
 ### Labeling
