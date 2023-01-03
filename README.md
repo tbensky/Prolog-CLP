@@ -100,7 +100,7 @@ In CLP, *labeling* is when we force Prolog to come up with actual values for var
 
 # Learning Projects
 
-I'm not a puzzle person. I've never done a Sudoku or crossword puzzle. I also never really liked writing code to solve puzzles. But, since [this book](https://www.amazon.com/Art-Computer-Programming-Combinatorial-Algorithms/dp/0201038048/) came out, I became quickly convinced that puzzles are actually a good way of learning CLP. So OK, puzzles it'll be. Let's start with Sudoku.
+I'm not a puzzle person. I've never done a Sudoku or crossword puzzle (I don't have the patience). I also never really liked *writing code* to solve puzzles. But, since [this book](https://www.amazon.com/Art-Computer-Programming-Combinatorial-Algorithms/dp/0201038048/) came out, I became quickly convinced that puzzles are actually a good way of learning CLP. So OK, puzzles it'll be. Let's start with Sudoku.
 
 ## Project: Sudoku with and without CLP
 
