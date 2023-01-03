@@ -1070,3 +1070,67 @@ aindex(18).
 aindex(19).
 aindex(20).
 ```
+
+#### Lanford 15
+
+Just for fun, we coded up a Langford search for the set ${1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15}$. As of 31-Dec-2022, it has been running on a Dell server. We'll update this page if a solution pops out.
+
+
+### With CLP
+
+That's about it for trying for Langford pairs using standard Prolog. Let's get into a CLP version now. 
+
+We post our first attempt here, but are not sure it's be best adaptation. It is a start though. 
+
+Here, we start by adapting the non-CLP Langford 7 code above using an emerging pattern: in CLP the domain picking from Prolog facts (i.e. `val` and `aindex` above) is done using constraints. In this case, we insist that all element of our proposed Langford list `L` have values from 1..7 using the `L ins 1..7` clause. We also modified the `rule` clause to use the CLP `element` clause (and not Prolog's `nth1`). Also, the intermediary index `J` is computed using CLP's `#=` not `is`.
+
+After all of the rules are applied, we label the proposed list `L`, then check that each digit only appears twice, using the sequence of `count2` calls. Here is the code.
+
+```prolog
+:- use_module(library(clpfd)).
+
+langford(L) :-
+
+    L = [_,_,_,_,_,_,_,_,_,_,_,_,_,_],
+    L ins 1..7,
+
+    rule(L,1),
+    rule(L,2),
+    rule(L,3),
+    rule(L,4),
+    rule(L,5),
+    rule(L,6),
+    rule(L,7),
+
+    label(L),
+    
+    count2(L,1),
+    count2(L,2),
+    count2(L,3),
+    count2(L,4),
+    count2(L,5),
+    count2(L,6),
+    count2(L,7).
+
+rule(L,K) :-    element(I,L,K),
+                J #= I + K + 1,
+                element(J,L,K).
+
+ 
+ count2(L, E) :-
+    include(=(E), L, L2), 
+    length(L2, 2).
+```
+
+Sure enough, after running it we get an answer in about 4 seconds, using `time(langford(L))`: 
+
+```
+- time(langford(L)).
+% 73,826,437 inferences, 4.706 CPU in 4.733 seconds (99% CPU, 15686182 Lips)
+L = [1, 4, 1, 5, 6, 7, 4, 2, 3|...] [write]
+L = [1, 4, 1, 5, 6, 7, 4, 2, 3, 5, 2, 6, 3, 7] 
+```
+
+More solutions are found within about 3 seconds of each other. This seems *slower* that the non-CLP version. We think the labeling and count2 sequence is not the best CLP approach. 
+
+
