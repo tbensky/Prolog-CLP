@@ -67,7 +67,8 @@ As another example, you may have heard of, is a funny holiday logic-puzzle:
 
 The problem says something like "find the order of Santa's reindeer." 
 
-It might be good to somehow enumerate all reindeer names, so we can get order numbers for all of them.  Then, we can start interpreting the puzzle.
+It might be good to somehow enumerate all reindeer names, so we can get order numbers for all of them.  Then, we can start interpreting the puzzle, pushing to find
+numerical values for each reindeer.
 
 "Vixen should be behind Rudolph, Prancer and Dasher" might mean whatever order Vixen ends up being in, it should a larger number than that of "Rudolph, Prancer and Dasher."  So we might write
 
