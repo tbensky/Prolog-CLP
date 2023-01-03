@@ -1276,7 +1276,7 @@ X = [1, 2, 1, 3, 2, 4, 15, 3, 14, 11, 4, 5, 13, 6, 10, 12, 7, 5, 8, 9, 6, 11, 15
 
 ## Solving Santa's Reindeer
 
-[This puzzle](Note: See clpfd solution in comment to this: https://news.ycombinator.com/item?id=34224456) popped up on HN on 1/2/23:
+[This puzzle](https://news.ycombinator.com/item?id=34224456) popped up on HN on 1/2/23:
 
 > Vixen should be behind Rudolph, Prancer and Dasher, whilst Vixen should be in front of Dancer and Comet. Dancer should be behind Donder, Blitzen and Rudolph. Comet should be behind Cupid, Prancer and Rudolph. Donder should be behind Comet, Vixen, Dasher, Prancer and Cupid. Cupid should be in front of Comet, Blitzen, Vixen, Dancer and Rudolph. Prancer should be in front of Blitzen, Donder and Cupid. Blitzen should be behind Cupid but in front of Dancer, Vixen and Donder. Rudolph should be behind Prancer but in front of Dasher, Dancer and Donder. Finally, Dasher should be behind Prancer but in front of Blitzen, Dancer and Vixen.
 
