@@ -61,6 +61,40 @@ at some point Z might be nailed down, at which point, Prolog will be able to fin
 This is the basic idea of Prolog+CLP. Programs don't have to stop just becase variables are not known. It's happy to work
 with *constraints* on variables and continue.
 
+As another example, you may have heard of these funny holiday logic-puzzles like this:
+
+> Vixen should be behind Rudolph, Prancer and Dasher, whilst Vixen should be in front of Dancer and Comet. Dancer should be ...
+
+The problem says something like "find the order of Santa's reindeer." 
+
+It might be good to somehow enumerate all reindeer names, so we can get order numbers for all of them.  So, we can start interpreting the puzzle.
+
+"Vixen should be behind Rudolph, Prancer and Dasher" might mean whatever order Vixen ends up being in, it should greater in number than that of "Rudolph, Prancer and Dasher."  So we might write
+
+```
+Vixen > Rudolph
+Vixen > Prancer
+Vixen > Dasher
+```
+
+Next, we look at "Vixen should be in front of Dancer and Comet" for which we might write:
+
+```
+Vixen < Dancer
+Vixen < Comet
+```
+
+Now this is all very nice, but you must see how stuck this might feel: for whatever order Vixen ends up being in, it'll be a number bigger than that for Rudolph, Prancer, and Dasher, but less than that for Dancer and Comet.  And we can't say anything more about Vixen until we can "solve" for the ordering of the other reigndeer. 
+
+At this level, classical Prolog won't help, since we can't just tell it `Vixen > Rudolph`, as it will fail since it doesn't know anything about Rudolph.  Using Prolog+CLP however, we can state
+
+```
+Vixen #< Dancer
+```
+
+as a *constraint* to be resolved later on. Prolog will happily continue, and if enough constraints are put forth, will provide a solution. This problem is solved below.
+
+
 ### Labeling
 
 In this first CLP xample, if we run ``go(X,Y,Z), label([X,Y,Z])`` then Prolog will actually start emitting solutions that
