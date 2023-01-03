@@ -8,7 +8,7 @@ In the case of CLP, Prolog's search happily continues with incomplete conclusion
 
 At this point, Prolog + CLP is a bit tough to study. Outside of Bratko, in the 4th edition of ["Prolog Programming for Artificial Intelligence"](https://www.amazon.com/Programming-Artificial-Intelligence-International-Computer/dp/0321417461/) (chapters 7 and 14), there isn't really any books on Prolog + CLP, so there's no unified source for learning or reading about it. (I'm old fashioned too; I learn things best from books.)
 
-It seems best then to just jump in and start experimenting with it, which is what I'm doing here. (Maybe this repo will be a book someday?)
+It seems best then to just jump in and start experimenting with it, which is what I'm doing here. (Maybe this repo will be a book someday?) (Note: See clpfd solution in comment to this: https://news.ycombinator.com/item?id=34224456)
 
 
 ## Project: Basic ideas of CLP
@@ -1082,7 +1082,7 @@ That's about it for trying for Langford pairs using standard Prolog. Let's get i
 
 We post our first attempt here, but are not sure it's the best way to go. It is a start though. 
 
-Here, we start by adapting the non-CLP Langford 7 code above using an emerging pattern: in CLP the domain picking from Prolog facts (i.e. `val` and `aindex` above) is done using constraints. In this case, we insist that all elements of our proposed Langford list `L` have values from 1..7 using the `L ins 1..7` clause. We also modified the `rule` clause to use the CLP `element` clause (and not Prolog's `nth1`). Also, the intermediary index `J` is computed using CLP's `#=` not `is`.
+Here, we start by adapting the non-CLP Langford 7 code above using an emerging pattern: in CLP the domain picking from Prolog facts (i.e. `val` and `aindex` above) is done using constraints. In this case, we insist that all elements of our proposed Langford list `L` have values from 1..7 using the `L ins 1..7` clause. We also modified the `rule` clause to use the CLP `element` clause (and not Prolog's `nth1`).  (Note: we switched it back to use `nth1`, as it runs *much faster*??)  Also, the intermediary index `J` is computed using CLP's `#=` not `is`.
 
 After all of the rules are applied, we label the proposed list `L`, then check that each digit appears only twice, using the sequence of `count2` calls. Here is the code.
 
@@ -1100,37 +1100,176 @@ langford(L) :-
     rule(L,4),
     rule(L,5),
     rule(L,6),
-    rule(L,7),
+    rule(L,7).
 
-    label(L),
-    
-    count2(L,1),
-    count2(L,2),
-    count2(L,3),
-    count2(L,4),
-    count2(L,5),
-    count2(L,6),
-    count2(L,7).
-
-rule(L,K) :-    element(I,L,K),
+rule(L,K) :-    nth1(I,L,K),
                 J #= I + K + 1,
-                element(J,L,K).
-
- 
- count2(L, E) :-
-    include(=(E), L, L2), 
-    length(L2, 2).
+                nth1(J,L,K).
 ```
 
-Sure enough, after running it we get an answer in about 4 seconds, using `time(langford(L))`: 
+Sure enough, after running it we get an answer instantly, using `time((langford(L),label(L))`: 
 
 ```
-- time(langford(L)).
-% 73,826,437 inferences, 4.706 CPU in 4.733 seconds (99% CPU, 15686182 Lips)
-L = [1, 4, 1, 5, 6, 7, 4, 2, 3|...] [write]
-L = [1, 4, 1, 5, 6, 7, 4, 2, 3, 5, 2, 6, 3, 7] 
+?- time((langford(L),label(L))).
+% 18,906 inferences, 0.001 CPU in 0.001 seconds (100% CPU, 17265753 Lips)
+L = [1, 7, 1, 2, 5, 6, 2, 3, 4, 7, 5, 3, 6, 4] ;
+% 2,051 inferences, 0.000 CPU in 0.000 seconds (97% CPU, 13493421 Lips)
+L = [1, 7, 1, 2, 6, 4, 2, 5, 3, 7, 4, 6, 3, 5] ;
+% 10,991 inferences, 0.001 CPU in 0.001 seconds (99% CPU, 14812668 Lips)
+L = [1, 6, 1, 7, 2, 4, 5, 2, 6, 3, 4, 7, 5, 3] ;
+% 6,331 inferences, 0.000 CPU in 0.000 seconds (99% CPU, 14487414 Lips)
+L = [1, 5, 1, 6, 7, 2, 4, 5, 2, 3, 6, 4, 7, 3] ;
+% 15,257 inferences, 0.001 CPU in 0.001 seconds (99% CPU, 15120912 Lips)
+L = [1, 4, 1, 5, 6, 7, 4, 2, 3, 5, 2, 6, 3, 7] ;
+% 7,898 inferences, 0.001 CPU in 0.001 seconds (99% CPU, 14545120 Lips)
+L = [1, 4, 1, 6, 7, 3, 4, 5, 2, 3, 6, 2, 7, 5] ;
+% 8,321 inferences, 0.001 CPU in 0.001 seconds (99% CPU, 11686798 Lips)
+L = [1, 6, 1, 3, 5, 7, 4, 3, 6, 2, 5, 4, 2, 7] ;
+% 2,377 inferences, 0.000 CPU in 0.000 seconds (95% CPU, 10471366 Lips)
+L = [1, 5, 1, 7, 3, 4, 6, 5, 3, 2, 4, 7, 2, 6] 
+... 
 ```
 
-More solutions are found within about 3 seconds of each other. This seems *slower* that the non-CLP version. We think the labeling and count2 sequence is not the best CLP approach. 
+If we do
+
+```prolog
+?- findall(X,langford(X),X), length(X,L).
+X = [[1, 7, 1, 2, 5, 6, 2, 3|...], [1, 7, 1, 2, 6, 4, 2|...], [1, 6, 1, 7, 2, 4|...], [1, 5, 1, 6, 7|...], [1, 4, 1, 5|...], [1, 4, 1|...], [1, 6|...], [1|...], [...|...]|...],
+L = 52.
+```
+
+We get 52 solutions, pretty much instantly. There are 26 for n=7, but Prolog finds each solution and its reverse as well.
+
+Curiously, we dropped testing if the numbers occur in pairs in any proposed solution.  Why? The space constraints of the Langford list itself.  The pairs of numbers must
+all squeeze into the 14 slots, so if all `rule` clauses succeed, there can't be for example a solution like [1,1,1,1,...]
+
+#### n=11: Wow, going up to 11 returns solutions instantly:
+
+```prolog
+?- time((langford(X),label(X))).
+% 1,736,171 inferences, 0.100 CPU in 0.100 seconds (100% CPU, 17422689 Lips)
+X = [1, 2, 1, 11, 2, 3, 9, 10, 4|...] [write]
+X = [1, 2, 1, 11, 2, 3, 9, 10, 4, 3, 8, 5, 7, 4, 6, 11, 9, 5, 10, 8, 7, 6] ;
+% 15,471 inferences, 0.001 CPU in 0.001 seconds (99% CPU, 12077283 Lips)
+X = [1, 2, 1, 11, 2, 3, 10, 8, 4, 3, 9, 7, 5, 4, 6, 11, 8, 10, 5, 7, 9, 6] ;
+% 8,590 inferences, 0.001 CPU in 0.001 seconds (99% CPU, 11718963 Lips)
+X = [1, 2, 1, 11, 2, 3, 9, 10, 4, 3, 6, 7, 8, 4, 5, 11, 9, 6, 10, 7, 5, 8] ;
+% 5,762 inferences, 0.001 CPU in 0.001 seconds (99% CPU, 11524000 Lips)
+X = [1, 2, 1, 11, 2, 3, 10, 8, 4, 3, 7, 9, 6, 4, 5, 11, 8, 10, 7, 6, 5, 9] ;
+% 67,014 inferences, 0.004 CPU in 0.004 seconds (100% CPU, 15189030 Lips)
+X = [1, 2, 1, 9, 2, 3, 11, 8, 10, 3, 4, 5, 7, 9, 6, 4, 8, 5, 11, 10, 7, 6] ;
+% 14,461 inferences, 0.001 CPU in 0.001 seconds (99% CPU, 12121542 Lips)
+X = [1, 2, 1, 9, 2, 3, 10, 11, 7, 3, 4, 8, 5, 9, 6, 4, 7, 10, 5, 11, 8, 6] ;
+% 1,279 inferences, 0.000 CPU in 0.000 seconds (94% CPU, 11842593 Lips)
+X = [1, 2, 1, 9, 2, 3, 10, 8, 11, 3, 4, 7, 5, 9, 6, 4, 8, 10, 5, 7, 11, 6] ;
+% 22,663 inferences, 0.002 CPU in 0.002 seconds (99% CPU, 12818439 Lips)
+X = [1, 2, 1, 9, 2, 3, 10, 11, 7, 3, 4, 6, 8, 9, 5, 4, 7, 10, 6, 11, 5, 8] ;
+% 31,525 inferences, 0.002 CPU in 0.002 seconds (99% CPU, 13998668 Lips)
+X = [1, 2, 1, 11, 2, 3, 10, 5, 9, 3, 8, 4, 7, 5, 6, 11, 4, 10, 9, 8, 7, 6] ;
+% 30,153 inferences, 0.002 CPU in 0.002 seconds (100% CPU, 13643891 Lips)
+X = [1, 2, 1, 9, 2, 3, 10, 7, 11, 3, 8, 4, 5, 9, 6, 7, 4, 10, 5, 8, 11, 6] ;
+% 27,279 inferences, 0.002 CPU in 0.002 seconds (99% CPU, 15316676 Lips)
+X = [1, 2, 1, 11, 2, 3, 6, 9, 10, 3, 7, 4, 8, 6, 5, 11, 4, 9, 7, 10, 5, 8] ;
+% 1,905 inferences, 0.000 CPU in 0.000 seconds (93% CPU, 10241935 Lips)
+X = [1, 2, 1, 9, 2, 3, 10, 11, 6, 3, 7, 4, 8, 9, 5, 6, 4, 10, 7, 11, 5, 8] ;
+% 3,334 inferences, 0.000 CPU in 0.000 seconds (97% CPU, 10931148 Lips)
+X = [1, 2, 1, 9, 2, 3, 11, 7, 10, 3, 6, 4, 8, 9, 5, 7, 4, 6, 11, 10, 5, 8] ;
+% 2,860 inferences, 0.000 CPU in 0.000 seconds (97% CPU, 10671642 Lips)
+X = [1, 2, 1, 9, 2, 3, 11, 7, 8, 3, 10, 4, 6, 9, 5, 7, 4, 8, 11, 6, 5, 10] ;
+% 31,746 inferences, 0.002 CPU in 0.002 seconds (99% CPU, 13531969 Lips)
+X = [1, 2, 1, 11, 2, 3, 9, 5, 10, 3, 7, 8, 4, 5, 6, 11, 9, 4, 7, 10, 8, 6] ;
+% 31,096 inferences, 0.002 CPU in 0.002 seconds (99% CPU, 14842959 Lips)
+X = [1, 2, 1, 9, 2, 3, 11, 7, 10, 3, 5, 8, 4, 9, 6, 7, 5, 4, 11, 10, 8, 6] ;
+% 1,248 inferences, 0.000 CPU in 0.000 seconds (94% CPU, 12000000 Lips)
+X = [1, 2, 1, 9, 2, 3, 8, 10, 11, 3, 5, 7, 4, 9, 6, 8, 5, 4, 10, 7, 11, 6] ;
+% 28,094 inferences, 0.002 CPU in 0.002 seconds (99% CPU, 12976443 Lips)
+X = [1, 2, 1, 11, 2, 3, 6, 10, 7, 3, 8, 9, 4, 6, 5, 11, 7, 4, 10, 8, 5, 9] ;
+% 1,087 inferences, 0.000 CPU in 0.000 seconds (89% CPU, 9134454 Lips)
+X = [1, 2, 1, 11, 2, 3, 6, 8, 10, 3, 7, 9, 4, 6, 5, 11, 8, 4, 7, 10, 5, 9] ;
+% 1,087 inferences, 0.000 CPU in 0.000 seconds (89% CPU, 9211864 Lips)
+X = [1, 2, 1, 11, 2, 3, 6, 8, 9, 3, 10, 7, 4, 6, 5, 11, 8, 4, 9, 7, 5, 10] ;
+% 3,612 inferences, 0.000 CPU in 0.000 seconds (98% CPU, 11079755 Lips)
+X = [1, 2, 1, 9, 2, 3, 11, 8, 6, 3, 10, 7, 4, 9, 5, 6, 8, 4, 11, 7, 5, 10] ;
+% 3,560 inferences, 0.000 CPU in 0.000 seconds (97% CPU, 10920245 Lips)
+X = [1, 2, 1, 9, 2, 3, 8, 11, 7, 3, 10, 6, 4, 9, 5, 8, 7, 4, 6, 11, 5, 10] ;
+% 165,220 inferences, 0.010 CPU in 0.010 seconds (100% CPU, 15964828 Lips)
+X = [1, 2, 1, 11, 2, 3, 10, 5, 7, 3, 9, 6, 8, 5, 4, 11, 7, 10, 6, 4, 9, 8] ;
+% 1,340 inferences, 0.000 CPU in 0.000 seconds (91% CPU, 9436620 Lips)
+X = [1, 2, 1, 11, 2, 3, 9, 5, 8, 3, 10, 6, 7, 5, 4, 11, 9, 8, 6, 4, 7, 10] ;
+% 5,373 inferences, 0.000 CPU in 0.000 seconds (98% CPU, 11456290 Lips)
+X = [1, 2, 1, 11, 2, 3, 6, 10, 8, 3, 5, 9, 7, 6, 4, 11, 5, 8, 10, 4, 7, 9] ;
+% 4,776 inferences, 0.000 CPU in 0.000 seconds (97% CPU, 14088496 Lips)
+X = [1, 2, 1, 9, 2, 3, 10, 7, 11, 3, 5, 6, 8, 9, 4, 7, 5, 10, 6, 4, 11, 8] ;
+% 16,188 inferences, 0.001 CPU in 0.001 seconds (99% CPU, 14837764 Lips)
+X = [1, 2, 1, 11, 2, 3, 6, 10, 7, 3, 9, 5, 8, 6, 4, 11, 7, 5, 10, 4, 9, 8] ;
+% 2,127 inferences, 0.000 CPU in 0.000 seconds (96% CPU, 10477833 Lips)
+X = [1, 2, 1, 11, 2, 3, 6, 8, 9, 3, 10, 5, 7, 6, 4, 11, 8, 5, 9, 4, 7, 10] ;
+% 3,361 inferences, 0.000 CPU in 0.000 seconds (98% CPU, 13774590 Lips)
+X = [1, 2, 1, 9, 2, 3, 11, 8, 6, 3, 10, 5, 7, 9, 4, 6, 8, 5, 11, 4, 7, 10] ;
+% 16,192 inferences, 0.001 CPU in 0.001 seconds (99% CPU, 14882353 Lips)
+X = [1, 2, 1, 11, 2, 3, 6, 9, 7, 3, 10, 8, 5, 6, 4, 11, 7, 9, 5, 4, 8, 10] ;
+% 488,246 inferences, 0.029 CPU in 0.029 seconds (100% CPU, 17061397 Lips)
+X = [1, 2, 1, 11, 2, 10, 3, 4, 9, 7, 3, 8, 4, 5, 6, 11, 10, 7, 9, 5, 8, 6] ;
+% 10,521 inferences, 0.001 CPU in 0.001 seconds (99% CPU, 12065367 Lips)
+X = [1, 2, 1, 11, 2, 10, 3, 4, 8, 9, 3, 6, 4, 7, 5, 11, 10, 8, 6, 9, 5, 7] 
+```
 
 
+#### n=15: < 4 seconds
+
+This code for n=15, gives solutions in about 4 seconds.
+
+```prolog
+:- use_module(library(clpfd)).
+
+langford(L) :-
+
+    L = [
+            _,_,_,_,_,_,_,_,_,_,
+            _,_,_,_,_,_,_,_,_,_,
+            _,_,_,_,_,_,_,_,_,_
+        ],
+    L ins 1..15,
+
+    rule(L,1),
+    rule(L,2),
+    rule(L,3),
+    rule(L,4),
+    rule(L,5),
+    rule(L,6),
+    rule(L,7),
+    rule(L,8),
+    rule(L,9),
+    rule(L,10),
+    rule(L,11),
+    rule(L,12),
+    rule(L,13),
+    rule(L,14),
+    rule(L,15).
+
+rule(L,K) :-    nth1(I,L,K),
+                J #= I + K + 1,
+                nth1(J,L,K).
+```
+
+Here are some solutions:
+
+```prolog
+?- time((langford(X),label(X))).
+% 72,467,128 inferences, 4.000 CPU in 4.002 seconds (100% CPU, 18116719 Lips)
+X = [1, 2, 1, 3, 2, 4, 14, 3, 15|...] [write]
+X = [1, 2, 1, 3, 2, 4, 14, 3, 15, 13, 4, 5, 12, 6, 7, 10, 11, 5, 8, 9, 6, 14, 7, 13, 15, 12, 10, 8, 11, 9] ;
+% 25,984 inferences, 0.002 CPU in 0.002 seconds (99% CPU, 13243629 Lips)
+X = [1, 2, 1, 3, 2, 4, 14, 3, 15, 13, 4, 5, 12, 6, 7, 11, 9, 5, 10, 8, 6, 14, 7, 13, 15, 12, 9, 11, 8, 10] ;
+% 84,353 inferences, 0.005 CPU in 0.005 seconds (97% CPU, 16252987 Lips)
+X = [1, 2, 1, 3, 2, 4, 15, 3, 12, 14, 4, 5, 13, 6, 10, 7, 11, 5, 8, 9, 6, 12, 15, 7, 14, 10, 13, 8, 11, 9] ;
+% 877 inferences, 0.000 CPU in 0.000 seconds (93% CPU, 8858586 Lips)
+X = [1, 2, 1, 3, 2, 4, 14, 3, 15, 12, 4, 5, 13, 6, 10, 7, 11, 5, 8, 9, 6, 14, 12, 7, 15, 10, 13, 8, 11, 9] ;
+% 28,923 inferences, 0.002 CPU in 0.002 seconds (99% CPU, 13063686 Lips)
+X = [1, 2, 1, 3, 2, 4, 14, 3, 13, 15, 4, 5, 11, 6, 12, 7, 9, 5, 10, 8, 6, 14, 13, 7, 11, 15, 9, 12, 8, 10] ;
+% 92,304 inferences, 0.006 CPU in 0.006 seconds (100% CPU, 14875745 Lips)
+X = [1, 2, 1, 3, 2, 4, 14, 3, 13, 15, 4, 5, 10, 6, 11, 12, 7, 5, 8, 9, 6, 14, 13, 10, 7, 15, 11, 8, 12, 9] ;
+% 1,868 inferences, 0.000 CPU in 0.000 seconds (93% CPU, 10263736 Lips)
+X = [1, 2, 1, 3, 2, 4, 15, 3, 14, 11, 4, 5, 13, 6, 10, 12, 7, 5, 8, 9, 6, 11, 15, 14, 7, 10, 13, 8, 12, 9] 
+...
+```

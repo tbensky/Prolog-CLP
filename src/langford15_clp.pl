@@ -2,8 +2,12 @@
 
 langford(L) :-
 
-    L = [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_],
-    L ins 1..11,
+    L = [
+            _,_,_,_,_,_,_,_,_,_,
+            _,_,_,_,_,_,_,_,_,_,
+            _,_,_,_,_,_,_,_,_,_
+        ],
+    L ins 1..15,
 
     rule(L,1),
     rule(L,2),
@@ -15,11 +19,12 @@ langford(L) :-
     rule(L,8),
     rule(L,9),
     rule(L,10),
-    rule(L,11).
+    rule(L,11),
+    rule(L,12),
+    rule(L,13),
+    rule(L,14),
+    rule(L,15).
 
 rule(L,K) :-    nth1(I,L,K),
                 J #= I + K + 1,
                 nth1(J,L,K).
-
-
-go :- langford(L), label(L), write(L).
