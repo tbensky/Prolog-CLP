@@ -8,7 +8,7 @@ In the case of CLP, Prolog's search happily continues with incomplete conclusion
 
 At this point, Prolog + CLP is a bit tough to study. Outside of Bratko, in the 4th edition of ["Prolog Programming for Artificial Intelligence"](https://www.amazon.com/Programming-Artificial-Intelligence-International-Computer/dp/0321417461/) (chapters 7 and 14), there isn't really any books on Prolog + CLP, so there's no unified source for learning or reading about it. (I'm old fashioned too; I learn things best from books.)
 
-It seems best then to just jump in and start experimenting with it, which is what I'm doing here. (Maybe this repo will be a book someday?) (Note: See clpfd solution in comment to this: https://news.ycombinator.com/item?id=34224456)
+It seems best then to just jump in and start experimenting with it, which is what I'm doing here. (Maybe this repo will be a book someday?) 
 
 
 ## Project: Basic ideas of CLP
@@ -1273,3 +1273,80 @@ X = [1, 2, 1, 3, 2, 4, 14, 3, 13, 15, 4, 5, 10, 6, 11, 12, 7, 5, 8, 9, 6, 14, 13
 X = [1, 2, 1, 3, 2, 4, 15, 3, 14, 11, 4, 5, 13, 6, 10, 12, 7, 5, 8, 9, 6, 11, 15, 14, 7, 10, 13, 8, 12, 9] 
 ...
 ```
+
+## Solving Santa's Reindeer
+
+[This puzzle](Note: See clpfd solution in comment to this: https://news.ycombinator.com/item?id=34224456) popped up on HN on 1/2/23:
+
+> Vixen should be behind Rudolph, Prancer and Dasher, whilst Vixen should be in front of Dancer and Comet. Dancer should be behind Donder, Blitzen and Rudolph. Comet should be behind Cupid, Prancer and Rudolph. Donder should be behind Comet, Vixen, Dasher, Prancer and Cupid. Cupid should be in front of Comet, Blitzen, Vixen, Dancer and Rudolph. Prancer should be in front of Blitzen, Donder and Cupid. Blitzen should be behind Cupid but in front of Dancer, Vixen and Donder. Rudolph should be behind Prancer but in front of Dasher, Dancer and Donder. Finally, Dasher should be behind Prancer but in front of Blitzen, Dancer and Vixen.
+
+A good bit of practice with CLP operators and `maplist`.
+
+```prolog
+:- use_module(library(clpfd)).
+
+go(L) :-
+        L = [Vixen, Rudolph, Prancer, Dasher, Comet, Dancer, Donder, Blitzen, Cupid],
+        L ins 1..9,
+        
+        % Vixen should be behind Rudolph, Prancer and Dasher,
+        maplist(#>(Vixen),[Rudolph,Prancer,Dasher]),
+        
+        %  Vixen should be in front of Dancer and Comet.
+        maplist(#<(Vixen),[Dancer,Comet]),
+
+        % Dancer should be behind Donder, Blitzen and Rudolph. 
+        maplist(#>(Dancer),[Donder,Blitzen,Rudolph]),
+        
+        % Comet should be behind Cupid, Prancer and Rudolph.
+        maplist(#>(Comet),[Cupid,Prancer,Rudolph]),
+
+        % Donder should be behind Comet, Vixen, Dasher, Prancer and Cupid. 
+        maplist(#>(Donder),[Comet, Vixen, Dasher, Prancer,Cupid]),
+
+        % Cupid should be in front of Comet, Blitzen, Vixen, Dancer and Rudolph
+        maplist(#<(Cupid),[Comet, Blitzen, Vixen, Dancer,Rudolph]),
+
+        % Prancer should be in front of Blitzen, Donder and Cupid.
+        maplist(#<(Prancer),[Blitzen,Donder,Cupid]),
+
+        % Blitzen should be behind Cupid 
+        Blitzen #> Cupid,
+
+        % but in front of Dancer, Vixen and Donder.
+        maplist(#<(Blitzen),[Dancer,Vixen,Donder]),
+
+        % Rudolph should be behind Prancer
+        Rudolph #> Prancer,
+        
+        % but in front of Dasher, Dancer and Donder.
+        maplist(#<(Rudolph),[Dasher,Dancer,Donder]),
+
+        % Finally, Dasher should be behind Prancer
+        Dasher #> Prancer,
+
+        % but in front of Blitzen, Dancer and Vixen.
+        maplist(#<(Dasher),[Blitzen,Dancer,Vixen]).
+```
+
+which spits out 
+
+```prolog
+?- go(L).
+L = [6, 3, 1, 4, 7, 9, 8, 5, 2].
+```
+
+Meaning:
+
+```prolog
+        Blitzen = 5,
+        Comet = 7,
+        Cupid = 2,
+        Dancer = 9,
+        Dasher = 4,
+        Donder = 8,
+        Prancer = 1,
+        Rudolph = 3,
+        Vixen = 6
+```
+
