@@ -1143,7 +1143,7 @@ We get 52 solutions, pretty much instantly. There are 26 for n=7, but Prolog fin
 Curiously, we dropped testing if the numbers occur in pairs in any proposed solution.  Why? The space constraints of the Langford list itself.  The pairs of numbers must
 all squeeze into the 14 slots, so if all `rule` clauses succeed, there can't be for example a solution like [1,1,1,1,...]
 
-#### n=11: Wow, going up to 11 returns solutions instantly:
+#### n=11: Solutions in about 0.1 seconds.
 
 ```prolog
 ?- time((langford(X),label(X))).
@@ -1215,7 +1215,7 @@ X = [1, 2, 1, 11, 2, 10, 3, 4, 8, 9, 3, 6, 4, 7, 5, 11, 10, 8, 6, 9, 5, 7]
 ```
 
 
-#### n=15: < 4 seconds
+#### n=15: About 4 seconds for a solution.
 
 This code for n=15, gives solutions in about 4 seconds.
 
