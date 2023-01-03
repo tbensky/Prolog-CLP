@@ -1080,7 +1080,7 @@ Just for fun, we coded up a Langford search for the set ${1,1,2,2,3,3,4,4,5,5,6,
 
 That's about it for trying for Langford pairs using standard Prolog. Let's get into a CLP version now. 
 
-We post our first attempt here, but are not sure it's be best adaptation. It is a start though. 
+We post our first attempt here, but are not sure it's the best way to go. It is a start though. 
 
 Here, we start by adapting the non-CLP Langford 7 code above using an emerging pattern: in CLP the domain picking from Prolog facts (i.e. `val` and `aindex` above) is done using constraints. In this case, we insist that all element of our proposed Langford list `L` have values from 1..7 using the `L ins 1..7` clause. We also modified the `rule` clause to use the CLP `element` clause (and not Prolog's `nth1`). Also, the intermediary index `J` is computed using CLP's `#=` not `is`.
 
