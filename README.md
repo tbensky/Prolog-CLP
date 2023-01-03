@@ -1082,9 +1082,9 @@ That's about it for trying for Langford pairs using standard Prolog. Let's get i
 
 We post our first attempt here, but are not sure it's the best way to go. It is a start though. 
 
-Here, we start by adapting the non-CLP Langford 7 code above using an emerging pattern: in CLP the domain picking from Prolog facts (i.e. `val` and `aindex` above) is done using constraints. In this case, we insist that all element of our proposed Langford list `L` have values from 1..7 using the `L ins 1..7` clause. We also modified the `rule` clause to use the CLP `element` clause (and not Prolog's `nth1`). Also, the intermediary index `J` is computed using CLP's `#=` not `is`.
+Here, we start by adapting the non-CLP Langford 7 code above using an emerging pattern: in CLP the domain picking from Prolog facts (i.e. `val` and `aindex` above) is done using constraints. In this case, we insist that all elements of our proposed Langford list `L` have values from 1..7 using the `L ins 1..7` clause. We also modified the `rule` clause to use the CLP `element` clause (and not Prolog's `nth1`). Also, the intermediary index `J` is computed using CLP's `#=` not `is`.
 
-After all of the rules are applied, we label the proposed list `L`, then check that each digit only appears twice, using the sequence of `count2` calls. Here is the code.
+After all of the rules are applied, we label the proposed list `L`, then check that each digit appears only twice, using the sequence of `count2` calls. Here is the code.
 
 ```prolog
 :- use_module(library(clpfd)).
