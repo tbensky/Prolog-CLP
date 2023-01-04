@@ -1637,7 +1637,7 @@ Here we see that Prolog recasts our list of unknowns into some internal represen
 
 for example means that Rudolph's position has to be less than or equal to Donder's position -1. We did in fact say that Rudolph's posiiton is to be less than Donder's, so Rudolph <= Donder-1 is correct.
 
-So CLP(FD), or constraint programming over integers works to form a series of algebratic equations to solve. With some editing (E to EE, and I to II and =< to <=), we put this into Mathematica to solve:
+So CLP(FD), or constraint programming over integers works to form a series of algebratic equations to solve. With some editing (get rid of the _'s, E to EE, and I to II and =< to <=), we put this into Mathematica to solve:
 
 ![Turbo Prolog Langford](https://github.com/tbensky/Prolog-CLP/blob/main/src/mma.png)
 
