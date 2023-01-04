@@ -85,9 +85,11 @@ Vixen < Dancer
 Vixen < Comet
 ```
 
-Now this is all very nice, but you must see how stuck this feels: for whatever order Vixen ends up being in, it'll be a number bigger than that for Rudolph, Prancer, and Dasher, but less than that for Dancer and Comet.  And we can't say anything more about Vixen until we can "solve" for the ordering of the other reindeer.  We can choose values for Rudolph, Prancer, and Dasher, but what values? Shall we say 5,6, and 7, so Vixen can be 4?  But we're just guessing; likely these values won't hold up later when other ordering rules are enforced.
+Now this is all very nice: whatever order Vixen ends up being in, it'll be a number bigger than that for Rudolph, Prancer, and Dasher, but less than that for Dancer and Comet.  
 
-At this level, classical Prolog won't help, since we'd need to guess values to keep the code going. In classiccal Prolog, we can't just tell it `Vixen > Rudolph`, as it will fail since it doesn't know anything about Rudolph. (Note: this puzzle can indeed be solved with classical Prolog, just not so directly has stated). Using Prolog+CLP however, we can just state
+But we're stuck now, because we can't say anything more about Vixen until we can "solve" for the ordering of the other reindeer.  We can *choose* some values for Rudolph, Prancer, and Dasher, but what values? Finding these values is the whole point of the code here.  But OK, suppose we we choose 5,6, and 7, so then Vixen can be 4.  But we're just guessing; likely these values won't hold up later when other ordering rules are enforced.
+
+At this level, classical (i.e. non-CLP) Prolog has no "magic" to offer. We have to code up a search strategy, since all we can do is guess values to keep the code going. In classical Prolog, we can't just tell it `Vixen > Rudolph`, as it will fail since it doesn't know anything about Rudolph. (Note: this puzzle can indeed be solved with classical Prolog, just as directly has stated). Using Prolog+CLP however, we can just state
 
 ```
 Vixen #< Dancer
