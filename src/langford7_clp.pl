@@ -13,6 +13,9 @@ langford(L) :-
     rule(L,6),
     rule(L,7).
 
-rule(L,K) :-    nth1(I,L,K),
+rule(L,K) :-    element(I,L,K),
                 J #= I + K + 1,
-                nth1(J,L,K).
+                element(J,L,K).
+
+
+% with element, need to label answer. using nth1, answers pop right out.

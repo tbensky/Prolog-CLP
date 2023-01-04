@@ -1587,9 +1587,9 @@ Meaning, given out initial variable list was `[Vixen, Rudolph, Prancer, Dasher, 
         Rudolph = 3,
         Vixen = 6
 ```
-#### Looking closer at CLP
+#### Looking closer at what CLP does
 
-This is a good chance to stop and look more closely at what CLP is doing.  Suppose we comment out the line `L ins 1..9` and run the program. We'll get:
+This is a good chance to stop and look more closely at what CLP is actually doing.  Suppose we comment out the line `L ins 1..9` and run the program. We'll get:
 
 ```prolog
 ?- go(L).
@@ -1641,4 +1641,4 @@ So CLP(FD), or constraint programming over integers works to form a series of al
 
 ![Turbo Prolog Langford](https://github.com/tbensky/Prolog-CLP/blob/main/src/mma.png)
 
-And indeed A (=Vixen) comes out to be 6, etc.
+Note we also told Mathematica about the range of the variables too. Indeed A (=Vixen) comes out to be 6, etc.
