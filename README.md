@@ -6,7 +6,7 @@ CLP is a "new" (mid-2000s) addition to Prolog that didn't exist in Prolog in the
 
 In the case of CLP, Prolog's search happily continues with incomplete conclusions, hoping to firm up such (later), as part of the overall search.
 
-At this point, Prolog + CLP is a bit tough to study. Outside of Bratko, in the 4th edition of ["Prolog Programming for Artificial Intelligence"](https://www.amazon.com/Programming-Artificial-Intelligence-International-Computer/dp/0321417461/) (chapters 7 and 14), there isn't really any books on Prolog + CLP, so there's no unified source for learning or reading about it. (I'm old fashioned too; I learn things best from books.)
+At this point, Prolog + CLP is a bit tough to study. Outside of Bratko, in the 4th edition of ["Prolog Programming for Artificial Intelligence"](https://www.amazon.com/Programming-Artificial-Intelligence-International-Computer/dp/0321417461/) (chapters 7 and 14), there isn't really any books on Prolog + CLP, so there's no unified source for learning or reading about it. (I'm old fashioned; I learn things best and slowly from books.)
 
 It seems best then to just jump in and start experimenting with it, which is what I'm doing here. (Maybe this repo will be a book someday?) 
 
@@ -85,9 +85,9 @@ Vixen < Dancer
 Vixen < Comet
 ```
 
-Now this is all very nice, but you must see how stuck this feels: for whatever order Vixen ends up being in, it'll be a number bigger than that for Rudolph, Prancer, and Dasher, but less than that for Dancer and Comet.  And we can't say anything more about Vixen until we can "solve" for the ordering of the other reigndeer. 
+Now this is all very nice, but you must see how stuck this feels: for whatever order Vixen ends up being in, it'll be a number bigger than that for Rudolph, Prancer, and Dasher, but less than that for Dancer and Comet.  And we can't say anything more about Vixen until we can "solve" for the ordering of the other reindeer.  We can choose values for Rudolph, Prancer, and Dasher, but what values? Shall we say 5,6, and 7, so Vixen can be 4?  But we're just guessing; likely these values won't hold up later when other ordering rules are enforced.
 
-At this level, classical Prolog won't help, since we can't just tell it `Vixen > Rudolph`, as it will fail since it doesn't know anything about Rudolph. (Note: this puzzle can be solved with classical Prolog, just not so directly has stated). Using Prolog+CLP however, we can just state
+At this level, classical Prolog won't help, since we'd need to guess values to keep the code going. In classiccal Prolog, we can't just tell it `Vixen > Rudolph`, as it will fail since it doesn't know anything about Rudolph. (Note: this puzzle can indeed be solved with classical Prolog, just not so directly has stated). Using Prolog+CLP however, we can just state
 
 ```
 Vixen #< Dancer
