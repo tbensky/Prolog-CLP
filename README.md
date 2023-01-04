@@ -1396,7 +1396,7 @@ The problem is that this runs and runs and doesn't seem to end. The search space
 [1,1,1,1,1,1,1,1,6]
 ```
 
-We can see that Prolog is just counting up one by one. It's waiting for a case to come up that satisfies the ordering rules.  Further, all of these guesses are obviously wrong for an answer to this, since reindeer cannot share a position in line.  The code is short and direct, but the search stategy is awful.
+We can see that Prolog is just counting up one by one. It's just guessing, and waiting for a case to come up that satisfies the ordering rules.  Further, all of these guesses are obviously wrong for an answer to this, since reindeer cannot share a position in line.  The code is short and direct, but the search stategy is awful.
 
 ### Second attempt: smarter domain choosing
 
@@ -1404,7 +1404,9 @@ In this next attempt, we'll dispense with the short code and work to choose the 
 
 For example, since the Blizten/Cupid requirement is so simple in `Blitzen > Cupid`, why not first choose ordering values for these two, then immediately check that this requirement holds? This will immediately exclude all search paths that do not have `Blitzen > Cupid`.
 
-Likewise, the Rudolph/Prancer condition is also simple in `Rudolph > Prancer`.  So we'll choose values for these two next, and ensure this condition is met.  We'll even do something else: let's be sure that all values chosen for all reindeer at this point (Blizten, Cupid, Rudolph, and Prancer) are not equal (again since reindeer cannot share a position in line).  This will narrow the search space even more.  So, we'll do this to start our search:
+Likewise, the Rudolph/Prancer condition is also simple in `Rudolph > Prancer`.  So we'll choose values for these two next, and ensure this condition is met.  We'll even do something else: let's be sure that all values chosen for all reindeer at this point (Blizten, Cupid, Rudolph, and Prancer) are not equal (again since reindeer cannot share a position in line).  This will narrow the search space even more.  In the book [Thinking as Computation](https://www.amazon.com/Thinking-Computation-First-Course-Press/dp/0262534746) this issue is discussed on p. 101 "Minimizing the guesswork: Two rules." 
+
+So, we'll do this to start our search:
 
 ```prolog
         order(Blitzen),
