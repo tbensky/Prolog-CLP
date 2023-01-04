@@ -1400,9 +1400,9 @@ We can see that Prolog is just counting up one by one. It's waiting for a case t
 
 In this next attempt, we'll dispense with the short code and work to choose the domain more wisely.
 
-For example, since the Blizten/Cupid requirement is so simple in `Blitzen > Cupid`, why not first choose ordering values for these two, then immediately check that this requirement holds? Wont't this immediately exclude all search paths that do not have `Blitzen > Cupid`?
+For example, since the Blizten/Cupid requirement is so simple in `Blitzen > Cupid`, why not first choose ordering values for these two, then immediately check that this requirement holds? This will immediately exclude all search paths that do not have `Blitzen > Cupid`.
 
-Likewise, the Rudolph/Prancer condition is also simple in `Rudolph > Prancer`.  So we'll choose values for these two next, and even do something else: let's be sure that all values chosen for all reindeer at this point (Blizten, Cupid, Rudolph, and Prancer) are not equal (again since reindeer cannot share a position in line).  This again will narrow the search space.  We'll do this to start our search:
+Likewise, the Rudolph/Prancer condition is also simple in `Rudolph > Prancer`.  So we'll choose values for these two next, and ensure this condition is met.  We'll even do something else: let's be sure that all values chosen for all reindeer at this point (Blizten, Cupid, Rudolph, and Prancer) are not equal (again since reindeer cannot share a position in line).  This will narrow the search space even more.  So, we'll do this to start our search:
 
 ```prolog
         order(Blitzen),
