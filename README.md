@@ -1319,7 +1319,7 @@ X = [1, 2, 1, 3, 2, 4, 15, 3, 14, 11, 4, 5, 13, 6, 10, 12, 7, 5, 8, 9, 6, 11, 15
 
 #### First attempt
 
-Here is a simple approach: make a list of reindeer names, use maplist to choose numbers for them all from the `order` domain, then use maplist again on
+Here is a simple approach: make a list of reindeer names, then use maplist to choose numbers for them all from the `order` domain. We'll then use maplist again on
 all chosen variables to enforce the ordering rules. Here is the code:
 
 ```prolog
@@ -1368,7 +1368,7 @@ go(L) :-
     maplist(<(Dasher),[Blitzen,Dancer,Vixen]).
 ```
 
-The problem is that this runs and doesn't seem to end. The ordering of the reindeer variable list is something like this:
+The problem is that this runs and doesn't seem to end. The ordering of the reindeer variable enumeration during the search is something like this:
 
 ```
 ?- go(L).
@@ -1380,15 +1380,15 @@ The problem is that this runs and doesn't seem to end. The ordering of the reind
 [1,1,1,1,1,1,1,1,6]
 ```
 
-where you can see Prolog is just counting up one by one. Further, even the first guess is impossible, since not all reindeer can be at position 1. The code is short and direct, but the search stategy is awful.
+We can see that Prolog is just counting up one by one. Further, all of these guesses are obviously impossible, since reindeer cannot share a position in line.  The code is short and direct, but the search stategy is awful.
 
 ### Second attempt: smarter domain choosing
 
 In this next attempt, we'll dispense with the short code and choose the domain more wisely.
 
-For example, since the Blizten/Cupid requirement is so simple in `Blitzen > Cupid`, why not first choose values for these two, then immediately check this requirement? Wont't that immediately exclude all search paths that do not have `Blitzen > Cupid`?
+For example, since the Blizten/Cupid requirement is so simple in `Blitzen > Cupid`, why not first choose values for these two, then immediately check this requirement? Wont't this immediately exclude all search paths that do not have `Blitzen > Cupid`?
 
-Likewise, the Rudolph/Prancer condition is simple in `Rudolph > Prancer`.  So we'll choose values for these two, and even do something else: let's be sure what all values chosen to this point are not equal (again since reindeer cannot share a position in line). We'll do this to start our search:
+Likewise, the Rudolph/Prancer condition is simple in `Rudolph > Prancer`.  So we'll choose values for these two next, and even do something else: let's be sure that all values chosen to this point are not equal (again since reindeer cannot share a position in line). We'll do this to start our search:
 
 ```prolog
         order(Blitzen),
