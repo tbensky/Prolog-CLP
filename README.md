@@ -1315,6 +1315,189 @@ X = [1, 2, 1, 3, 2, 4, 15, 3, 14, 11, 4, 5, 13, 6, 10, 12, 7, 5, 8, 9, 6, 11, 15
 
 > Vixen should be behind Rudolph, Prancer and Dasher, whilst Vixen should be in front of Dancer and Comet. Dancer should be behind Donder, Blitzen and Rudolph. Comet should be behind Cupid, Prancer and Rudolph. Donder should be behind Comet, Vixen, Dasher, Prancer and Cupid. Cupid should be in front of Comet, Blitzen, Vixen, Dancer and Rudolph. Prancer should be in front of Blitzen, Donder and Cupid. Blitzen should be behind Cupid but in front of Dancer, Vixen and Donder. Rudolph should be behind Prancer but in front of Dasher, Dancer and Donder. Finally, Dasher should be behind Prancer but in front of Blitzen, Dancer and Vixen.
 
+### Without CLP
+
+#### First attempt
+
+Here is a simple approach: make a list of reindeer names, use maplist to choose numbers for them all from the `order` domain, then use maplist again on
+all chosen variables to enforce the ordering rules. Here is the code:
+
+```prolog
+go(L) :-
+
+    L = [Dancer,Prancer,Donder,Blitzen,Vixen,Cupid,Comet,Dasher,Rudolph],
+    maplist(order,L),
+    
+    % Vixen should be behind Rudolph, Prancer and Dasher,
+    maplist(>(Vixen),[Rudolph,Prancer,Dasher]),
+
+    %  Vixen should be in front of Dancer and Comet.
+    maplist(<(Vixen),[Dancer,Comet]),
+
+    % Dancer should be behind Donder, Blitzen and Rudolph. 
+    maplist(>(Dancer),[Donder,Blitzen,Rudolph]),
+
+    % Comet should be behind Cupid, Prancer and Rudolph.
+    maplist(>(Comet),[Cupid,Prancer,Rudolph]),
+
+    % Donder should be behind Comet, Vixen, Dasher, Prancer and Cupid. 
+    maplist(>(Donder),[Comet, Vixen, Dasher, Prancer,Cupid]),
+
+    % Cupid should be in front of Comet, Blitzen, Vixen, Dancer and Rudolph
+    maplist(<(Cupid),[Comet, Blitzen, Vixen, Dancer,Rudolph]),
+
+    % Prancer should be in front of Blitzen, Donder and Cupid.
+    maplist(<(Prancer),[Blitzen,Donder,Cupid]),
+
+    % Blitzen should be behind Cupid 
+    Blitzen > Cupid,
+
+    % but in front of Dancer, Vixen and Donder.
+    maplist(<(Blitzen),[Dancer,Vixen,Donder]),
+
+    % Rudolph should be behind Prancer
+    Rudolph > Prancer,
+
+    % but in front of Dasher, Dancer and Donder.
+    maplist(<(Rudolph),[Dasher,Dancer,Donder]),
+
+    % Finally, Dasher should be behind Prancer
+    Dasher > Prancer,
+
+    % but in front of Blitzen, Dancer and Vixen.
+    maplist(<(Dasher),[Blitzen,Dancer,Vixen]).
+```
+
+The problem is that this runs and doesn't seem to end. The ordering of the reindeer variable list is something like this:
+
+```
+?- go(L).
+[1,1,1,1,1,1,1,1,1]
+[1,1,1,1,1,1,1,1,2]
+[1,1,1,1,1,1,1,1,3]
+[1,1,1,1,1,1,1,1,4]
+[1,1,1,1,1,1,1,1,5]
+[1,1,1,1,1,1,1,1,6]
+```
+
+where you can see Prolog is just counting up one by one. Further, even the first guess is impossible, since not all reindeer can be at position 1. The code is short and direct, but the search stategy is awful.
+
+### Second attempt: smarter domain choosing
+
+In this next attempt, we'll dispense with the short code and choose the domain more wisely.
+
+For example, since the Blizten/Cupid requirement is so simple in `Blitzen > Cupid`, why not first choose values for these two, then immediately check this requirement? Wont't that immediately exclude all search paths that do not have `Blitzen > Cupid`?
+
+Likewise, the Rudolph/Prancer condition is simple in `Rudolph > Prancer`.  So we'll choose values for these two, and even do something else: let's be sure what all values chosen to this point are not equal (again since reindeer cannot share a position in line). We'll do this to start our search:
+
+```prolog
+        order(Blitzen),
+        order(Cupid),
+
+        % Blitzen should be behind Cupid 
+        Blitzen > Cupid,
+
+        order(Rudolph),
+        Rudolph =\= Blitzen,
+        Rudolph =\= Cupid,
+
+        order(Prancer),
+        Prancer =\= Rudolph,
+        Prancer =\= Blitzen,
+        Prancer =\= Cupid,
+
+        % Rudolph should be behind Prancer
+        Rudolph > Prancer,
+```
+
+After this, we'll be on a search path that has 4 of the 9 reindeer on solid logical choosing. This code returns the answer in less than 0.1 seconds:
+
+```
+?- time(go(L)).
+% 1,052,741 inferences, 0.075 CPU in 0.076 seconds (99% CPU, 13974871 Lips)
+L = [9, 1, 8, 5, 6, 2, 7, 4, 3] ;
+```
+
+This means Dancer=9, Prancer=1, etc.
+
+```prolog
+go(L) :-
+
+    L = [Dancer,Prancer,Donder,Blitzen,Vixen,Cupid,Comet,Dasher,Rudolph],
+
+    order(Blitzen),
+    order(Cupid),
+    
+    % Blitzen should be behind Cupid 
+    Blitzen > Cupid,
+
+    order(Rudolph),
+    Rudolph =\= Blitzen,
+    Rudolph =\= Cupid,
+    
+    order(Prancer),
+    Prancer =\= Rudolph,
+    Prancer =\= Blitzen,
+    Prancer =\= Cupid,
+
+    % Rudolph should be behind Prancer
+    Rudolph > Prancer,
+
+    order(Vixen),
+    order(Dasher),
+    % Vixen should be behind Rudolph, Prancer and Dasher,
+    maplist(>(Vixen),[Rudolph,Prancer,Dasher]),
+
+    order(Dancer),
+    order(Comet),
+
+    %  Vixen should be in front of Dancer and Comet.
+    maplist(<(Vixen),[Dancer,Comet]),
+
+    order(Donder),
+
+    % Dancer should be behind Donder, Blitzen and Rudolph. 
+    maplist(>(Dancer),[Donder,Blitzen,Rudolph]),
+
+    % Comet should be behind Cupid, Prancer and Rudolph.
+    maplist(>(Comet),[Cupid,Prancer,Rudolph]),
+
+    % Donder should be behind Comet, Vixen, Dasher, Prancer and Cupid. 
+    maplist(>(Donder),[Comet, Vixen, Dasher, Prancer,Cupid]),
+
+    % Cupid should be in front of Comet, Blitzen, Vixen, Dancer and Rudolph
+    maplist(<(Cupid),[Comet, Blitzen, Vixen, Dancer,Rudolph]),
+
+    % Prancer should be in front of Blitzen, Donder and Cupid.
+    maplist(<(Prancer),[Blitzen,Donder,Cupid]),
+
+    % but in front of Dancer, Vixen and Donder.
+    maplist(<(Blitzen),[Dancer,Vixen,Donder]),    
+
+    % but in front of Dasher, Dancer and Donder.
+    maplist(<(Rudolph),[Dasher,Dancer,Donder]),
+
+    % Finally, Dasher should be behind Prancer
+    Dasher > Prancer,
+
+    % but in front of Blitzen, Dancer and Vixen.
+    maplist(<(Dasher),[Blitzen,Dancer,Vixen]).
+
+
+order(1).
+order(2).
+order(3).
+order(4).
+order(5).
+order(6).
+order(7).
+order(8).
+order(9).
+```
+
+
+
+### With CLP
 A good bit of practice with CLP operators and `maplist`.
 
 ```prolog
