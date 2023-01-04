@@ -1436,7 +1436,7 @@ After this, we'll be on a search path that has 4 of the 9 reindeer on solid logi
 L = [9, 1, 8, 5, 6, 2, 7, 4, 3] ;
 ```
 
-This means Dancer=9, Prancer=1, etc.
+This means Dancer=9, Prancer=1, etc.  Here is the complete code:
 
 ```prolog
 go(L) :-
