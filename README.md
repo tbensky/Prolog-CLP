@@ -1587,4 +1587,58 @@ Meaning, given out initial variable list was `[Vixen, Rudolph, Prancer, Dasher, 
         Rudolph = 3,
         Vixen = 6
 ```
+#### Looking closer at CLP
 
+This is a good chance to stop and look more closely at what CLP is doing.  Suppose we comment out the line `L ins 1..9` and run the program. We'll get:
+
+```prolog
+?- go(L).
+L = [_A, _B, _C, _D, _E, _F, _G, _H, _I],
+_B#=<_G+ -1,
+_B#=<_F+ -1,
+_B#=<_D+ -1,
+_C#=<_B+ -1,
+_I#=<_B+ -1,
+_B#=<_E+ -1,
+_B#=<_F+ -1,
+_B#=<_A+ -1,
+_D#=<_A+ -1,
+_H#=<_A+ -1,
+_I#=<_A+ -1,
+_A#=<_G+ -1,
+_A#=<_E+ -1,
+_A#=<_F+ -1,
+_D#=<_A+ -1,
+_C#=<_A+ -1,
+_C#=<_D+ -1,
+_C#=<_I+ -1,
+_C#=<_G+ -1,
+_C#=<_H+ -1,
+_C#=<_G+ -1,
+_C#=<_E+ -1,
+_D#=<_F+ -1,
+_D#=<_H+ -1,
+_D#=<_G+ -1,
+_H#=<_F+ -1,
+_I#=<_F+ -1,
+_H#=<_F+ -1,
+_G#=<_F+ -1,
+_I#=<_E+ -1,
+_E#=<_G+ -1,
+_I#=<_E+ -1,
+_H#=<_G+ -1,
+_I#=<_G+ -1,
+_I#=<_H+ -1,
+_I#=<_H+ -1.
+```
+Here we see that Prolog recasts our list of unknowns into some internal representation using `_A, _B`, etc. Without finding a single answer, it then spits out a list of constraints that it's pulled from our code. The line
+
+```_B#=<_G+ -1,`` 
+
+for example means that Rudolph's position has to be less than or equal to Donder's position -1. We did in fact say that Rudolph's posiiton is to be less than Donder's, so Rudolph <= Donder-1 is correct.
+
+So CLP(FD), or constraint programming over integers works to form a series of algebratic equations to solve. With some editing (E to EE, and I to II and =< to <=), we put this into Mathematica to solve:
+
+![Turbo Prolog Langford](https://github.com/tbensky/Prolog-CLP/blob/main/src/mma.png)
+
+And indeed A (=Vixen) comes out to be 6, etc.

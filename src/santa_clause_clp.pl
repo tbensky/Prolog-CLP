@@ -2,7 +2,7 @@
 
 go(L) :-
         L = [Vixen, Rudolph, Prancer, Dasher, Comet, Dancer, Donder, Blitzen, Cupid],
-        L ins 1..9,
+        %L ins 1..9,
         
         % Vixen should be behind Rudolph, Prancer and Dasher,
         maplist(#>(Vixen),[Rudolph,Prancer,Dasher]),
