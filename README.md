@@ -1320,14 +1320,16 @@ X = [1, 2, 1, 3, 2, 4, 15, 3, 14, 11, 4, 5, 13, 6, 10, 12, 7, 5, 8, 9, 6, 11, 15
 #### First attempt
 
 Here is a simple approach: make a list of reindeer names, then use maplist to choose numbers for them all from the `order` domain. We'll then use maplist again on
-all chosen variables to enforce the ordering rules. Here is the code:
+all chosen variables to enforce the ordering rules. We like this code because translating the problem into Prolog is so straightforward. Here is the code:
 
 ```prolog
 go(L) :-
 
     L = [Dancer,Prancer,Donder,Blitzen,Vixen,Cupid,Comet,Dasher,Rudolph],
     maplist(order,L),
-    
+
+    write(L), nl, sleep(1),
+
     % Vixen should be behind Rudolph, Prancer and Dasher,
     maplist(>(Vixen),[Rudolph,Prancer,Dasher]),
 
@@ -1366,9 +1368,21 @@ go(L) :-
 
     % but in front of Blitzen, Dancer and Vixen.
     maplist(<(Dasher),[Blitzen,Dancer,Vixen]).
+        
+
+
+order(1).
+order(2).
+order(3).
+order(4).
+order(5).
+order(6).
+order(7).
+order(8).
+order(9).
 ```
 
-The problem is that this runs and doesn't seem to end. The ordering of the reindeer variable enumeration during the search is something like this:
+The problem is that this runs and runs and doesn't seem to end. The search space is too large and the search approach is not at all guided.  As in a Langford trial above, the ordering of the reindeer variable enumeration during the search is something like this:
 
 ```
 ?- go(L).
@@ -1380,15 +1394,15 @@ The problem is that this runs and doesn't seem to end. The ordering of the reind
 [1,1,1,1,1,1,1,1,6]
 ```
 
-We can see that Prolog is just counting up one by one. Further, all of these guesses are obviously impossible, since reindeer cannot share a position in line.  The code is short and direct, but the search stategy is awful.
+We can see that Prolog is just counting up one by one. It's waiting for a case to come up that satisfies the ordering rules.  Further, all of these guesses are obviously wrong for an answer to this, since reindeer cannot share a position in line.  The code is short and direct, but the search stategy is awful.
 
 ### Second attempt: smarter domain choosing
 
-In this next attempt, we'll dispense with the short code and choose the domain more wisely.
+In this next attempt, we'll dispense with the short code and work to choose the domain more wisely.
 
-For example, since the Blizten/Cupid requirement is so simple in `Blitzen > Cupid`, why not first choose values for these two, then immediately check this requirement? Wont't this immediately exclude all search paths that do not have `Blitzen > Cupid`?
+For example, since the Blizten/Cupid requirement is so simple in `Blitzen > Cupid`, why not first choose ordering values for these two, then immediately check that this requirement holds? Wont't this immediately exclude all search paths that do not have `Blitzen > Cupid`?
 
-Likewise, the Rudolph/Prancer condition is simple in `Rudolph > Prancer`.  So we'll choose values for these two next, and even do something else: let's be sure that all values chosen to this point are not equal (again since reindeer cannot share a position in line). We'll do this to start our search:
+Likewise, the Rudolph/Prancer condition is also simple in `Rudolph > Prancer`.  So we'll choose values for these two next, and even do something else: let's be sure that all values chosen for all reindeer at this point (Blizten, Cupid, Rudolph, and Prancer) are not equal (again since reindeer cannot share a position in line).  This again will narrow the search space.  We'll do this to start our search:
 
 ```prolog
         order(Blitzen),
