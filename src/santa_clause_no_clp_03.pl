@@ -1,16 +1,37 @@
+order_ok([]).
+order_ok([A|[]]).
+order_ok([A,B|Tail]) :-is_behind(A,B), order_ok([B|Tail]).
 
 
+% answer: [prancer,cupid,rudolph,dasher,blitzen,vixen,comet,donder,dancer]
+% in reverse: [dancer,donder,comet,vixen,blitzen,dasher,rudolph,cupid,prancer]
+go(L) :-
+    L = [A,B,C,D,E,F,G,H,I],
+    rd(A),
+    rd(B),
+    %is_behind(A,B),
+    rd(C),
+    %is_behind(B,C),
+    rd(D),
+    %is_behind(C,D),
+    rd(E),
+    %is_behind(D,E),
+    rd(F),
+    %is_behind(E,F),
+    rd(G),
+    %is_behind(F,G),
+    rd(H),
+    %is_behind(G,H),
+    rd(I),
+    order_ok(L),
+    sort(L,L1),
+    same_length(L,L1).
 
-add_rd([],X,[X]).
-add_rd(L,X,[X|L]).
 
-go(L,L) :- length(L,9).
-
-go(L,Soln) :-
-    rd(X),
-    add_rd(L,X,L1),
-    go(L1,Soln).
-
+% catchall, so we only need to use the is_behind clause
+is_behind(X,Y) :- behind(X,Y).
+is_behind(X,Y) :- front(Y,X).
+is_behind(X,Y) :- behind(X,Z), behind(Z,Y).
 
 
 rd(vixen).

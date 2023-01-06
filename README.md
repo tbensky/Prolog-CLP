@@ -1,3 +1,7 @@
+* TOC
+{:toc}
+
+
 # Learning Constraint Logic Programming with Prolog
 
 This repo is a record of my attempt to research and learn Prolog programming using Constraint Logic Programming (CLP).  The work here was greatly inspired along by the [Power of Prolog](https://www.metalevel.at/prolog/optimization) series, reading through [this](https://github.com/triska/clpz/blob/master/clpz.pl), and [the SWI Prolog CLP page](https://www.swi-prolog.org/man/clpfd.html).
@@ -1515,6 +1519,101 @@ order(8).
 order(9).
 ```
 
+We still think of Prolog as a good symbol processing language, meaning we don't always want to have to go to numbers to solve a problem. Can't we just stick to the symbols, which in this case are the names of the reindeer? We like this approach because it allows us to translate the problem easier into Prolog as well.
+
+We can put the ordering rules in using two predicates called `behind` and `front`. Both take two aguements, like `behind(X,Y)` and will mean `Y` is behind `X` in line. Similar for `front`. Here are the ordering facts then:
+
+```prolog
+% Vixen should be behind Rudolph, Prancer and Dasher,
+behind(vixen,rudolph).
+behind(vixen,prancer).
+behind(vixen,dasher).
+
+% Dancer should be behind Donder, Blitzen and Rudolph. 
+behind(dancer,donder).
+behind(dancer,blitzen).
+behind(dancer,rudolph).
+
+% Comet should be behind Cupid, Prancer and Rudolph.
+behind(comet,cupid).
+behind(comet,prancer).
+behind(comet,rudolph).
+
+% Donder should be behind Comet, Vixen, Dasher, Prancer and Cupid. 
+behind(donder,comet).
+behind(donder,vixen).
+behind(donder,dasher).
+behind(donder,prancer).
+behind(donder,cupid).
+
+% Blitzen should be behind Cupid 
+behind(blitzen,cupid).
+
+% Rudolph should be behind Prancer
+behind(rudolph,prancer).
+
+% Finally, Dasher should be behind Prancer
+behind(dasher,prancer).
+
+% Cupid should be in front of Comet, Blitzen, Vixen, Dancer and Rudolph
+front(cupid,comet).
+front(cupid,blitzen).
+front(cupid,vixen).
+front(cupid,dancer).
+front(cupid,rudolph).
+
+% Vixen should be in front of Dancer and Comet.
+front(vixen,dancer).
+front(vixen,comet).
+
+% Prancer should be in front of Blitzen, Donder and Cupid.
+front(prancer,blitzen).
+front(prancer,donder).
+front(prancer,cupid).
+
+
+% but in front of Dancer, Vixen and Donder.
+front(blitzen,dancer).
+front(blitzen,vixen).
+front(blitzen,donder).
+
+% but in front of Dasher, Dancer and Donder.
+front(rudolph,dasher).
+front(rudolph,dancer).
+front(rudolph,donder).
+
+
+% but in front of Blitzen, Dancer and Vixen.
+front(dasher,blitzen).
+front(dasher,dancer).
+front(dasher,vixen).
+```
+
+To simplify our code and not have to use both predicates in our logic, we'll define `is_behind` as:
+
+```prolog
+is_behind(X,Y) :- behind(X,Y).
+is_behind(X,Y) :- front(Y,X).
+is_behind(X,Y) :- behind(X,Z), behind(Z,Y).
+```
+
+The third clause is useful for finding two reindeer that are supposed to be behind one another, but are not directly stated to be so as given by the facts. As an example, if Donder is behind Dancer, and Comet is behind Donder, and Vixen is behind Comet, then Vixen is also behind Dancer. This would be found to be true by
+
+```prolog
+is_behind(dancer,vixen) :- is_behind(dancer,Z), is_behind(Z,vixen).
+```
+
+Prolog will go look for somebody behind dancer, say, donder, so the clause will become:
+
+
+```prolog
+is_behind(dancer,vixen) :- is_behind(dancer,donder), is_behind(donder,vixen).
+```
+
+which wil be true.
+
+
+[dancer,donder,comet,vixen,blitzen,dasher,rudolph,cupid,prancer]
 
 
 ### With CLP
