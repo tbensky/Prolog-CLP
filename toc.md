@@ -26,26 +26,44 @@
 
 -   TOC {:toc}
 
+Learning Constraint Logic Programming with Prolog
+=================================================
 
+This repo is a record of my attempt to research and learn Prolog
+programming using Constraint Logic Programming (CLP). The work here was
+greatly inspired along by the [Power of
+Prolog](https://www.metalevel.at/prolog/optimization) series, reading
+through [this](https://github.com/triska/clpz/blob/master/clpz.pl), and
+[the SWI Prolog CLP page](https://www.swi-prolog.org/man/clpfd.html).
 
-# Learning Constraint Logic Programming with Prolog
+CLP is a "new" (mid-2000s) addition to Prolog that didn't exist in
+Prolog in the late 1980s (when I first dabbled with Prolog). I can
+(personally) see how CLP greatly enhances the power of logic
+programming. In short, CLP allows Prolog searches to proceed with
+incomplete conclusions about the data. In such cases, the old Prolog
+would simply fail and stop.
 
-This repo is a record of my attempt to research and learn Prolog programming using Constraint Logic Programming (CLP).  The work here was greatly inspired along by the [Power of Prolog](https://www.metalevel.at/prolog/optimization) series, reading through [this](https://github.com/triska/clpz/blob/master/clpz.pl), and [the SWI Prolog CLP page](https://www.swi-prolog.org/man/clpfd.html).
+In the case of CLP, Prolog's search happily continues with incomplete
+conclusions, hoping to firm up such (later), as part of the overall
+search.
 
-CLP is a "new" (mid-2000s) addition to Prolog that didn't exist in Prolog in the late 1980s (when I first dabbled with Prolog). I can (personally) see how CLP greatly enhances the power of logic programming. In short, CLP allows Prolog searches to proceed with incomplete conclusions about the data. In such cases, the old Prolog would simply fail and stop. 
+At this point, Prolog + CLP is a bit tough to study. Outside of Bratko,
+in the 4th edition of ["Prolog Programming for Artificial
+Intelligence"](https://www.amazon.com/Programming-Artificial-Intelligence-International-Computer/dp/0321417461/)
+(chapters 7 and 14), there isn't really any books on Prolog + CLP, so
+there's no unified source for learning or reading about it. (I'm old
+fashioned; I learn things best and slowly from books.)
 
-In the case of CLP, Prolog's search happily continues with incomplete conclusions, hoping to firm up such (later), as part of the overall search.
+It seems best then to just jump in and start experimenting with it,
+which is what I'm doing here. (Maybe this repo will be a book someday?)
 
-At this point, Prolog + CLP is a bit tough to study. Outside of Bratko, in the 4th edition of ["Prolog Programming for Artificial Intelligence"](https://www.amazon.com/Programming-Artificial-Intelligence-International-Computer/dp/0321417461/) (chapters 7 and 14), there isn't really any books on Prolog + CLP, so there's no unified source for learning or reading about it. (I'm old fashioned; I learn things best and slowly from books.)
+Project: Basic ideas of CLP
+---------------------------
 
-It seems best then to just jump in and start experimenting with it, which is what I'm doing here. (Maybe this repo will be a book someday?) 
+Here is a simple Prolog program that tries to instantiate the variables
+`X`, `Y`, and `Z`.
 
-
-## Project: Basic ideas of CLP
-
-Here is a simple Prolog program that tries to instantiate the variables `X`, `Y`, and `Z`.  
-
-```prolog
+``` {.prolog}
 go(X,Y,Z) :- 
             X is 4, 
             Y is X + Z, 
@@ -55,17 +73,17 @@ go(X,Y,Z) :-
 
 If this is run, we'll get:
 
-```
-?- go(X,Y,Z).
-ERROR: is/2: Arguments are not sufficiently instantiated
-```
+    ?- go(X,Y,Z).
+    ERROR: is/2: Arguments are not sufficiently instantiated
 
-It cannot run, because in the line `Y is X + Z`, `Z` has not been set, so the code fails at that line. But supposing in
-some logic you are working on, `Z` will be determined, but just later on. Does the code really have to fail already?
+It cannot run, because in the line `Y is X + Z`, `Z` has not been set,
+so the code fails at that line. But supposing in some logic you are
+working on, `Z` will be determined, but just later on. Does the code
+really have to fail already?
 
 With CLP, we can recast the code like this:
 
-```prolog
+``` {.prolog}
 :- use_module(library(clpfd)).
 
 
@@ -76,64 +94,84 @@ go(X,Y,Z) :-
             Z #< 10.
 ```
 
-Here, the traditional `is` in Prolog is replaced with `#=`, which is the CLP version of assignment. If this code is run, we get
+Here, the traditional `is` in Prolog is replaced with `#=`, which is the
+CLP version of assignment. If this code is run, we get
 
-```prolog
+``` {.prolog}
 X = 4,
 Y in 7..13,
 4+Z#=Y,
 Z in 3..9.
 ```
 
-Which happily runs, acknowledging that X is 4, Y will be involved in $4+Z=Y$ and Z will be between 3 and 9. If the code continued,
-at some point Z might be nailed down, at which point, Prolog will be able to find Y as well.
+Which happily runs, acknowledging that X is 4, Y will be involved in
+$4+Z=Y$ and Z will be between 3 and 9. If the code continued, at some
+point Z might be nailed down, at which point, Prolog will be able to
+find Y as well.
 
-This is the basic idea of Prolog+CLP. Programs don't have to stop just becase variables are not known. It's happy to work
-with *constraints* on variables and continue.
+This is the basic idea of Prolog+CLP. Programs don't have to stop just
+becase variables are not known. It's happy to work with *constraints* on
+variables and continue.
 
-As another example, you may have heard of, is a funny holiday logic-puzzle:
+As another example, you may have heard of, is a funny holiday
+logic-puzzle:
 
-> Vixen should be behind Rudolph, Prancer and Dasher, whilst Vixen should be in front of Dancer and Comet. Dancer should be ...
+> Vixen should be behind Rudolph, Prancer and Dasher, whilst Vixen
+> should be in front of Dancer and Comet. Dancer should be ...
 
-The problem says something like "find the order of Santa's reindeer." 
+The problem says something like "find the order of Santa's reindeer."
 
-It might be good to somehow enumerate all reindeer names, so we can get order numbers for all of them.  Then, we can start interpreting the puzzle, pushing to find
-numerical values for each reindeer.
+It might be good to somehow enumerate all reindeer names, so we can get
+order numbers for all of them. Then, we can start interpreting the
+puzzle, pushing to find numerical values for each reindeer.
 
-"Vixen should be behind Rudolph, Prancer and Dasher" might mean whatever order Vixen ends up being in, it should a larger number than that of "Rudolph, Prancer and Dasher."  So we might write
+"Vixen should be behind Rudolph, Prancer and Dasher" might mean whatever
+order Vixen ends up being in, it should a larger number than that of
+"Rudolph, Prancer and Dasher." So we might write
 
-```
-Vixen > Rudolph
-Vixen > Prancer
-Vixen > Dasher
-```
+    Vixen > Rudolph
+    Vixen > Prancer
+    Vixen > Dasher
 
-Next, we look at "Vixen should be in front of Dancer and Comet" for which we might write:
+Next, we look at "Vixen should be in front of Dancer and Comet" for
+which we might write:
 
-```
-Vixen < Dancer
-Vixen < Comet
-```
+    Vixen < Dancer
+    Vixen < Comet
 
-Now this is all very nice: whatever order Vixen ends up being in, it'll be a number bigger than that for Rudolph, Prancer, and Dasher, but less than that for Dancer and Comet.  
+Now this is all very nice: whatever order Vixen ends up being in, it'll
+be a number bigger than that for Rudolph, Prancer, and Dasher, but less
+than that for Dancer and Comet.
 
-But we're stuck now, because we can't say anything more about Vixen until we can "solve" for the ordering of the other reindeer.  We can *choose* some values for Rudolph, Prancer, and Dasher, but what values? Finding these values is the whole point of the code here.  But OK, suppose we we choose 5,6, and 7, so then Vixen can be 4.  But we're just guessing; likely these values won't hold up later when other ordering rules are enforced.
+But we're stuck now, because we can't say anything more about Vixen
+until we can "solve" for the ordering of the other reindeer. We can
+*choose* some values for Rudolph, Prancer, and Dasher, but what values?
+Finding these values is the whole point of the code here. But OK,
+suppose we we choose 5,6, and 7, so then Vixen can be 4. But we're just
+guessing; likely these values won't hold up later when other ordering
+rules are enforced.
 
-At this level, classical (i.e. non-CLP) Prolog has no "magic" to offer. We have to code up a search strategy, since all we can do is guess values to keep the code going. In classical Prolog, we can't just tell it `Vixen > Rudolph`, as it will fail since it doesn't know anything about Rudolph. (Note: this puzzle can indeed be solved with classical Prolog, just as directly has stated). Using Prolog+CLP however, we can just state
+At this level, classical (i.e. non-CLP) Prolog has no "magic" to offer.
+We have to code up a search strategy, since all we can do is guess
+values to keep the code going. In classical Prolog, we can't just tell
+it `Vixen > Rudolph`, as it will fail since it doesn't know anything
+about Rudolph. (Note: this puzzle can indeed be solved with classical
+Prolog, just as directly has stated). Using Prolog+CLP however, we can
+just state
 
-```
-Vixen #< Dancer
-```
+    Vixen #< Dancer
 
-as a *constraint* to be resolved later on. Prolog will happily continue, and if enough constraints are put forth, will provide a solution. This problem is solved below with both a CLP and non-CLP approach.
-
+as a *constraint* to be resolved later on. Prolog will happily continue,
+and if enough constraints are put forth, will provide a solution. This
+problem is solved below with both a CLP and non-CLP approach.
 
 ### Labeling
 
-In this first CLP xample, if we run ``go(X,Y,Z), label([X,Y,Z])`` then Prolog will actually start emitting solutions that
-meet the given constraints. Here's the output:
+In this first CLP xample, if we run `go(X,Y,Z), label([X,Y,Z])` then
+Prolog will actually start emitting solutions that meet the given
+constraints. Here's the output:
 
-```prolog
+``` {.prolog}
 ?- go(X,Y,Z), label([X,Y,Z]).
 X = 4,
 Y = 7,
@@ -163,26 +201,47 @@ Y = 13,
 Z = 9.
 ```
 
-In CLP, *labeling* is when we force Prolog to come up with actual values for variables.
+In CLP, *labeling* is when we force Prolog to come up with actual values
+for variables.
 
-# Learning Projects
+Learning Projects
+=================
 
-I'm not a puzzle person. I've never done a Sudoku or crossword puzzle (I don't have the patience). I also never really liked *writing code* to solve puzzles. But, since [this book](https://www.amazon.com/Art-Computer-Programming-Combinatorial-Algorithms/dp/0201038048/) came out, I became quickly convinced that puzzles are actually a good way of learning CLP. So OK, puzzles it'll be. Let's start with Sudoku.
+I'm not a puzzle person. I've never done a Sudoku or crossword puzzle (I
+don't have the patience). I also never really liked *writing code* to
+solve puzzles. But, since [this
+book](https://www.amazon.com/Art-Computer-Programming-Combinatorial-Algorithms/dp/0201038048/)
+came out, I became quickly convinced that puzzles are actually a good
+way of learning CLP. So OK, puzzles it'll be. Let's start with Sudoku.
 
-## Project: Sudoku with and without CLP
+Project: Sudoku with and without CLP
+------------------------------------
 
-Here, we'll study implementing Sudoku in Prolog using two methods, one with and without CLP.
+Here, we'll study implementing Sudoku in Prolog using two methods, one
+with and without CLP.
 
 ### Without CLP
 
-Solving a full 9x9, with a atomic "guess and check" backtracking Sudoku solver (traditional Prolog), is not feasible. As [Norvig](https://norvig.com/sudoku.html) said:
+Solving a full 9x9, with a atomic "guess and check" backtracking Sudoku
+solver (traditional Prolog), is not feasible. As
+[Norvig](https://norvig.com/sudoku.html) said:
 
-> First, we could try a brute force approach. Suppose we have a very efficient program that takes only one instruction to evaluate a position, and that we have access to the next-generation computing technology, let's say a 10GHz processor with 1024 cores, and let's say we could afford a million of them, and while we're shopping, let's say we also pick up a time machine and go back 13 billion years to the origin of the universe and start our program running. We can then compute that we'd be almost 1% done with this one puzzle by now.
+> First, we could try a brute force approach. Suppose we have a very
+> efficient program that takes only one instruction to evaluate a
+> position, and that we have access to the next-generation computing
+> technology, let's say a 10GHz processor with 1024 cores, and let's say
+> we could afford a million of them, and while we're shopping, let's say
+> we also pick up a time machine and go back 13 billion years to the
+> origin of the universe and start our program running. We can then
+> compute that we'd be almost 1% done with this one puzzle by now.
 
+So, we have to do a 4x4 puzzle instead. Here's the code for it (inspired
+by the one in [this
+book](https://www.amazon.com/Thinking-Computation-First-Course-Press/dp/0262534746/)).
+Our notation here is that columns are labeled A..D and rows are labeled
+1..4.
 
-So, we have to do a 4x4 puzzle instead. Here's the code for it (inspired by the one in [this book](https://www.amazon.com/Thinking-Computation-First-Course-Press/dp/0262534746/)). Our notation here is that columns are labeled A..D and rows are labeled 1..4.
-
-```prolog
+``` {.prolog}
 sudoku([
          A1, B1, C1, D1,
          A2, B2, C2, D2,
@@ -240,9 +299,11 @@ go(X) :- X = [
          print_soln(X).
 ```
 
-Down in the ```go``` pedicate, we initialize a Sudoku board as needed into variable ```X```. Then we make a call to the solver in ```sudoku(X)```. The header
+Down in the `go` pedicate, we initialize a Sudoku board as needed into
+variable `X`. Then we make a call to the solver in `sudoku(X)`. The
+header
 
-```prolog
+``` {.prolog}
 sudoku([
          A1, B1, C1, D1,
          A2, B2, C2, D2,
@@ -255,7 +316,7 @@ maps the incoming Sudoku board into discrete variables.
 
 Next, the code
 
-```prolog
+``` {.prolog}
  maplist(domain,[
                            A1, B1, C1, D1,
                            A2, B2, C2, D2,
@@ -264,9 +325,13 @@ Next, the code
                            ]),
 ```
 
-chooses a value for each variable by applying each to the `domain` goal.  The Sudoku rules of 1) unique columns, 2) unique rows, and 3) unique 2x2 blocks are enforced in the series of `distinct` predicate calls. We let it go using `go(X).`, and sure enough after about 3 seconds (3 GHz Intel iMac), we'll get the solution of:
+chooses a value for each variable by applying each to the `domain` goal.
+The Sudoku rules of 1) unique columns, 2) unique rows, and 3) unique 2x2
+blocks are enforced in the series of `distinct` predicate calls. We let
+it go using `go(X).`, and sure enough after about 3 seconds (3 GHz Intel
+iMac), we'll get the solution of:
 
-```prolog
+``` {.prolog}
 [1,4,3,2]
 [3,2,4,1]
 [2,3,1,4]
@@ -277,9 +342,12 @@ This appears to be the only solution.
 
 ### With CLP
 
-We can go for the 9x9 Sudoku solver, using CLP, which is always looking to prune the search space. This code will solve a 9x9 Sudoku almost immediately. Our notation here is that columns are labeled A..I and rows are labeled 1..9.
+We can go for the 9x9 Sudoku solver, using CLP, which is always looking
+to prune the search space. This code will solve a 9x9 Sudoku almost
+immediately. Our notation here is that columns are labeled A..I and rows
+are labeled 1..9.
 
-```Prolog
+``` {.prolog}
 :- use_module(library(clpfd)).
 :- use_module(library(apply)).
 
@@ -350,84 +418,108 @@ rules([
                 all_distinct([G4,H4,I4,G5,H5,I5,G6,H6,I6]),
                 all_distinct([G7,H7,I7,G8,H8,I8,G9,H9,I9]).
 
-
 ```
 
-Note the structure is very similar to the non-CLP Sudoko: set up a board, assign elements to variables, and apply the Sudoku rules (unique rows, columns, and now 4x4 blocks). 
+Note the structure is very similar to the non-CLP Sudoko: set up a
+board, assign elements to variables, and apply the Sudoku rules (unique
+rows, columns, and now 4x4 blocks).
 
-The difference now is two-fold. First, the `all_distinct` predicate is part of the CLPFD library. It stores the fact that we want each variable in a given list to have a unique value. 
+The difference now is two-fold. First, the `all_distinct` predicate is
+part of the CLPFD library. It stores the fact that we want each variable
+in a given list to have a unique value.
 
-Second is the `X ins 1..9`. The `ins` predicate is also part of the CLPFD library. It sets the domain of each variable in the list `X` to be within 1 to 9 (`ins` is a clever help that maps the domain needs over all elements of a list. It is similar to the `maplist(domain,...)` call in the non-CLP solver).
+Second is the `X ins 1..9`. The `ins` predicate is also part of the
+CLPFD library. It sets the domain of each variable in the list `X` to be
+within 1 to 9 (`ins` is a clever help that maps the domain needs over
+all elements of a list. It is similar to the `maplist(domain,...)` call
+in the non-CLP solver).
 
 The following solution is produced.
 
-```
-[1,5,6,8,9,4,3,2,7]
-[9,2,8,7,3,1,4,5,6]
-[4,7,3,2,6,5,9,1,8]
-[3,6,2,4,1,7,8,9,5]
-[7,8,9,3,5,2,6,4,1]
-[5,1,4,9,8,6,2,7,3]
-[8,3,1,5,4,9,7,6,2]
-[6,9,7,1,2,3,5,8,4]
-[2,4,5,6,7,8,1,3,9]
-```
+    [1,5,6,8,9,4,3,2,7]
+    [9,2,8,7,3,1,4,5,6]
+    [4,7,3,2,6,5,9,1,8]
+    [3,6,2,4,1,7,8,9,5]
+    [7,8,9,3,5,2,6,4,1]
+    [5,1,4,9,8,6,2,7,3]
+    [8,3,1,5,4,9,7,6,2]
+    [6,9,7,1,2,3,5,8,4]
+    [2,4,5,6,7,8,1,3,9]
 
+Project: Crypto-arithmetic (or alphametics) puzzles
+---------------------------------------------------
 
-## Project: Crypto-arithmetic (or alphametics) puzzles
+There are some famous puzzles like finding values for all variables such
+that
 
-There are some famous puzzles like finding values for all variables such that
-
-```
-   SEND
-+  MORE
---------
-  MONEY
-```
+       SEND
+    +  MORE
+    --------
+      MONEY
 
 and
 
-```
-   TWO
-+  TWO
-------
-  FOUR
-```
+       TWO
+    +  TWO
+    ------
+      FOUR
 
-The idea is to find values for all variables so that the sums hold. We also have the constrains that there are no leading zeros in the
+The idea is to find values for all variables so that the sums hold. We
+also have the constrains that there are no leading zeros in the
 solution, and all digits of the addends are distinct.
 
-Here, we'll do the TWO+TWO=FOUR puzzle. Looks tricky to do by hand since the "O" is both in the addends and the sum. Our technique can be applied to the SEND+MORE=MONEY problem as well.
+Here, we'll do the TWO+TWO=FOUR puzzle. Looks tricky to do by hand since
+the "O" is both in the addends and the sum. Our technique can be applied
+to the SEND+MORE=MONEY problem as well.
 
 ### Grade school addition
 
-Remembering how to do these stacked "grade school" addition problems: Start with the rightmost column of digits.  Add the two digits. If the sum is less than 10, we write the sum under the two digits and go
-to the next column to the left and repeat. If the sum is ever larger than 10, we write the ones digit under the two digits, and "carry" the one, which means add it to the sum of the next
-left column.
+Remembering how to do these stacked "grade school" addition problems:
+Start with the rightmost column of digits. Add the two digits. If the
+sum is less than 10, we write the sum under the two digits and go to the
+next column to the left and repeat. If the sum is ever larger than 10,
+we write the ones digit under the two digits, and "carry" the one, which
+means add it to the sum of the next left column.
 
 In terms of code, we'll do this
 
-* Add two digits. The sum "mod 10" will be written under the two digits.
+-   Add two digits. The sum "mod 10" will be written under the two
+    digits.
 
-* Check the sum and see if it's larger than 10. If so, add a 1 to the next column on the left.
+-   Check the sum and see if it's larger than 10. If so, add a 1 to the
+    next column on the left.
 
-* We have a predicate called `carry` that will give us a 1 or 0 to add onto the current column we're working on, based on the sum of the previous (right) column.
+-   We have a predicate called `carry` that will give us a 1 or 0 to add
+    onto the current column we're working on, based on the sum of the
+    previous (right) column.
 
 This problem also has a constraint that $F\ne 0$.
 
 ### Without CLP
 
-Without CLP, we are starting to see a pattern emerge in the Prolog code for these constrained searches. The pattern is 1) assign variables, 2) apply and rules to be followed 3) then apply the constraints. This is outlined on p. 89 of Levesque, "Thinking as Computation." Here, we proceed as follows.  
+Without CLP, we are starting to see a pattern emerge in the Prolog code
+for these constrained searches. The pattern is 1) assign variables, 2)
+apply and rules to be followed 3) then apply the constraints. This is
+outlined on p. 89 of Levesque, "Thinking as Computation." Here, we
+proceed as follows.
 
-Another contraint to the pattern ("classic 1980s Prolog") is to be sure all variables are assigned before they are later referenced (which is a much looser constraint in the CLP mode).
+Another contraint to the pattern ("classic 1980s Prolog") is to be sure
+all variables are assigned before they are later referenced (which is a
+much looser constraint in the CLP mode).
 
-First, we allow Prolog to find values for needed variables. These are drawn from some predicate that reflects the domain needed for the variables. Here, T, W, and O are assigned values from the `value` predicate.
+First, we allow Prolog to find values for needed variables. These are
+drawn from some predicate that reflects the domain needed for the
+variables. Here, T, W, and O are assigned values from the `value`
+predicate.
 
-Next, more variable assignments are made as per the rules of the problem. In this case, the grade school addition, which will assign values to R, U, O, and F, taking any carries into account.
+Next, more variable assignments are made as per the rules of the
+problem. In this case, the grade school addition, which will assign
+values to R, U, O, and F, taking any carries into account.
 
-Lastly, constrains are applied, in this case that T, W, and O are all not equal, and $F\ne 0$.
+Lastly, constrains are applied, in this case that T, W, and O are all
+not equal, and $F\ne 0$.
 
-```prolog
+``` {.prolog}
 
 solve([F,O,U,R,T,W,O]) :-
 
@@ -471,12 +563,18 @@ value(9).
 go([F,O,U,R,T,W,O]) :- solve([F,O,U,R,T,W,O]).
 ```
 
-
 ### With CLP
 
-Same basic plan and structure as the non-CLP version above.  We instead use `#=` for assignment nad `#\=` for inequality testing. The program structure is a bit different now, since CLP's ``#=`` won't fail if variables are not yet defined. Hence, we can do some variable assignments first, then apply the rules, then set the variable domain later using the ``ins 0..9`` line. We found that the `[T,W,O] ins 0..9.` and `all_distinct([T,W,O])` lines can go anywhere in the `solve` predicate.
+Same basic plan and structure as the non-CLP version above. We instead
+use `#=` for assignment nad `#\=` for inequality testing. The program
+structure is a bit different now, since CLP's `#=` won't fail if
+variables are not yet defined. Hence, we can do some variable
+assignments first, then apply the rules, then set the variable domain
+later using the `ins 0..9` line. We found that the `[T,W,O] ins 0..9.`
+and `all_distinct([T,W,O])` lines can go anywhere in the `solve`
+predicate.
 
-```prolog
+``` {.prolog}
 :- use_module(library(clpfd)).
 
 solve([F,O,U,R,T,W,O]) :-
@@ -500,10 +598,11 @@ carry(S,0).
 go([F,O,U,R,T,W,O]) :- solve([F,O,U,R,T,W,O]), label([F,O,U,R,T,W,O]).
 ```
 
-There seems to be many solutions to this problem, noting the list gives the values of F, O, U, and R, then T, W, then O. (So the first line
+There seems to be many solutions to this problem, noting the list gives
+the values of F, O, U, and R, then T, W, then O. (So the first line
 below says that 765+765=1530, which is true.)
 
-```prolog
+``` {.prolog}
 L = [1, 5, 3, 0, 7, 6, 5] ;
 L = [1, 5, 7, 0, 7, 8, 5] ;
 L = [1, 5, 9, 0, 7, 9, 5] ;
@@ -582,31 +681,38 @@ L = [1, 8, 6, 6, 9, 3, 8] ;
 L = [1, 8, 8, 6, 9, 4, 8] ;
 ```
 
+Project: One more alphametric
+-----------------------------
 
-## Project: One more alphametric
+Knuth (4A, p. 346, \#24) has a few more of these puzzles proposed. Let's
+do one more he suggests, which is
 
-Knuth (4A, p. 346, #24) has a few more of these puzzles proposed. Let's do one more he suggests, which is
-
-```
-  SATURN
-  URANUS
- NEPTUNE
-+  PLUTO
----------
- PLANETS
-```
-
+      SATURN
+      URANUS
+     NEPTUNE
+    +  PLUTO
+    ---------
+     PLANETS
 
 ### Without CLP
-We immediately notice that in the first column, S=N+S+E+O, which means computing S depends on S itself. The second column has the same issue with T. Thus, a non-CLP Prolog implementation will not work without proposing values for some of these variables first. 
 
-We also have to be prepared for larger carry digits, and 9+9+9+9 (+9 for a carry) is possible. This 9x5=45, so our carry predicate has been extended. We also defined the variable `Leading`, which will be the leading digit of the sum.  P is still constrained to 0..9, but in the leftmost column, there might be a carry to add to N which may make that last sum larger than 10.
+We immediately notice that in the first column, S=N+S+E+O, which means
+computing S depends on S itself. The second column has the same issue
+with T. Thus, a non-CLP Prolog implementation will not work without
+proposing values for some of these variables first.
+
+We also have to be prepared for larger carry digits, and 9+9+9+9 (+9 for
+a carry) is possible. This 9x5=45, so our carry predicate has been
+extended. We also defined the variable `Leading`, which will be the
+leading digit of the sum. P is still constrained to 0..9, but in the
+leftmost column, there might be a carry to add to N which may make that
+last sum larger than 10.
 
 ### With CLP
+
 Here is our CLP implementation.
 
-
-```prolog
+``` {.prolog}
 /*
   SATURN
   URANUS
@@ -671,55 +777,76 @@ go([A, E, L, N, O, P, R, S, T, U, Leading]) :-
 
 It looks like there's a lot of answers. Here's the first few:
 
-```
-[0,0,0,0,0,0] + [0,0,0,0,0,0] + [0,0,0,0,0,0,0] + [0,0,0,0,0] = [0,0,0,0,0,0,0,0]
+    [0,0,0,0,0,0] + [0,0,0,0,0,0] + [0,0,0,0,0,0,0] + [0,0,0,0,0] = [0,0,0,0,0,0,0,0]
 
-[7,0,4,3,7,0] + [3,7,0,0,3,7] + [0,0,1,4,3,0,0] + [1,1,3,4,0] = [0,1,1,0,0,0,4,7]
+    [7,0,4,3,7,0] + [3,7,0,0,3,7] + [0,0,1,4,3,0,0] + [1,1,3,4,0] = [0,1,1,0,0,0,4,7]
 
-[9,0,3,3,7,0] + [3,7,0,0,3,9] + [0,0,1,3,3,0,0] + [1,3,3,3,0] = [0,1,3,0,0,0,3,9]
+    [9,0,3,3,7,0] + [3,7,0,0,3,9] + [0,0,1,3,3,0,0] + [1,3,3,3,0] = [0,1,3,0,0,0,3,9]
 
-[6,1,4,3,7,0] + [3,7,1,0,3,6] + [0,0,1,4,3,0,0] + [1,0,3,4,0] = [0,1,0,1,0,0,4,6]
+    [6,1,4,3,7,0] + [3,7,1,0,3,6] + [0,0,1,4,3,0,0] + [1,0,3,4,0] = [0,1,0,1,0,0,4,6]
 
-[8,1,3,3,7,0] + [3,7,1,0,3,8] + [0,0,1,3,3,0,0] + [1,2,3,3,0] = [0,1,2,1,0,0,3,8]
+    [8,1,3,3,7,0] + [3,7,1,0,3,8] + [0,0,1,3,3,0,0] + [1,2,3,3,0] = [0,1,2,1,0,0,3,8]
 
-[7,2,3,3,7,0] + [3,7,2,0,3,7] + [0,0,1,3,3,0,0] + [1,1,3,3,0] = [0,1,1,2,0,0,3,7]
+    [7,2,3,3,7,0] + [3,7,2,0,3,7] + [0,0,1,3,3,0,0] + [1,1,3,3,0] = [0,1,1,2,0,0,3,7]
 
-[9,2,2,3,7,0] + [3,7,2,0,3,9] + [0,0,1,2,3,0,0] + [1,3,3,2,0] = [0,1,3,2,0,0,2,9]
+    [9,2,2,3,7,0] + [3,7,2,0,3,9] + [0,0,1,2,3,0,0] + [1,3,3,2,0] = [0,1,3,2,0,0,2,9]
 
-[6,3,3,3,7,0] + [3,7,3,0,3,6] + [0,0,1,3,3,0,0] + [1,0,3,3,0] = [0,1,0,3,0,0,3,6]
+    [6,3,3,3,7,0] + [3,7,3,0,3,6] + [0,0,1,3,3,0,0] + [1,0,3,3,0] = [0,1,0,3,0,0,3,6]
 
-[8,3,2,3,7,0] + [3,7,3,0,3,8] + [0,0,1,2,3,0,0] + [1,2,3,2,0] = [0,1,2,3,0,0,2,8]
+    [8,3,2,3,7,0] + [3,7,3,0,3,8] + [0,0,1,2,3,0,0] + [1,2,3,2,0] = [0,1,2,3,0,0,2,8]
 
-[7,4,2,3,7,0] + [3,7,4,0,3,7] + [0,0,1,2,3,0,0] + [1,1,3,2,0] = [0,1,1,4,0,0,2,7]
-```
+    [7,4,2,3,7,0] + [3,7,4,0,3,7] + [0,0,1,2,3,0,0] + [1,1,3,2,0] = [0,1,1,4,0,0,2,7]
 
-## Project: Langford Pairs
+Project: Langford Pairs
+-----------------------
 
+Knuth begins Volume 4A with "Langford Pairs" (They're literally
+mentioned in sentence \#3 on p. 1). Langford pairs are a way of
+combining pairs of numbers, like {1,1,2,3,3,...,n,n}. The combination is
+to contain all of these numbers in such a way that for a given pair of
+numbers k (like k=1, so 1 and 1, or k=2, so 2 and 2), k other digits
+appear between the pair. So, for the pair of 1s, one other digit should
+appear between the 1 and 1. For the 3, 3 other digits should appear
+between the two 3s, etc.
 
-Knuth begins Volume 4A with "Langford Pairs" (They're literally mentioned in sentence #3 on p. 1).  Langford pairs are a way of combining pairs of numbers, like {1,1,2,3,3,...,n,n}.  The combination is to contain all of these numbers in such a way that for a given pair of numbers k (like k=1, so 1 and 1, or k=2, so 2 and 2), k other digits appear between the pair. So, for the pair of 1s, one other digit should appear between the 1 and 1. For the 3, 3 other digits should appear between the two 3s, etc.
+As an example, for the set {1,1,2,2,3,3,4,4}, the Langford pairing is
+{2,3,4,2,1,3,1,4}. The job here is to formulate the search for a
+Langford pairing of a set of numbers. Here's an [interesting
+write-up](https://dialectrix.com/langford/OnLangfordsProblem.pdf).
 
-As an example, for the set {1,1,2,2,3,3,4,4}, the Langford pairing is {2,3,4,2,1,3,1,4}. The job here is to formulate the search for a Langford pairing of a set of numbers. Here's an [interesting write-up](https://dialectrix.com/langford/OnLangfordsProblem.pdf).
-
-This was a tough problems for us to formulate. After coming up with a basic n=4 code below though, things started to make more sense.  The key part of this logic is again, freeing our minds from procedural coding, and realizing that Prolog predicates can be called with any combination of their inputs instantiated.  Here for example, the ```nth1``` predicate can not only retrieve a given list element at some position, but it will also search a list for an element and return its position. 
+This was a tough problems for us to formulate. After coming up with a
+basic n=4 code below though, things started to make more sense. The key
+part of this logic is again, freeing our minds from procedural coding,
+and realizing that Prolog predicates can be called with any combination
+of their inputs instantiated. Here for example, the `nth1` predicate can
+not only retrieve a given list element at some position, but it will
+also search a list for an element and return its position.
 
 ### Without CLP
 
-We start here by setting up the basic structure into list ```L``` (an 8-element list), then select values for all elements using the ```val``` predicate, which contain the domain needed here (numbers from 1 to 4).
+We start here by setting up the basic structure into list `L` (an
+8-element list), then select values for all elements using the `val`
+predicate, which contain the domain needed here (numbers from 1 to 4).
 
 Then we apply to Langford constraints, using blocks like this:
 
-```prolog
+``` {.prolog}
 nth1(Index11,L,1),
 Index12 is Index11 + 2,
 nth1(Index12,L,1), 
 ```
 
-which work as follows. First, find where a 1 appears in list `L` and put its position into `Index11`. Next, make `Index12` point 2 elements away, and look at position `Index12` with the second call to `nth1` and see if it also contains a 1. (Note: looking 2 elements away leaves 1 list element between the two 1s, as needed.)  A block like this appears for all digits 1 to 4.
+which work as follows. First, find where a 1 appears in list `L` and put
+its position into `Index11`. Next, make `Index12` point 2 elements away,
+and look at position `Index12` with the second call to `nth1` and see if
+it also contains a 1. (Note: looking 2 elements away leaves 1 list
+element between the two 1s, as needed.) A block like this appears for
+all digits 1 to 4.
 
-Lasly, using the `count2` calls, we ensure each digit appears exacty twice in the final Langford list. Here's the code:
+Lasly, using the `count2` calls, we ensure each digit appears exacty
+twice in the final Langford list. Here's the code:
 
-
-```prolog
+``` {.prolog}
 langford(L) :-
 
   L = [A,B,C,D,E,F,G,I],
@@ -757,10 +884,10 @@ val(4).
   
 ```
 
+The code can be shortened using a predicate called `rule` that enforces
+the Langford rules, on a list `L` for a number `K`, which is
 
-The code can be shortened using a predicate called `rule` that enforces the Langford rules, on a list `L` for a number `K`, which is
-
-```prolog
+``` {.prolog}
 rule(L,K) :-  count2(L,K),
                 nth1(I,L,K),
                 J is I + K + 1,
@@ -768,9 +895,12 @@ rule(L,K) :-  count2(L,K),
                
 ```
 
-Here, we moved the `count2` to the start of the body, to force `rule` to fail if there aren't 2 of a given number in the list (no reason to do the searching with the `nth1` clauses otherwise).  So, the shorter code becomes:
+Here, we moved the `count2` to the start of the body, to force `rule` to
+fail if there aren't 2 of a given number in the list (no reason to do
+the searching with the `nth1` clauses otherwise). So, the shorter code
+becomes:
 
-```prolog
+``` {.prolog}
 langford(L) :-
 
     L = [A,B,C,D,E,F,G,I],
@@ -797,9 +927,11 @@ val(3).
 val(4).
 ```
 
-There are two solutions for n=4, which the computer finds readily in under a second. There is no solution for n=5 or n=6, and 26 for n=7, so let's expand the code above for n=7, which is:
+There are two solutions for n=4, which the computer finds readily in
+under a second. There is no solution for n=5 or n=6, and 26 for n=7, so
+let's expand the code above for n=7, which is:
 
-```prolog
+``` {.prolog}
 langford(Final) :-
 
   Final = [A,B,C,D,E,F,G,H,I,J,K,L,M,N],
@@ -836,70 +968,108 @@ val(6).
 val(7).
 ```
 
-What we notice right away that we have a "real" combinatorics problem here: the computer can't seem to find a Langford solution for n=7. The search space is too large. 
+What we notice right away that we have a "real" combinatorics problem
+here: the computer can't seem to find a Langford solution for n=7. The
+search space is too large.
 
-We investigated a bit and found that even if we change the `rule(L,K)` body to `rule(L,K) :- count2(L,K).`, in other words, to just look for sequences where each digit appears twice, the computer still cannot even find one of these in any short amount of time. 
+We investigated a bit and found that even if we change the `rule(L,K)`
+body to `rule(L,K) :- count2(L,K).`, in other words, to just look for
+sequences where each digit appears twice, the computer still cannot even
+find one of these in any short amount of time.
 
-Inserting a `write` statement revealed the search is merely iterating through all possible 14-digit values. Here are the first few test solutions:
+Inserting a `write` statement revealed the search is merely iterating
+through all possible 14-digit values. Here are the first few test
+solutions:
 
-```
-[1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-[1,1,1,1,1,1,1,1,1,1,1,1,1,2]
-[1,1,1,1,1,1,1,1,1,1,1,1,1,3]
-[1,1,1,1,1,1,1,1,1,1,1,1,1,4]
-[1,1,1,1,1,1,1,1,1,1,1,1,1,5]
-[1,1,1,1,1,1,1,1,1,1,1,1,1,6]
-[1,1,1,1,1,1,1,1,1,1,1,1,1,7]
-[1,1,1,1,1,1,1,1,1,1,1,1,2,1]
-[1,1,1,1,1,1,1,1,1,1,1,1,2,2]
-[1,1,1,1,1,1,1,1,1,1,1,1,2,3]
-[1,1,1,1,1,1,1,1,1,1,1,1,2,4]
-[1,1,1,1,1,1,1,1,1,1,1,1,2,5]
-[1,1,1,1,1,1,1,1,1,1,1,1,2,6]
-[1,1,1,1,1,1,1,1,1,1,1,1,2,7]
-[1,1,1,1,1,1,1,1,1,1,1,1,3,1]
-[1,1,1,1,1,1,1,1,1,1,1,1,3,2]
-[1,1,1,1,1,1,1,1,1,1,1,1,3,3]
-[1,1,1,1,1,1,1,1,1,1,1,1,3,4]
-[1,1,1,1,1,1,1,1,1,1,1,1,3,5]
-[1,1,1,1,1,1,1,1,1,1,1,1,3,6]
-[1,1,1,1,1,1,1,1,1,1,1,1,3,7]
-```
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,2]
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,3]
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,4]
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,5]
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,6]
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,7]
+    [1,1,1,1,1,1,1,1,1,1,1,1,2,1]
+    [1,1,1,1,1,1,1,1,1,1,1,1,2,2]
+    [1,1,1,1,1,1,1,1,1,1,1,1,2,3]
+    [1,1,1,1,1,1,1,1,1,1,1,1,2,4]
+    [1,1,1,1,1,1,1,1,1,1,1,1,2,5]
+    [1,1,1,1,1,1,1,1,1,1,1,1,2,6]
+    [1,1,1,1,1,1,1,1,1,1,1,1,2,7]
+    [1,1,1,1,1,1,1,1,1,1,1,1,3,1]
+    [1,1,1,1,1,1,1,1,1,1,1,1,3,2]
+    [1,1,1,1,1,1,1,1,1,1,1,1,3,3]
+    [1,1,1,1,1,1,1,1,1,1,1,1,3,4]
+    [1,1,1,1,1,1,1,1,1,1,1,1,3,5]
+    [1,1,1,1,1,1,1,1,1,1,1,1,3,6]
+    [1,1,1,1,1,1,1,1,1,1,1,1,3,7]
 
-This tell us: never mind the Langford spacings, we need to get better at generating test sequences alone, that just have each digit appear twice. Our search algorithm is too random right now.
+This tell us: never mind the Langford spacings, we need to get better at
+generating test sequences alone, that just have each digit appear twice.
+Our search algorithm is too random right now.
 
 #### A more "intelligent" domain
 
-The domain selection above isn't very helpful.  We essentially tell Prolog to get a number from 1..7, and try to place it (and others) to meet the Langford rules. It's essentially a random search.  What if we got more clever about the domain selection to guide Prolog to the *Langford* sequence we seek?
+The domain selection above isn't very helpful. We essentially tell
+Prolog to get a number from 1..7, and try to place it (and others) to
+meet the Langford rules. It's essentially a random search. What if we
+got more clever about the domain selection to guide Prolog to the
+*Langford* sequence we seek?
 
-Here, make our domain a little more restrictive at the onset. Instead of choosing a number, let's choose a number and pre-calculate the two positions in the final solution the number must appear. For example, if we choose a 1, we know it has to apppear at index $n_1$ and index $n_1+1+1$. Or, more generally, number $k$ has to appear at index $n_1$ and $n_1+k+1$.  This is what the `domain(Len,K,N1,N2)` clause does.
+Here, make our domain a little more restrictive at the onset. Instead of
+choosing a number, let's choose a number and pre-calculate the two
+positions in the final solution the number must appear. For example, if
+we choose a 1, we know it has to apppear at index $n_1$ and index
+$n_1+1+1$. Or, more generally, number $k$ has to appear at index $n_1$
+and $n_1+k+1$. This is what the `domain(Len,K,N1,N2)` clause does.
 
-The `domain(Len,K,N1,N2)` clause assumes it has `Len` spots to fill in the Langford sequence. (Here "spot" also means (in array lingo) the index or position in the Langford sequence.) It finds a number `K` from `val(K)` then chooses a possible index for it (in the Langford sequence) from the `aindex` facts. We note the domain of `aindex` is always `1..Len-2`, because at minimum a `1_1` sequence might be squeezed into the last 3 positions.
+The `domain(Len,K,N1,N2)` clause assumes it has `Len` spots to fill in
+the Langford sequence. (Here "spot" also means (in array lingo) the
+index or position in the Langford sequence.) It finds a number `K` from
+`val(K)` then chooses a possible index for it (in the Langford sequence)
+from the `aindex` facts. We note the domain of `aindex` is always
+`1..Len-2`, because at minimum a `1_1` sequence might be squeezed into
+the last 3 positions.
 
-So, `domain` instantiates a number, `K` and the two positions in the Langford sequence it is proposed to go (`N1` and `N2`).
+So, `domain` instantiates a number, `K` and the two positions in the
+Langford sequence it is proposed to go (`N1` and `N2`).
 
-As the code runs, we are maintaining our proposed Langford sequence in a single list of sub-lists.  Each sub-list has 3 elements: the number and the two positions in which it should appear in the final sequence. So if a sub-list is `[1,2,4]`, this means `1` should appear at position `2` and `4`.
+As the code runs, we are maintaining our proposed Langford sequence in a
+single list of sub-lists. Each sub-list has 3 elements: the number and
+the two positions in which it should appear in the final sequence. So if
+a sub-list is `[1,2,4]`, this means `1` should appear at position `2`
+and `4`.
 
-The return values returned from `domain` need to be checked using the `member` sequences.
+The return values returned from `domain` need to be checked using the
+`member` sequences.
 
-* Make sure the number `K` hasn't already been placed: `\+ member([K,_,_],L0)`
-* Make sure position `N1` has not already been used by some other number: `\+ member([_,N1,_],L0)` and ` \+ member([_,_,N1],L0)`
-* Make sure position `N2` has not already been used by some other number: ` \+ member([_,_,N2],L0)` and `  \+ member([_,N2,_],L0)`
+-   Make sure the number `K` hasn't already been placed:
+    `\+ member([K,_,_],L0)`
+-   Make sure position `N1` has not already been used by some other
+    number: `\+ member([_,N1,_],L0)` and `\+ member([_,_,N1],L0)`
+-   Make sure position `N2` has not already been used by some other
+    number: `\+ member([_,_,N2],L0)` and `\+ member([_,N2,_],L0)`
 
-Then we call `langford` recursively using `langford([[K,N1,N2]|L0],Soln)`. This prepends the latest sub-list that passes all Langford tests to
-running list `L0` via the `[[K,N1,N2]|L0]` construct, and hangs onto variable `Soln` to present the final solution. 
+Then we call `langford` recursively using
+`langford([[K,N1,N2]|L0],Soln)`. This prepends the latest sub-list that
+passes all Langford tests to running list `L0` via the `[[K,N1,N2]|L0]`
+construct, and hangs onto variable `Soln` to present the final solution.
 
-The terminal case is when the length of the main list (or number of Langford sub-lists) reaches a length of the maximum number in the Langford number set.  (Recall each sub-lists holds the number and its **two** positions.) This terminal case will instantiate its latest solution to the 2nd variable passed into the `langford` call. 
+The terminal case is when the length of the main list (or number of
+Langford sub-lists) reaches a length of the maximum number in the
+Langford number set. (Recall each sub-lists holds the number and its
+**two** positions.) This terminal case will instantiate its latest
+solution to the 2nd variable passed into the `langford` call.
 
-(Note: using a list as an accumulator like this is a bit of a triumph for us; accumulators in Prolog take some getting used to.)
+(Note: using a list as an accumulator like this is a bit of a triumph
+for us; accumulators in Prolog take some getting used to.)
 
 Here's this approach for the ${11,22,33,44}$ set. It can be called with:
 
-```prolog
+``` {.prolog}
 langford([],L).
 ```
 
-```prolog
+``` {.prolog}
 langford(L,L) :- length(L,4).
 
 langford(L0,Soln) :-
@@ -936,30 +1106,42 @@ aindex(6).
 ```
 
 ##### Turbo Prolog
-Just for fun (and as a tribute to what got me started in Prolog), I thought I'd try to get this programing running on Turbo Prolog (yes, the 1980s Borland software). Here it is (running in a Dosbox on macOS):
 
-![Turbo Prolog Langford](https://github.com/tbensky/Prolog-CLP/blob/main/src/turbo_prolog.png)
+Just for fun (and as a tribute to what got me started in Prolog), I
+thought I'd try to get this programing running on Turbo Prolog (yes, the
+1980s Borland software). Here it is (running in a Dosbox on macOS):
 
-I had to make several modifications to the code, including Turbo Prolog's `domains`, `predicates`, and `clauses` sections. Also, a compound list (lists within a list)
-had to be handled as per p. 202 of the Turbo Prolog 2.0 User's Guide (that we bought on ebay); see the `llist` and `list` definitions in the `domains` section, and all the `l()` and `i()` wrappers throughout (`l` means list and `i` means integer).  Lastly, there is no `is` (looks like it's `=` for assignment), the `\+` for not is now handled with `not()`, and `=<` is `<=`.
+![Turbo Prolog
+Langford](https://github.com/tbensky/Prolog-CLP/blob/main/src/turbo_prolog.png)
 
-Nonetheless, you can see a solution in the "Dialog" window, noteably `[i(4),i(1),i(6)]....` indicating that 4 is to be at positions 1 and 6, and so on. Here's the code:
+I had to make several modifications to the code, including Turbo
+Prolog's `domains`, `predicates`, and `clauses` sections. Also, a
+compound list (lists within a list) had to be handled as per p. 202 of
+the Turbo Prolog 2.0 User's Guide (that we bought on ebay); see the
+`llist` and `list` definitions in the `domains` section, and all the
+`l()` and `i()` wrappers throughout (`l` means list and `i` means
+integer). Lastly, there is no `is` (looks like it's `=` for assignment),
+the `\+` for not is now handled with `not()`, and `=<` is `<=`.
 
-```prolog
+Nonetheless, you can see a solution in the "Dialog" window, noteably
+`[i(4),i(1),i(6)]....` indicating that 4 is to be at positions 1 and 6,
+and so on. Here's the code:
+
+``` {.prolog}
 % Turbo Prolog (yes, the 1980s software) implementation
 % of Langford pairing for {11,22,33,44}
 domains
-	llist = l(list); i(integer)
-	list = llist*
+    llist = l(list); i(integer)
+    list = llist*
 
 predicates
-	length(list,integer)
-	domain(integer,integer,integer,integer)
-	langford(list,list)
-	member(llist,llist)
-	val(integer)
-	aindex(integer)
-	
+    length(list,integer)
+    domain(integer,integer,integer,integer)
+    langford(list,list)
+    member(llist,llist)
+    val(integer)
+    aindex(integer)
+    
 clauses
 
         member(X,l([X|_])).
@@ -1002,31 +1184,30 @@ domain(Len,K,N1,N2) :-
         aindex(6).
 
 goal
-	langford([],L), write(L), nl.
+    langford([],L), write(L), nl.
 ```
 
 #### Back at it
-For the ${1,1,2,2,3,3,4,4,5,5,6,6,7,7}$ set, the following gives a solution instantly, by calling:
 
-```prolog
+For the ${1,1,2,2,3,3,4,4,5,5,6,6,7,7}$ set, the following gives a
+solution instantly, by calling:
+
+``` {.prolog}
 langford([],L).
 ```
 
 One will get:
 
-```
-L = [[7, 2, 10], [6, 6, 13], [5, 5, 11], [4, 9, 14], [3, 8, 12], [2, 4, 7], [1, 1, 3]] 
-```
+    L = [[7, 2, 10], [6, 6, 13], [5, 5, 11], [4, 9, 14], [3, 8, 12], [2, 4, 7], [1, 1, 3]] 
 
-telling us that 7 goes into places 2 and 10, 6 goes into places 6 and 13, 5 into 5 and 11, etc.
+telling us that 7 goes into places 2 and 10, 6 goes into places 6 and
+13, 5 into 5 and 11, etc.
 
 Here's another solution:
 
-```
-L = [[7, 2, 10], [5, 8, 14], [3, 9, 13], [6, 5, 12], [4, 6, 11], [2, 4, 7], [1, 1, 3]] 
-```
+    L = [[7, 2, 10], [5, 8, 14], [3, 9, 13], [6, 5, 12], [4, 6, 11], [2, 4, 7], [1, 1, 3]] 
 
-```prolog
+``` {.prolog}
 langford(L,L) :- length(L,7).
 
 langford(L0,Soln) :-
@@ -1071,17 +1252,21 @@ aindex(11).
 aindex(12).
 ```
 
-We were also able to run it for `n=11`, by running `time(langford([],L)).` A solution popped out after 90 minutes or `58,842,480,119 inferences, 5394.525 CPU in 5402.777 seconds (100% CPU, 10907815 Lips).`
+We were also able to run it for `n=11`, by running
+`time(langford([],L)).` A solution popped out after 90 minutes or
+`58,842,480,119 inferences, 5394.525 CPU in 5402.777 seconds (100% CPU, 10907815 Lips).`
 
-```prolog
+``` {.prolog}
 L = [[10, 8, 19], [11, 4, 16], [9, 7, 17], [8, 11, 20], [7, 13, 21], [6, 15, 22], [5, 12, 18], [4, 9, 14], [3, 6, 10], [2, 2, 5], [1, 1, 3]]
 ```
 
 This solution is: `1,2,1,11,2,3,9,10,4,3,8,5,7,4,6,11,9,5,10,8,7,6`.
 
-Here's the code. Note the changes are: 1) the `11` in the `length(L,11)` clause, 2) the `22` in the `domain(22,K,N1,N2)` clause 3) extending the `val` facts up to 11, 4) extending the `aindex` facts up to `20`. 
+Here's the code. Note the changes are: 1) the `11` in the `length(L,11)`
+clause, 2) the `22` in the `domain(22,K,N1,N2)` clause 3) extending the
+`val` facts up to 11, 4) extending the `aindex` facts up to `20`.
 
-```prolog
+``` {.prolog}
 langford(L,L) :- length(L,11).
 
 langford(L0,Soln) :-
@@ -1140,20 +1325,33 @@ aindex(20).
 
 #### Lanford 15
 
-Just for fun, we coded up a Langford search for the set ${1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15}$. As of 31-Dec-2022, it has been running on a Dell server. We'll update this page if a solution pops out.
-
+Just for fun, we coded up a Langford search for the set
+${1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15}$.
+As of 31-Dec-2022, it has been running on a Dell server. We'll update
+this page if a solution pops out.
 
 ### With CLP
 
-That's about it for trying for Langford pairs using standard Prolog. Let's get into a CLP version now. 
+That's about it for trying for Langford pairs using standard Prolog.
+Let's get into a CLP version now.
 
-We post our first attempt here, but are not sure it's the best way to go. It is a start though. 
+We post our first attempt here, but are not sure it's the best way to
+go. It is a start though.
 
-Here, we start by adapting the non-CLP Langford 7 code above using an emerging pattern: in CLP the domain picking from Prolog facts (i.e. `val` and `aindex` above) is done using constraints. In this case, we insist that all elements of our proposed Langford list `L` have values from 1..7 using the `L ins 1..7` clause. We also modified the `rule` clause to use the CLP `element` clause (and not Prolog's `nth1`).  (Note: we switched it back to use `nth1`, as it runs *much faster*??)  Also, the intermediary index `J` is computed using CLP's `#=` not `is`.
+Here, we start by adapting the non-CLP Langford 7 code above using an
+emerging pattern: in CLP the domain picking from Prolog facts (i.e.
+`val` and `aindex` above) is done using constraints. In this case, we
+insist that all elements of our proposed Langford list `L` have values
+from 1..7 using the `L ins 1..7` clause. We also modified the `rule`
+clause to use the CLP `element` clause (and not Prolog's `nth1`). (Note:
+we switched it back to use `nth1`, as it runs *much faster*??) Also, the
+intermediary index `J` is computed using CLP's `#=` not `is`.
 
-After all of the rules are applied, we label the proposed list `L`, then check that each digit appears only twice, using the sequence of `count2` calls. Here is the code.
+After all of the rules are applied, we label the proposed list `L`, then
+check that each digit appears only twice, using the sequence of `count2`
+calls. Here is the code.
 
-```prolog
+``` {.prolog}
 :- use_module(library(clpfd)).
 
 langford(L) :-
@@ -1174,45 +1372,48 @@ rule(L,K) :-    nth1(I,L,K),
                 nth1(J,L,K).
 ```
 
-Sure enough, after running it we get an answer instantly, using `time((langford(L),label(L))`: 
+Sure enough, after running it we get an answer instantly, using
+`time((langford(L),label(L))`:
 
-```
-?- time((langford(L),label(L))).
-% 18,906 inferences, 0.001 CPU in 0.001 seconds (100% CPU, 17265753 Lips)
-L = [1, 7, 1, 2, 5, 6, 2, 3, 4, 7, 5, 3, 6, 4] ;
-% 2,051 inferences, 0.000 CPU in 0.000 seconds (97% CPU, 13493421 Lips)
-L = [1, 7, 1, 2, 6, 4, 2, 5, 3, 7, 4, 6, 3, 5] ;
-% 10,991 inferences, 0.001 CPU in 0.001 seconds (99% CPU, 14812668 Lips)
-L = [1, 6, 1, 7, 2, 4, 5, 2, 6, 3, 4, 7, 5, 3] ;
-% 6,331 inferences, 0.000 CPU in 0.000 seconds (99% CPU, 14487414 Lips)
-L = [1, 5, 1, 6, 7, 2, 4, 5, 2, 3, 6, 4, 7, 3] ;
-% 15,257 inferences, 0.001 CPU in 0.001 seconds (99% CPU, 15120912 Lips)
-L = [1, 4, 1, 5, 6, 7, 4, 2, 3, 5, 2, 6, 3, 7] ;
-% 7,898 inferences, 0.001 CPU in 0.001 seconds (99% CPU, 14545120 Lips)
-L = [1, 4, 1, 6, 7, 3, 4, 5, 2, 3, 6, 2, 7, 5] ;
-% 8,321 inferences, 0.001 CPU in 0.001 seconds (99% CPU, 11686798 Lips)
-L = [1, 6, 1, 3, 5, 7, 4, 3, 6, 2, 5, 4, 2, 7] ;
-% 2,377 inferences, 0.000 CPU in 0.000 seconds (95% CPU, 10471366 Lips)
-L = [1, 5, 1, 7, 3, 4, 6, 5, 3, 2, 4, 7, 2, 6] 
-... 
-```
+    ?- time((langford(L),label(L))).
+    % 18,906 inferences, 0.001 CPU in 0.001 seconds (100% CPU, 17265753 Lips)
+    L = [1, 7, 1, 2, 5, 6, 2, 3, 4, 7, 5, 3, 6, 4] ;
+    % 2,051 inferences, 0.000 CPU in 0.000 seconds (97% CPU, 13493421 Lips)
+    L = [1, 7, 1, 2, 6, 4, 2, 5, 3, 7, 4, 6, 3, 5] ;
+    % 10,991 inferences, 0.001 CPU in 0.001 seconds (99% CPU, 14812668 Lips)
+    L = [1, 6, 1, 7, 2, 4, 5, 2, 6, 3, 4, 7, 5, 3] ;
+    % 6,331 inferences, 0.000 CPU in 0.000 seconds (99% CPU, 14487414 Lips)
+    L = [1, 5, 1, 6, 7, 2, 4, 5, 2, 3, 6, 4, 7, 3] ;
+    % 15,257 inferences, 0.001 CPU in 0.001 seconds (99% CPU, 15120912 Lips)
+    L = [1, 4, 1, 5, 6, 7, 4, 2, 3, 5, 2, 6, 3, 7] ;
+    % 7,898 inferences, 0.001 CPU in 0.001 seconds (99% CPU, 14545120 Lips)
+    L = [1, 4, 1, 6, 7, 3, 4, 5, 2, 3, 6, 2, 7, 5] ;
+    % 8,321 inferences, 0.001 CPU in 0.001 seconds (99% CPU, 11686798 Lips)
+    L = [1, 6, 1, 3, 5, 7, 4, 3, 6, 2, 5, 4, 2, 7] ;
+    % 2,377 inferences, 0.000 CPU in 0.000 seconds (95% CPU, 10471366 Lips)
+    L = [1, 5, 1, 7, 3, 4, 6, 5, 3, 2, 4, 7, 2, 6] 
+    ... 
 
 If we do
 
-```prolog
+``` {.prolog}
 ?- findall(X,langford(X),X), length(X,L).
 X = [[1, 7, 1, 2, 5, 6, 2, 3|...], [1, 7, 1, 2, 6, 4, 2|...], [1, 6, 1, 7, 2, 4|...], [1, 5, 1, 6, 7|...], [1, 4, 1, 5|...], [1, 4, 1|...], [1, 6|...], [1|...], [...|...]|...],
 L = 52.
 ```
 
-We get 52 solutions, pretty much instantly. There are 26 for n=7, but Prolog finds each solution and its reverse as well.
+We get 52 solutions, pretty much instantly. There are 26 for n=7, but
+Prolog finds each solution and its reverse as well.
 
-Curiously, we dropped testing if the numbers occur in pairs in any proposed solution.  Why? The space constraints of the Langford list itself.  The pairs of numbers must
-all squeeze into the 14 slots, so if all `rule` clauses succeed, there can't be for example a solution like [1,1,1,1,...]
+Curiously, we dropped testing if the numbers occur in pairs in any
+proposed solution. Why? The space constraints of the Langford list
+itself. The pairs of numbers must all squeeze into the 14 slots, so if
+all `rule` clauses succeed, there can't be for example a solution like
+\[1,1,1,1,...\]
 
 #### n=11: Solutions in about 0.1 seconds.
 
-```prolog
+``` {.prolog}
 ?- time((langford(X),label(X))).
 % 1,736,171 inferences, 0.100 CPU in 0.100 seconds (100% CPU, 17422689 Lips)
 X = [1, 2, 1, 11, 2, 3, 9, 10, 4|...] [write]
@@ -1281,12 +1482,11 @@ X = [1, 2, 1, 11, 2, 10, 3, 4, 9, 7, 3, 8, 4, 5, 6, 11, 10, 7, 9, 5, 8, 6] ;
 X = [1, 2, 1, 11, 2, 10, 3, 4, 8, 9, 3, 6, 4, 7, 5, 11, 10, 8, 6, 9, 5, 7] 
 ```
 
-
 #### n=15: About 4 seconds for a solution.
 
 This code for n=15, gives solutions in about 4 seconds.
 
-```prolog
+``` {.prolog}
 :- use_module(library(clpfd)).
 
 langford(L) :-
@@ -1321,7 +1521,7 @@ rule(L,K) :-    nth1(I,L,K),
 
 Here are some solutions:
 
-```prolog
+``` {.prolog}
 ?- time((langford(X),label(X))).
 % 72,467,128 inferences, 4.000 CPU in 4.002 seconds (100% CPU, 18116719 Lips)
 X = [1, 2, 1, 3, 2, 4, 14, 3, 15|...] [write]
@@ -1341,11 +1541,22 @@ X = [1, 2, 1, 3, 2, 4, 15, 3, 14, 11, 4, 5, 13, 6, 10, 12, 7, 5, 8, 9, 6, 11, 15
 ...
 ```
 
-## Solving Santa's Reindeer
+Solving Santa's Reindeer
+------------------------
 
-[This puzzle](https://news.ycombinator.com/item?id=34224456) popped up on HN on 1/2/23:
+[This puzzle](https://news.ycombinator.com/item?id=34224456) popped up
+on HN on 1/2/23:
 
-> Vixen should be behind Rudolph, Prancer and Dasher, whilst Vixen should be in front of Dancer and Comet. Dancer should be behind Donder, Blitzen and Rudolph. Comet should be behind Cupid, Prancer and Rudolph. Donder should be behind Comet, Vixen, Dasher, Prancer and Cupid. Cupid should be in front of Comet, Blitzen, Vixen, Dancer and Rudolph. Prancer should be in front of Blitzen, Donder and Cupid. Blitzen should be behind Cupid but in front of Dancer, Vixen and Donder. Rudolph should be behind Prancer but in front of Dasher, Dancer and Donder. Finally, Dasher should be behind Prancer but in front of Blitzen, Dancer and Vixen.
+> Vixen should be behind Rudolph, Prancer and Dasher, whilst Vixen
+> should be in front of Dancer and Comet. Dancer should be behind
+> Donder, Blitzen and Rudolph. Comet should be behind Cupid, Prancer and
+> Rudolph. Donder should be behind Comet, Vixen, Dasher, Prancer and
+> Cupid. Cupid should be in front of Comet, Blitzen, Vixen, Dancer and
+> Rudolph. Prancer should be in front of Blitzen, Donder and Cupid.
+> Blitzen should be behind Cupid but in front of Dancer, Vixen and
+> Donder. Rudolph should be behind Prancer but in front of Dasher,
+> Dancer and Donder. Finally, Dasher should be behind Prancer but in
+> front of Blitzen, Dancer and Vixen.
 
 The question is: "In what order should the reindeer be placed?"
 
@@ -1353,10 +1564,13 @@ The question is: "In what order should the reindeer be placed?"
 
 #### First attempt
 
-Here is a simple approach: make a list of reindeer names, then use maplist to choose numbers for them all from the `order` domain. We'll then use maplist again on
-all chosen variables to enforce the ordering rules. We like this code because translating the problem into Prolog is so straightforward. Here is the code:
+Here is a simple approach: make a list of reindeer names, then use
+maplist to choose numbers for them all from the `order` domain. We'll
+then use maplist again on all chosen variables to enforce the ordering
+rules. We like this code because translating the problem into Prolog is
+so straightforward. Here is the code:
 
-```prolog
+``` {.prolog}
 go(L) :-
 
     L = [Dancer,Prancer,Donder,Blitzen,Vixen,Cupid,Comet,Dasher,Rudolph],
@@ -1416,31 +1630,48 @@ order(8).
 order(9).
 ```
 
-The problem is that this runs and runs and doesn't seem to end. The search space is too large and the search approach is not at all guided.  As in a Langford trial above, the ordering of the reindeer variable enumeration during the search is something like this:
+The problem is that this runs and runs and doesn't seem to end. The
+search space is too large and the search approach is not at all guided.
+As in a Langford trial above, the ordering of the reindeer variable
+enumeration during the search is something like this:
 
-```
-?- go(L).
-[1,1,1,1,1,1,1,1,1]
-[1,1,1,1,1,1,1,1,2]
-[1,1,1,1,1,1,1,1,3]
-[1,1,1,1,1,1,1,1,4]
-[1,1,1,1,1,1,1,1,5]
-[1,1,1,1,1,1,1,1,6]
-```
+    ?- go(L).
+    [1,1,1,1,1,1,1,1,1]
+    [1,1,1,1,1,1,1,1,2]
+    [1,1,1,1,1,1,1,1,3]
+    [1,1,1,1,1,1,1,1,4]
+    [1,1,1,1,1,1,1,1,5]
+    [1,1,1,1,1,1,1,1,6]
 
-We can see that Prolog is just counting up one by one. It's just guessing, and waiting for a case to come up that satisfies the ordering rules.  Further, all of these guesses are obviously wrong for an answer to this, since reindeer cannot share a position in line.  The code is short and direct, but the search stategy is awful.
+We can see that Prolog is just counting up one by one. It's just
+guessing, and waiting for a case to come up that satisfies the ordering
+rules. Further, all of these guesses are obviously wrong for an answer
+to this, since reindeer cannot share a position in line. The code is
+short and direct, but the search stategy is awful.
 
 ### Second attempt: smarter domain choosing
 
-In this next attempt, we'll dispense with the short code and work to choose the domain more wisely.
+In this next attempt, we'll dispense with the short code and work to
+choose the domain more wisely.
 
-For example, since the Blizten/Cupid requirement is so simple in `Blitzen > Cupid`, why not first choose ordering values for these two, then immediately check that this requirement holds? This will immediately exclude all search paths that do not have `Blitzen > Cupid`.
+For example, since the Blizten/Cupid requirement is so simple in
+`Blitzen > Cupid`, why not first choose ordering values for these two,
+then immediately check that this requirement holds? This will
+immediately exclude all search paths that do not have `Blitzen > Cupid`.
 
-Likewise, the Rudolph/Prancer condition is also simple in `Rudolph > Prancer`.  So we'll choose values for these two next, and ensure this condition is met.  We'll even do something else: let's be sure that all values chosen for all reindeer at this point (Blizten, Cupid, Rudolph, and Prancer) are not equal (again since reindeer cannot share a position in line).  This will narrow the search space even more.  In the book [Thinking as Computation](https://www.amazon.com/Thinking-Computation-First-Course-Press/dp/0262534746) this issue is discussed on p. 101 "Minimizing the guesswork: Two rules." 
+Likewise, the Rudolph/Prancer condition is also simple in
+`Rudolph > Prancer`. So we'll choose values for these two next, and
+ensure this condition is met. We'll even do something else: let's be
+sure that all values chosen for all reindeer at this point (Blizten,
+Cupid, Rudolph, and Prancer) are not equal (again since reindeer cannot
+share a position in line). This will narrow the search space even more.
+In the book [Thinking as
+Computation](https://www.amazon.com/Thinking-Computation-First-Course-Press/dp/0262534746)
+this issue is discussed on p. 101 "Minimizing the guesswork: Two rules."
 
 So, we'll do this to start our search:
 
-```prolog
+``` {.prolog}
         order(Blitzen),
         order(Cupid),
 
@@ -1460,17 +1691,17 @@ So, we'll do this to start our search:
         Rudolph > Prancer,
 ```
 
-After this, we'll be on a search path that has 4 of the 9 reindeer on solid logical choosing. This code returns the answer in less than 0.1 seconds:
+After this, we'll be on a search path that has 4 of the 9 reindeer on
+solid logical choosing. This code returns the answer in less than 0.1
+seconds:
 
-```
-?- time(go(L)).
-% 1,052,741 inferences, 0.075 CPU in 0.076 seconds (99% CPU, 13974871 Lips)
-L = [9, 1, 8, 5, 6, 2, 7, 4, 3] ;
-```
+    ?- time(go(L)).
+    % 1,052,741 inferences, 0.075 CPU in 0.076 seconds (99% CPU, 13974871 Lips)
+    L = [9, 1, 8, 5, 6, 2, 7, 4, 3] ;
 
-This means Dancer=9, Prancer=1, etc.  Here is the complete code:
+This means Dancer=9, Prancer=1, etc. Here is the complete code:
 
-```prolog
+``` {.prolog}
 go(L) :-
 
     L = [Dancer,Prancer,Donder,Blitzen,Vixen,Cupid,Comet,Dasher,Rudolph],
@@ -1545,11 +1776,18 @@ order(8).
 order(9).
 ```
 
-We still think of Prolog as a good symbol processing language, meaning we don't always want to have to go to numbers to solve a problem. Can't we just stick to the symbols, which in this case are the names of the reindeer? We like this approach because it allows us to translate the problem easier into Prolog as well.
+We still think of Prolog as a good symbol processing language, meaning
+we don't always want to have to go to numbers to solve a problem. Can't
+we just stick to the symbols, which in this case are the names of the
+reindeer? We like this approach because it allows us to translate the
+problem easier into Prolog as well.
 
-We can put the ordering rules in using two predicates called `behind` and `front`. Both take two aguements, like `behind(X,Y)` and will mean `Y` is behind `X` in line. Similar for `front`. Here are the ordering facts then:
+We can put the ordering rules in using two predicates called `behind`
+and `front`. Both take two aguements, like `behind(X,Y)` and will mean
+`Y` is behind `X` in line. Similar for `front`. Here are the ordering
+facts then:
 
-```prolog
+``` {.prolog}
 % Vixen should be behind Rudolph, Prancer and Dasher,
 behind(vixen,rudolph).
 behind(vixen,prancer).
@@ -1615,37 +1853,41 @@ front(dasher,dancer).
 front(dasher,vixen).
 ```
 
-To simplify our code and not have to use both predicates in our logic, we'll define `is_behind` as:
+To simplify our code and not have to use both predicates in our logic,
+we'll define `is_behind` as:
 
-```prolog
+``` {.prolog}
 is_behind(X,Y) :- behind(X,Y).
 is_behind(X,Y) :- front(Y,X).
 is_behind(X,Y) :- behind(X,Z), behind(Z,Y).
 ```
 
-The third clause is useful for finding two reindeer that are supposed to be behind one another, but are not directly stated to be so as given by the facts. As an example, if Donder is behind Dancer, and Comet is behind Donder, and Vixen is behind Comet, then Vixen is also behind Dancer. This would be found to be true by
+The third clause is useful for finding two reindeer that are supposed to
+be behind one another, but are not directly stated to be so as given by
+the facts. As an example, if Donder is behind Dancer, and Comet is
+behind Donder, and Vixen is behind Comet, then Vixen is also behind
+Dancer. This would be found to be true by
 
-```prolog
+``` {.prolog}
 is_behind(dancer,vixen) :- is_behind(dancer,Z), is_behind(Z,vixen).
 ```
 
-Prolog will go look for somebody behind dancer, say, donder, so the clause will become:
+Prolog will go look for somebody behind dancer, say, donder, so the
+clause will become:
 
-
-```prolog
+``` {.prolog}
 is_behind(dancer,vixen) :- is_behind(dancer,donder), is_behind(donder,vixen).
 ```
 
 which wil be true.
 
-
-[dancer,donder,comet,vixen,blitzen,dasher,rudolph,cupid,prancer]
-
+\[dancer,donder,comet,vixen,blitzen,dasher,rudolph,cupid,prancer\]
 
 ### With CLP
+
 A good bit of practice with CLP operators and `maplist`.
 
-```prolog
+``` {.prolog}
 :- use_module(library(clpfd)).
 
 go(L) :-
@@ -1692,16 +1934,17 @@ go(L) :-
         maplist(#<(Dasher),[Blitzen,Dancer,Vixen]).
 ```
 
-which spits out 
+which spits out
 
-```prolog
+``` {.prolog}
 ?- go(L).
 L = [6, 3, 1, 4, 7, 9, 8, 5, 2].
 ```
 
-Meaning, given out initial variable list was `[Vixen, Rudolph, Prancer, Dasher, Comet, Dancer, Donder, Blitzen, Cupid]`:
+Meaning, given out initial variable list was
+`[Vixen, Rudolph, Prancer, Dasher, Comet, Dancer, Donder, Blitzen, Cupid]`:
 
-```prolog
+``` {.prolog}
         Blitzen = 5,
         Comet = 7,
         Cupid = 2,
@@ -1712,11 +1955,14 @@ Meaning, given out initial variable list was `[Vixen, Rudolph, Prancer, Dasher, 
         Rudolph = 3,
         Vixen = 6
 ```
+
 #### Looking closer at what CLP does
 
-This is a good chance to stop and look more closely at what CLP is actually doing.  Suppose we comment out the line `L ins 1..9` and run the program. We'll get:
+This is a good chance to stop and look more closely at what CLP is
+actually doing. Suppose we comment out the line `L ins 1..9` and run the
+program. We'll get:
 
-```prolog
+``` {.prolog}
 ?- go(L).
 L = [_A, _B, _C, _D, _E, _F, _G, _H, _I],
 _B#=<_G+ -1,
@@ -1756,14 +2002,25 @@ _I#=<_G+ -1,
 _I#=<_H+ -1,
 _I#=<_H+ -1.
 ```
-Here we see that Prolog recasts our list of unknowns into some internal representation using `_A, _B`, etc. Without finding a single answer, it then spits out a list of constraints that it's pulled from our code. The line
 
-```_B#=<_G+ -1,`` 
+Here we see that Prolog recasts our list of unknowns into some internal
+representation using `_A, _B`, etc. Without finding a single answer, it
+then spits out a list of constraints that it's pulled from our code. The
+line
 
-for example means that Rudolph's position has to be less than or equal to Donder's position -1. We did in fact say that Rudolph's posiiton is to be less than Donder's, so Rudolph <= Donder-1 is correct.
+\``_B#=<_G+ -1,`
 
-So CLP(FD), or constraint programming over integers works to form a series of algebraic equations to solve. With some editing (get rid of the _'s, E to EE, and I to II and =< to <=), we put this into Mathematica to solve:
+for example means that Rudolph's position has to be less than or equal
+to Donder's position -1. We did in fact say that Rudolph's posiiton is
+to be less than Donder's, so Rudolph \<= Donder-1 is correct.
 
-![Turbo Prolog Langford](https://github.com/tbensky/Prolog-CLP/blob/main/src/mma.png)
+So CLP(FD), or constraint programming over integers works to form a
+series of algebraic equations to solve. With some editing (get rid of
+the \_'s, E to EE, and I to II and =\< to \<=), we put this into
+Mathematica to solve:
 
-Note we also told Mathematica about the range of the variables too. Indeed A (=Vixen) comes out to be 6, etc.
+![Turbo Prolog
+Langford](https://github.com/tbensky/Prolog-CLP/blob/main/src/mma.png)
+
+Note we also told Mathematica about the range of the variables too.
+Indeed A (=Vixen) comes out to be 6, etc.
