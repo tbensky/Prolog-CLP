@@ -24,10 +24,6 @@
             choosing](#second-attempt-smarter-domain-choosing)
         -   [With CLP](#with-clp-4)
 
--   TOC {:toc}
-
-
-
 # Learning Constraint Logic Programming with Prolog
 
 This repo is a record of my attempt to research and learn Prolog programming using Constraint Logic Programming (CLP).  The work here was greatly inspired along by the [Power of Prolog](https://www.metalevel.at/prolog/optimization) series, reading through [this](https://github.com/triska/clpz/blob/master/clpz.pl), and [the SWI Prolog CLP page](https://www.swi-prolog.org/man/clpfd.html).
