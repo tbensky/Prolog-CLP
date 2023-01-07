@@ -1811,7 +1811,7 @@ front(dasher,vixen).
 
 #### Concluding with non-CLP
 
-There are probably more non-CLP approaches to think about. We actually like the non-CLP approaches, because it forces us to think carefully about the search strategy, and small things can make a large difference in the run times.
+There are probably more non-CLP approaches to think about. We like the non-CLP approaches for the learning opportunities, because it forces us to think carefully about the search strategy. Clearly, small things can make a large difference in the run times.
 
 Let's go off now and look into a CLP-based solutions.
 
