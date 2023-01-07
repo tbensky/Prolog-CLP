@@ -1809,9 +1809,18 @@ front(dasher,dancer).
 front(dasher,vixen).
 ```  
 
+#### Concluding with non-CLP
+
+There are probablhy more non-CLP approaches to think about. We actually like the non-CLP approaches, because it forces us to think carefully about the search strategy, and small things can make a large difference in the run times.
+
+Let's go off now and look into a CLP-based solutions.
+
         
 ### With CLP
-A good bit of practice with CLP operators and `maplist`.
+
+With CLP, our focus really is setting up an answer structure (here a list of variables), specifying the domain for the variables, then listing all known constraints.
+
+Our first attempt here has a good bit of practice with CLP operators and `maplist`.
 
 ```prolog
 :- use_module(library(clpfd)).
@@ -1860,14 +1869,15 @@ go(L) :-
         maplist(#<(Dasher),[Blitzen,Dancer,Vixen]).
 ```
 
-which spits out 
+This runs very fast, doing much better than our best non-CLP version:
 
 ```prolog
-?- go(L).
+?- time(go(L)).
+% 19,206 inferences, 0.002 CPU in 0.002 seconds (89% CPU, 10392857 Lips)
 L = [6, 3, 1, 4, 7, 9, 8, 5, 2].
 ```
 
-Meaning, given out initial variable list was `[Vixen, Rudolph, Prancer, Dasher, Comet, Dancer, Donder, Blitzen, Cupid]`:
+Meaning, given that our initial variable list was `[Vixen, Rudolph, Prancer, Dasher, Comet, Dancer, Donder, Blitzen, Cupid]`, we get:
 
 ```prolog
         Blitzen = 5,
