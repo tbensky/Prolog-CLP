@@ -1651,7 +1651,7 @@ go(L,Soln) :-
 
 We start with an `order_ok()` clause, which takes in a list and will tell you if the reindeer names are in order, as per the rules. The clauses look like:
 
-* `order_ok([])` meaning an empty list is the the right order.
+* `order_ok([])` meaning an empty list is in the right order.
 * `order_ok(L) :- length(L,1).` meaning a list with one name in it is in the right order (as there's nothing to compare it with).
 * `order_ok([A,B|Tail]) :- is_behind(A,B), order_ok([B|Tail]).` Pick out the first two elements of the list, `A` and `B`. If they're in the right order, then the new list to check is `B` + the rest of the list.
 
