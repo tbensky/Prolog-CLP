@@ -1343,7 +1343,12 @@ X = [1, 2, 1, 3, 2, 4, 15, 3, 14, 11, 4, 5, 13, 6, 10, 12, 7, 5, 8, 9, 6, 11, 15
 
 > Vixen should be behind Rudolph, Prancer and Dasher, whilst Vixen should be in front of Dancer and Comet. Dancer should be behind Donder, Blitzen and Rudolph. Comet should be behind Cupid, Prancer and Rudolph. Donder should be behind Comet, Vixen, Dasher, Prancer and Cupid. Cupid should be in front of Comet, Blitzen, Vixen, Dancer and Rudolph. Prancer should be in front of Blitzen, Donder and Cupid. Blitzen should be behind Cupid but in front of Dancer, Vixen and Donder. Rudolph should be behind Prancer but in front of Dasher, Dancer and Donder. Finally, Dasher should be behind Prancer but in front of Blitzen, Dancer and Vixen.
 
-The question is: "In what order should the reindeer be placed?"
+The question is: "In what order should the reindeer be placed?"  For the sake of this study, the correct answer is:
+```[prancer,cupid,rudolph,dasher,blitzen,vixen,comet,donder,dancer]```
+
+or in reverse
+
+```[dancer,donder,comet,vixen,blitzen,dasher,rudolph,cupid,prancer]```.
 
 ### Without CLP
 
@@ -1541,7 +1546,10 @@ order(8).
 order(9).
 ```
 
-We still think of Prolog as a good symbol processing language, meaning we don't always want to have to go to numbers to solve a problem. Can't we just stick to the symbols, which in this case are the names of the reindeer? We like this approach because it allows us to translate the problem easier into Prolog as well.
+
+### Classic-Prolog attempt
+
+We still think of Prolog as a good symbol processing language, meaning we don't always want to have to go to numbers to solve a problem. Can't we just stick to the symbols as our core data (which in this case are the names of the reindeer)? We also like this approach because it allows us to translate the problem easier into Prolog.
 
 We can put the ordering rules in using two predicates called `behind` and `front`. Both take two aguements, like `behind(X,Y)` and will mean `Y` is behind `X` in line. Similar for `front`. Here are the ordering facts then:
 
@@ -1616,28 +1624,191 @@ To simplify our code and not have to use both predicates in our logic, we'll def
 ```prolog
 is_behind(X,Y) :- behind(X,Y).
 is_behind(X,Y) :- front(Y,X).
-is_behind(X,Y) :- behind(X,Z), behind(Z,Y).
 ```
 
-The third clause is useful for finding two reindeer that are supposed to be behind one another, but are not directly stated to be so as given by the facts. As an example, if Donder is behind Dancer, and Comet is behind Donder, and Vixen is behind Comet, then Vixen is also behind Dancer. This would be found to be true by
+To us a classical-Prolog solution would involve some recursion, and building up a solution (likely in a list as an accumulatorr) by imagining Prolog going through some clauses, backtracking when it hits a false, and continuing toward the terminal `.` as long as it keeps finding `true` results.
+
+#### Attempt #1
+
+Here's a first attempt:
 
 ```prolog
-is_behind(dancer,vixen) :- is_behind(dancer,Z), is_behind(Z,vixen).
+order_ok([]).
+order_ok(L) :- length(L,1).
+order_ok([A,B|Tail]) :- is_behind(A,B), order_ok([B|Tail]).
+
+go(L,L) :- 
+            length(L,9),
+            order_ok(L).
+
+
+go(L,Soln) :-
+                rd(X),
+                \+ member(X,L),
+                append([X],L,L1),
+                go(L1,Soln).
 ```
 
-Prolog will go look for somebody behind dancer, say, donder, so the clause will become:
+We start with an `order_ok()` clause, which takes in a list and will tell you if the reindeer names are in order, as per the rules. The clauses look like:
 
+* `order_ok([])' meaning an empty list is the the right order.
+* `order_ok(L) :- length(L,1).` meaning a list with one name in it is in the right order (as there's nothing to compare it with).
+* `order_ok([A,B|Tail]) :- is_behind(A,B), order_ok([B|Tail]).` Pick out the first two elements of the list, `A` and `B`. If they're in the right order, then the new list to check is `B` + the rest of the list.
+
+If we run this on the solution, like this:
 
 ```prolog
-is_behind(dancer,vixen) :- is_behind(dancer,donder), is_behind(donder,vixen).
+?- order_ok([dancer,donder,comet,vixen,blitzen,dasher,rudolph,cupid,prancer]).
+true ;
 ```
 
-which wil be true.
+it works.
+
+The core solution is run with `go(L,Soln)`, where a proposed empty list is passed in, with the hopes of combining it into some solution list `Soln`. Here, we
+pick a reindeer with `rd(X)`, and be sure it is not already in the solution with `\+ member(X,L)`.  If not, we append it to the ongoing list `L`, and
+now "loop" with the list `L1` as our current ordering. The `go(L,L)` will stop the search when a list of 9 reindeer results, and their ordering is all ok.
+
+If we run it, we'll get a solution in about 2.6 seconds of:
+
+```prolog
+?- time(go([],L)).
+% 38,700,282 inferences, 2.626 CPU in 2.632 seconds (100% CPU, 14738855 Lips)
+L = [dancer, donder, comet, vixen, blitzen, dasher, rudolph, cupid, prancer] ;
+```
+
+This isn't really a great approach though, as all the search does it create a list of 9 unique reindeer names, and check to see if they're all in order. We're happy with our growing
+abilities in coding in Prolog, but the search strategy isn't very good.
+
+#### Attempt #2
+
+We can improve the search by thinking a bit about what is an acceptable reindeer to choose in the `rd(X)` step. After choosing a reindeer, verifying it's not already in the solution list,
+then appending it to the solution list, why don't we now check if the list is in order? So a core like this:
+
+```prolog
+go(L,L) :-  length(L,9), order_ok(L).
+
+go([],Soln) :- rd(X), go([X],Soln).
+
+go(L,Soln) :-
+
+    rd(X),
+    \+ member(X,L),
+    append([X],L,L1),
+    order_ok(L),
+    go(L1,Soln).
+```
+
+This does a *much better* job, finishing in less than 0.02 seconds, with only a fraction of the total inferences:
+
+```
+?- time(go([],L)).
+% 156,145 inferences, 0.014 CPU in 0.015 seconds (96% CPU, 10903219 Lips)
+L = [dancer, donder, comet, vixen, blitzen, dasher, rudolph, cupid, prancer] ;
+```
 
 
-[dancer,donder,comet,vixen,blitzen,dasher,rudolph,cupid,prancer]
+Here is the complete code:
+
+```prolog
+order_ok([]).
+order_ok(L) :- length(L,1).
+order_ok([A,B|Tail]) :- is_behind(A,B), order_ok([B|Tail]).
 
 
+% answer: [prancer,cupid,rudolph,dasher,blitzen,vixen,comet,donder,dancer]
+% in reverse: [dancer,donder,comet,vixen,blitzen,dasher,rudolph,cupid,prancer]
+
+go(L,L) :-  length(L,9), order_ok(L).
+
+go([],Soln) :- rd(X), go([X],Soln).
+
+go(L,Soln) :-
+
+    rd(X),
+    \+ member(X,L),
+    append([X],L,L1),
+    order_ok(L),
+    go(L1,Soln).
+   
+
+% Allows us to only need the is_behind clause
+is_behind(X,Y) :- behind(X,Y).
+is_behind(X,Y) :- front(Y,X).
+
+rd(vixen).
+rd(dancer).
+rd(comet).
+rd(donder).
+rd(cupid).
+rd(prancer).
+rd(rudolph).
+rd(dasher).
+rd(blitzen).
+
+% Vixen should be behind Rudolph, Prancer and Dasher,
+behind(vixen,rudolph).
+behind(vixen,prancer).
+behind(vixen,dasher).
+
+% Dancer should be behind Donder, Blitzen and Rudolph. 
+behind(dancer,donder).
+behind(dancer,blitzen).
+behind(dancer,rudolph).
+
+% Comet should be behind Cupid, Prancer and Rudolph.
+behind(comet,cupid).
+behind(comet,prancer).
+behind(comet,rudolph).
+
+% Donder should be behind Comet, Vixen, Dasher, Prancer and Cupid. 
+behind(donder,comet).
+behind(donder,vixen).
+behind(donder,dasher).
+behind(donder,prancer).
+behind(donder,cupid).
+
+% Blitzen should be behind Cupid 
+behind(blitzen,cupid).
+
+% Rudolph should be behind Prancer
+behind(rudolph,prancer).
+
+% Finally, Dasher should be behind Prancer
+behind(dasher,prancer).
+
+% Cupid should be in front of Comet, Blitzen, Vixen, Dancer and Rudolph
+front(cupid,comet).
+front(cupid,blitzen).
+front(cupid,vixen).
+front(cupid,dancer).
+front(cupid,rudolph).
+
+% Vixen should be in front of Dancer and Comet.
+front(vixen,dancer).
+front(vixen,comet).
+
+% Prancer should be in front of Blitzen, Donder and Cupid.
+front(prancer,blitzen).
+front(prancer,donder).
+front(prancer,cupid).
+
+% but in front of Dancer, Vixen and Donder.
+front(blitzen,dancer).
+front(blitzen,vixen).
+front(blitzen,donder).
+
+% but in front of Dasher, Dancer and Donder.
+front(rudolph,dasher).
+front(rudolph,dancer).
+front(rudolph,donder).
+
+% but in front of Blitzen, Dancer and Vixen.
+front(dasher,blitzen).
+front(dasher,dancer).
+front(dasher,vixen).
+```  
+
+        
 ### With CLP
 A good bit of practice with CLP operators and `maplist`.
 

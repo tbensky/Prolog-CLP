@@ -6,16 +6,16 @@ order_ok([A,B|Tail]) :- is_behind(A,B), order_ok([B|Tail]).
 % answer: [prancer,cupid,rudolph,dasher,blitzen,vixen,comet,donder,dancer]
 % in reverse: [dancer,donder,comet,vixen,blitzen,dasher,rudolph,cupid,prancer]
 
-go(L,L) :-
-            length(L,9),
-            order_ok(L).
+go(L,L) :-  length(L,9), order_ok(L).
 
+go([],Soln) :- rd(X), go([X],Soln).
 
 go(L,Soln) :-
 
     rd(X),
     \+ member(X,L),
     append([X],L,L1),
+    order_ok(L),
     go(L1,Soln).
    
 
