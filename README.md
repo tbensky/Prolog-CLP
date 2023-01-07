@@ -1655,18 +1655,17 @@ We start with an `order_ok()` clause, which takes in a list and will tell you if
 * `order_ok(L) :- length(L,1).` meaning a list with one name in it is in the right order (as there's nothing to compare it with).
 * `order_ok([A,B|Tail]) :- is_behind(A,B), order_ok([B|Tail]).` Pick out the first two elements of the list, `A` and `B`. If they're in the right order, then the new list to check is `B` + the rest of the list.
 
-If we run this on the solution, like this:
+If we test this on the solution:
 
 ```prolog
 ?- order_ok([dancer,donder,comet,vixen,blitzen,dasher,rudolph,cupid,prancer]).
 true ;
 ```
-
 it works.
 
-The core solution is run with `go(L,Soln)`, where a proposed empty list is passed in, with the hopes of combining it into some solution list `Soln`. Here, we
+The core solution here is run with `go(L,Soln)`, where a proposed empty list is initially passed in, with the hopes of eventually assigning it to solution list `Soln`. Here, we
 pick a reindeer with `rd(X)`, and be sure it is not already in the solution with `\+ member(X,L)`.  If not, we append it to the ongoing list `L`, and
-now "loop" with the list `L1` as our current ordering. The `go(L,L)` will stop the search when a list of 9 reindeer results, and their ordering is all ok.
+now "loop" with the list `L1` as our latest reindeer ordering. The `go(L,L)` will stop the search when a list of 9 reindeer results, and their ordering is all ok.
 
 If we run it, we'll get a solution in about 2.6 seconds of:
 
