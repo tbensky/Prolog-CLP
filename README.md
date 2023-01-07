@@ -1676,12 +1676,14 @@ L = [dancer, donder, comet, vixen, blitzen, dasher, rudolph, cupid, prancer] ;
 ```
 
 This isn't really a great approach though, as all the search does it create a list of 9 unique reindeer names, and check to see if they're all in order. We're happy with our growing
-abilities in coding in Prolog, but the search strategy isn't very good.
+abilities in coding in Prolog, but this is a needle-in-a-haystack search strategy, that isn't very good.
 
 #### Attempt #2
 
 We can improve the search by thinking a bit about what is an acceptable reindeer to choose in the `rd(X)` step. After choosing a reindeer, verifying it's not already in the solution list,
-then appending it to the solution list, why don't we now check if the list is in order? So a core like this:
+then appending it to the solution list, why don't we now check if the list is in order? 
+
+As an example, suppose the first two reindeer chosen are not the the proper order. There is no reason to proceed with that search.  So a core like this:
 
 ```prolog
 go(L,L) :-  length(L,9), order_ok(L).
