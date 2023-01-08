@@ -1945,3 +1945,73 @@ So CLP(FD), or constraint programming over integers works to form a series of al
 ![Reindeer_mathematica](https://github.com/tbensky/Prolog-CLP/blob/main/src/Santa/mma.png)
 
 Note we also told Mathematica about the range of the variables too. Indeed A (=Vixen) comes out to be 6, etc.
+
+
+## Knuth's Stanford Graphbase: five-letter words
+
+In Knuth's Volume 4A book,  Ch 7 is titled "Combinatorial Searching," and is what got me started on the Langford pairs (above). On p. 9, he discusses a collection of five-letter words, a list of 5757 of them, that he
+personally compiled over 20 years for "testing many kinds of combinatorial algorithms."  
+
+Fun! So these words will be the next domain for our Prolog-searching-CLP studies.
+
+
+### Getting the words
+
+The words can be download from [here](https://www-cs-faculty.stanford.edu/~knuth/sgb.html). We wrote a small Python script to read them in and put them into a Prolog-friendly format, like this:
+
+
+```prolog
+word([w,h,i,c,h]).
+word([t,h,e,r,e]).
+word([t,h,e,i,r]).
+word([a,b,o,u,t]).
+word([w,o,u,l,d]).
+word([t,h,e,s,e]).
+word([o,t,h,e,r]).
+word([w,o,r,d,s]).
+word([c,o,u,l,d]).
+word([w,r,i,t,e]).
+word([f,i,r,s,t]).
+word([w,a,t,e,r]).
+word([a,f,t,e,r]).
+word([w,h,e,r,e]).
+word([r,i,g,h,t]).
+word([t,h,i,n,k]).
+...
+```
+
+This is the first 16 words, put into Prolog lists, one character per list element. You can find this list in this repo at SGB/words.pl. To use, we put an `:- include('words.pl').` at the stop of our code, and off we go. 
+
+To begin, we're looking at solving Exercises 26-35 on p. 38 of Vol 4A (or at least some of them).
+
+### Palindromes (#29)
+
+A palindrome is a word spelled the same forward and backward. We got a non-CLP Prolog doing this pretty quickly.
+
+```prolog
+:- include('words.pl').
+
+go :-
+        word([A,B,C,D,E]),
+        A = E,
+        B = D,
+        write([A,B,C,D,E]).
+```
+
+For a 5-letter words, the middle letter will be the same and only checking to see if letters 1=5, and 2=4 will do it. Here are a few:
+
+```prolog
+?- go.
+[l,e,v,e,l]
+true ;
+[r,e,f,e,r]
+true ;
+[r,a,d,a,r]
+true ;
+[m,a,d,a,m]
+true ;
+[r,o,t,o,r]
+true ;
+[c,i,v,i,c]
+```
+

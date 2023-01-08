@@ -8,5 +8,5 @@ with open('5letter.txt', 'r') as fd:
                 print(f"{c},",end="")
             else:
                 print(c,end="")
-        print("])")
+        print("]).")
 
