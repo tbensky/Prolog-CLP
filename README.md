@@ -1957,7 +1957,7 @@ Fun! So these words will be the next domain for our Prolog-searching-CLP studies
 
 ### Getting the words
 
-The words can be download from [here](https://www-cs-faculty.stanford.edu/~knuth/sgb.html). We wrote a small Python script to read them in and put them into a Prolog-friendly format, like this:
+The words can be download from [here](https://www-cs-faculty.stanford.edu/~knuth/sgb.html). A short Python script reads them in and puts them into a Prolog-friendly format, like this:
 
 
 ```prolog
@@ -1980,9 +1980,9 @@ word([t,h,i,n,k]).
 ...
 ```
 
-This is the first 16 words, put into Prolog lists, one character per list element. You can find this list in this repo at SGB/words.pl. To use, we put an `:- include('words.pl').` at the stop of our code, and off we go. 
+This is the first 16 words, put into Prolog lists, one character per list element. You can find this list in this repo at SGB/words.pl. The line `:- include('words.pl').` is put at the stop of our code, and off we go. 
 
-To begin, we're looking at solving Exercises 26-35 on p. 38 of Vol 4A (or at least some of them).
+Solving Exercises 26-35 on p. 38 of Vol 4A (or at least some of them), seems like a good place to start.
 
 ### Palindromes (#29)
 
