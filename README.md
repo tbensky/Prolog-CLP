@@ -16,6 +16,8 @@ It seems best then to just jump in and start experimenting with it, which is wha
 * [Projects](#learning-projects)
    * [Sudoku](#project-sudoku-with-and-without-clp)
    * [Arithmetics](#project-crypto-arithmetic-or-alphametics-puzzles)
+   * [Langford pairs](#project-langford-pairs)
+   * [Santa's Reindeer](#solving-santas-reindeer)
 
 
 ## Project: Basic ideas of CLP
@@ -560,7 +562,7 @@ L = [1, 8, 8, 6, 9, 4, 8] ;
 ```
 
 
-## Project: One more alphametric
+### Project: One more alphametric
 
 Knuth (4A, p. 346, #24) has a few more of these puzzles proposed. Let's do one more he suggests, which is
 
@@ -574,12 +576,12 @@ Knuth (4A, p. 346, #24) has a few more of these puzzles proposed. Let's do one m
 ```
 
 
-### Without CLP
+#### Without CLP
 We immediately notice that in the first column, S=N+S+E+O, which means computing S depends on S itself. The second column has the same issue with T. Thus, a non-CLP Prolog implementation will not work without proposing values for some of these variables first. 
 
 We also have to be prepared for larger carry digits, and 9+9+9+9 (+9 for a carry) is possible. This 9x5=45, so our carry predicate has been extended. We also defined the variable `Leading`, which will be the leading digit of the sum.  P is still constrained to 0..9, but in the leftmost column, there might be a carry to add to N which may make that last sum larger than 10.
 
-### With CLP
+#### With CLP
 Here is our CLP implementation.
 
 
