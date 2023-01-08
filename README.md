@@ -14,7 +14,7 @@ It seems best then to just jump in and start experimenting with it, which is wha
 
 * [Basic ideas of LCP](#project-basic-ideas-of-clp)
 * [Projects](#learning-projects)
- - [Sudoku](#project-sudoku-with-and-without-clp)
+  *[Sudoku](#project-sudoku-with-and-without-clp)
 
 
 ## Project: Basic ideas of CLP
