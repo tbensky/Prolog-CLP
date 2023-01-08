@@ -934,7 +934,7 @@ aindex(6).
 ##### Turbo Prolog
 Just for fun (and as a tribute to what got me started in Prolog), I thought I'd try to get this programing running on Turbo Prolog (yes, the 1980s Borland software). Here it is (running in a Dosbox on macOS):
 
-![Turbo Prolog Langford](https://github.com/tbensky/Prolog-CLP/blob/main/src/turbo_prolog.png)
+![Turbo Prolog Langford](https://github.com/tbensky/Prolog-CLP/blob/main/src/Langford/turbo_prolog.png)
 
 I had to make several modifications to the code, including Turbo Prolog's `domains`, `predicates`, and `clauses` sections. Also, a compound list (lists within a list)
 had to be handled as per p. 202 of the Turbo Prolog 2.0 User's Guide (that we bought on ebay); see the `llist` and `list` definitions in the `domains` section, and all the `l()` and `i()` wrappers throughout (`l` means list and `i` means integer).  Lastly, there is no `is` (looks like it's `=` for assignment), the `\+` for not is now handled with `not()`, and `=<` is `<=`.
@@ -1942,6 +1942,6 @@ for example means that Rudolph's position has to be less than or equal to Donder
 
 So CLP(FD), or constraint programming over integers works to form a series of algebraic equations to solve. With some editing (get rid of the _'s, E to EE, and I to II and =< to <=), we put this into Mathematica to solve:
 
-![Turbo Prolog Langford](https://github.com/tbensky/Prolog-CLP/blob/main/src/mma.png)
+![Reindeer_mathematica](https://github.com/tbensky/Prolog-CLP/blob/main/src/Santa/mma.png)
 
 Note we also told Mathematica about the range of the variables too. Indeed A (=Vixen) comes out to be 6, etc.
