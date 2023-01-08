@@ -18,6 +18,7 @@ It seems best then to just jump in and start experimenting with it, which is wha
    * [Arithmetics](#project-crypto-arithmetic-or-alphametics-puzzles)
    * [Langford pairs](#project-langford-pairs)
    * [Santa's Reindeer](#solving-santas-reindeer)
+   * [Knuth's Stanford GraphBase](#knuths-stanford-graphbase-five-letter-words)
 
 
 ## Project: Basic ideas of CLP
