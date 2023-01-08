@@ -1,29 +1,3 @@
--   [Learning Constraint Logic Programming with
-    Prolog](#learning-constraint-logic-programming-with-prolog)
-    -   [Project: Basic ideas of CLP](#project-basic-ideas-of-clp)
-        -   [Labeling](#labeling)
--   [Learning Projects](#learning-projects)
-    -   [Project: Sudoku with and without
-        CLP](#project-sudoku-with-and-without-clp)
-        -   [Without CLP](#without-clp)
-        -   [With CLP](#with-clp)
-    -   [Project: Crypto-arithmetic (or alphametics)
-        puzzles](#project-crypto-arithmetic-or-alphametics-puzzles)
-        -   [Grade school addition](#grade-school-addition)
-        -   [Without CLP](#without-clp-1)
-        -   [With CLP](#with-clp-1)
-    -   [Project: One more alphametric](#project-one-more-alphametric)
-        -   [Without CLP](#without-clp-2)
-        -   [With CLP](#with-clp-2)
-    -   [Project: Langford Pairs](#project-langford-pairs)
-        -   [Without CLP](#without-clp-3)
-        -   [With CLP](#with-clp-3)
-    -   [Solving Santa's Reindeer](#solving-santas-reindeer)
-        -   [Without CLP](#without-clp-4)
-        -   [Second attempt: smarter domain
-            choosing](#second-attempt-smarter-domain-choosing)
-        -   [With CLP](#with-clp-4)
-
 # Learning Constraint Logic Programming with Prolog
 
 This repo is a record of my attempt to research and learn Prolog programming using Constraint Logic Programming (CLP).  The work here was greatly inspired along by the [Power of Prolog](https://www.metalevel.at/prolog/optimization) series, reading through [this](https://github.com/triska/clpz/blob/master/clpz.pl), and [the SWI Prolog CLP page](https://www.swi-prolog.org/man/clpfd.html).
@@ -36,6 +10,10 @@ At this point, Prolog + CLP is a bit tough to study. Outside of Bratko, in the 4
 
 It seems best then to just jump in and start experimenting with it, which is what I'm doing here. (Maybe this repo will be a book someday?) 
 
+# Contents
+
+* [Basic ideas of LCP](#project-basic-ideas-of-CLP)
+* [Projects](#learning-projects)
 
 ## Project: Basic ideas of CLP
 
