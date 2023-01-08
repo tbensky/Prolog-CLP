@@ -12,8 +12,10 @@ It seems best then to just jump in and start experimenting with it, which is wha
 
 # Contents
 
-* [Basic ideas of LCP](#project-basic-ideas-of-CLP)
+* [Basic ideas of LCP](#project-basic-ideas-of-clp)
 * [Projects](#learning-projects)
+ - [Sudoku](#project-sudoku-with-and-without-clp)
+
 
 ## Project: Basic ideas of CLP
 
