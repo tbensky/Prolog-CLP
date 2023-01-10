@@ -2181,7 +2181,9 @@ L = [a, a|b].`
 ```
 Apparently in a single list, Prolog wants only one tail--everything else is the head.
 
-> The key take-away from this construct is: The hole of the original list, now becomes instantiated with terminators, with its own new hole.
+> The key take-away from this construct is: The hole of the original list, now becomes instantiated as allowed by the terminators, generating its own new hole each time. 
+
+Note how the hole is never filled, as it's in the position of the uninstantiated `Rest` list throughout. It's always available in the list to successfully match the tail of a list, whose head strictly matches the rules of the terminators.
 
 
 So, we see how given the difference list terminators (the `ab` clauses), `gen_ab` *generates* output like this:
