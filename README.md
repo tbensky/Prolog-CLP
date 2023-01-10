@@ -2116,6 +2116,38 @@ A=[b|B]
 
 as above.
 
+We can get the output we more expecte by running `?- length(X,_), ab(X,Y).`, which gives
+
+```
+X = [a],
+Y = [] ;
+X = [b],
+Y = [] ;
+X = [a, _A],
+Y = [_A] ;
+X = [b, _A],
+Y = [_A] ;
+X = [a, _A, _B],
+Y = [_A, _B] ;
+X = [b, _A, _B],
+Y = [_A, _B] ;
+X = [a, _A, _B, _C],
+Y = [_A, _B, _C] ;
+X = [b, _A, _B, _C],
+Y = [_A, _B, _C] ;
+X = [a, _A, _B, _C, _D],
+Y = [_A, _B, _C, _D] ;
+X = [b, _A, _B, _C, _D],
+Y = [_A, _B, _C, _D] ;
+X = [a, _A, _B, _C, _D, _E],
+Y = [_A, _B, _C, _D, _E] ;
+X = [b, _A, _B, _C, _D, _E],
+Y = [_A, _B, _C, _D, _E] 
+```
+
+In this case, the list differencing is clear between `X` and `Y`. The `length` constraint forces Prolog to generate lists grouped by their length. So a difference
+list of length 1 is the `X=[a]` and `Y=[]` then `X=[b]` and `Y=[]` combination. Of length 2, the `X = [a, _A], Y = [_A]`  and `X = [b, _A], Y = [_A]` combination.
+
 
 Now let's move on to a clause that will generate output from the `ab` clauses, like this:
 
@@ -2139,8 +2171,9 @@ passed back into `gen_ab` as the first parameter.  Tracing:
 
 * As before, `List2` will now become `[a|Rest]`.
 
-* So `List1` which is currently `[a|List2] will become `[a|[a|Rest]]` which Prolog evaluates to `[a,a|Rest]`.  Note (again,
-unknown Prolog behavior):
+* So `List1` which is currently `[a|List2] will become `[a|[a|Rest]]` which Prolog evaluates to `[a,a|Rest]`. 
+
+Note (again, unknown Prolog behavior):
 
 ```
 ?- L=[a|[a|b]].
@@ -2148,3 +2181,60 @@ L = [a, a|b].`
 ```
 Apparently in a single list, Prolog wants only one tail--everything else is the head.
 
+So, we see how given the difference list terminators (the `ab` clauses), `gen_ab` *generates* output like this:
+
+
+```
+?- gen_ab(X,Y).
+X = [a|Y] ;
+X = [b|Y] ;
+X = [a, a|Y] ;
+X = [a, b|Y] ;
+X = [a, a, a|Y] ;
+X = [a, a, b|Y] ;
+X = [a, a, a, a|Y] ;
+X = [a, a, a, b|Y] ;
+X = [a, a, a, a, a|Y] ;
+X = [a, a, a, a, b|Y] ;
+X = [a, a, a, a, a, a|Y] ;
+X = [a, a, a, a, a, b|Y] ;
+X = [a, a, a, a, a, a, a|Y] ;
+X = [a, a, a, a, a, a, b|Y] ;
+X = [a, a, a, a, a, a, a, a|Y] ;
+X = [a, a, a, a, a, a, a, b|Y] ;
+```
+
+And notice that the result always has the difference list format with the `Y` in there.
+
+The pattern seems "unfair" in terms of the a's and the b's. This is "unfair enumeration" which we learned from Triska [here](https://www.youtube.com/watch?v=CvLsVfq6cks). We can fix this by
+running
+
+```
+?- length(X,_), gen_ab(X,Y).
+X = [a],
+Y = [] ;
+X = [b],
+Y = [] ;
+X = [a, _A],
+Y = [_A] ;
+X = [b, _A],
+Y = [_A] ;
+X = [a, a],
+Y = [] ;
+X = [a, b],
+Y = [] ;
+X = [b, a],
+Y = [] ;
+X = [b, b],
+Y = [] ;
+X = [a, _A, _B],
+Y = [_A, _B] ;
+X = [b, _A, _B],
+Y = [_A, _B] ;
+X = [a, a, _A],
+Y = [_A] ;
+X = [a, b, _A],
+Y = [_A] ;
+X = [a, a, a],
+Y = [] 
+```
