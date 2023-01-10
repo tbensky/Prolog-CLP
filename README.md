@@ -2171,7 +2171,7 @@ passed back into `gen_ab` as the first parameter.  Tracing:
 
 * As before, `List2` will now become `[a|Rest]`.
 
-* So `List1` which is currently `[a|List2] will become `[a|[a|Rest]]` which Prolog evaluates to `[a,a|Rest]`. 
+* So `List1` which is currently `[a|List2]` will become `[a|[a|Rest]]` which Prolog evaluates to `[a,a|Rest]`. 
 
 Note (again, unknown Prolog behavior):
 
@@ -2180,6 +2180,9 @@ Note (again, unknown Prolog behavior):
 L = [a, a|b].`
 ```
 Apparently in a single list, Prolog wants only one tail--everything else is the head.
+
+> The key take-away from this construct is: The hole of the original list, now becomes instantiated with terminators, with its own new hole.
+
 
 So, we see how given the difference list terminators (the `ab` clauses), `gen_ab` *generates* output like this:
 
