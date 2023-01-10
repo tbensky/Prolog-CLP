@@ -11,3 +11,9 @@ ab([b|Rest],Rest).
 
 xy([R],R).
 cd(a,a).
+
+
+
+pal_term([],_).
+pal_term([_|Rest],Rest).
+pal_term([X|Rest])

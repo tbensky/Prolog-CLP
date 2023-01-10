@@ -2171,20 +2171,24 @@ passed back into `gen_ab` as the first parameter.  Tracing:
 
 * As before, `List2` will now become `[a|Rest]`.
 
-* So `List1` which is currently `[a|List2]` will become `[a|[a|Rest]]` which Prolog evaluates to `[a,a|Rest]`. 
+* So with `List1=[a|List2]` and `List2=[a|Rest]`, `List1` will become `[a|[a|Rest]]` which Prolog evaluates to `[a,a|Rest]`. 
+
+* The `List2` to `List2` connection between the `ab()` call and the `gen_ab()` call is key here. 
+
+** Not sure how to highlight this right now, but this idea is the key functionality here: the hole in the original list, gets filled with
+a pattern that follows he rules of the terminators + its own hole.
 
 Note (again, unknown Prolog behavior):
 
 ```
 ?- L=[a|[a|b]].
-L = [a, a|b].`
+L = [a, a|b].
 ```
 Apparently in a single list, Prolog wants only one tail--everything else is the head.
 
 > The key take-away from this construct is: The hole of the original list, now becomes instantiated as allowed by the terminators, generating its own new hole each time. 
 
-Note how the hole is never filled, as it's in the position of the uninstantiated `Rest` list throughout. It's always available in the list to successfully match the tail of a list, whose head strictly matches the rules of the terminators.
-
+Note how the hole is never filled, as it's in the position of the uninstantiated `Rest` list throughout. It's always available in the list to successfully match the "leftover junk" in a tail of a list, whose head strictly matches the rules of the terminators.
 
 So, we see how given the difference list terminators (the `ab` clauses), `gen_ab` *generates* output like this:
 
@@ -2278,7 +2282,7 @@ false.
 ```
 
 
-Interesting, it can also be used to *generate* lists that follow the rules of the terminators:
+And, as we've already seen, it can also be used to *generate* lists that follow the rules of the terminators:
 
 ```prolog
 ?- gen_ab(X,[1,2,3]).
