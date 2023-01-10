@@ -2096,6 +2096,8 @@ We see that `A` is supposed to be the list containing `B`. Ok--makes sense.  We 
 A=[R], B=R
 ```
 
+But we suppose since `R` isn't an atom, Prolog is just tying things up--eliminating uninstantiated variables in solutions; we've never seen this behavior before.
+
 Now, when we do `ab(A,B).` we expected to see something like
 
 ```
@@ -2113,3 +2115,24 @@ A=[b|B]
 ```
 
 as above.
+
+
+Now let's move on to a clause that will generate output from the `ab` clauses, like this:
+
+```prolog
+gen_ab(List,Rest) :- ab(List,Rest).
+
+
+gen_ab(List1,Rest) :- 
+                    ab(List1,List2),
+                    gen_ab(List2,Rest).
+```
+
+The first clause just echos the direct `ab` calls from above. What about the second?
+
+This is where the hole (or rest, or tail) of `List1` (or `List2`) now gets its chance to become populated, as it's next
+passed back into `gen_ab` as the first parameter.  So after the first `ab(List1,List2)` call, `List1` will be `[a|List2]`
+and in the `gen_ab(List2,Rest).`, `List2` will also become `[a|List2]`. But as before, `List2` will now become `[a|Rest]`,
+so `List1` which is currently `[a|List2] will become `[a|[a|Rest[]]` which Prolog evaluates to `[a,a,|Rest]` (hint: `?- L=[a|[a|b]].` gives 
+`L = [a, a|b].`)
+
