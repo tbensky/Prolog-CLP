@@ -2238,3 +2238,81 @@ Y = [_A] ;
 X = [a, a, a],
 Y = [] 
 ```
+
+This forces Prolog to hunt for all solutions of a given length before continuing.
+
+##### Bi-directional
+
+Now for some usage. The `gen_ab` clause above can be used to *test* that an input list follows the rules of the terminators, like this:
+
+```
+?- gen_ab([a,1,2,3],X).
+X = [1, 2, 3] ;
+false.
+```
+Here, it sees the `a` in the head and returns the rest or hole (`X`) that consists of everything else other that isn't a single `a`. 
+
+As another example, here it'll strip off both leading `a`'s, one-by-one, before stopping:
+
+```
+?- gen_ab([a,a,1,2,3],X).
+X = [a, 1, 2, 3] ;
+X = [1, 2, 3] ;
+false.
+```
+
+Lastly, it'll strip off any `a` or `b` from the head of a list (one by one):
+
+```
+?- gen_ab([a,b,a,b,1,2,3],X).
+X = [b, a, b, 1, 2, 3] ;
+X = [a, b, 1, 2, 3] ;
+X = [b, 1, 2, 3] ;
+X = [1, 2, 3] ;
+false.
+```
+
+
+Interesting, it can also be used to *generate* lists that follow the rules of the terminators:
+
+```prolog
+?- gen_ab(X,[1,2,3]).
+X = [a, 1, 2, 3] ;
+X = [b, 1, 2, 3] ;
+X = [a, a, 1, 2, 3] ;
+X = [a, b, 1, 2, 3] ;
+X = [a, a, a, 1, 2, 3] ;
+X = [a, a, b, 1, 2, 3] ;
+X = [a, a, a, a, 1, 2, 3] ;
+X = [a, a, a, b, 1, 2, 3] ;
+X = [a, a, a, a, a, 1, 2, 3] ;
+X = [a, a, a, a, b, 1, 2, 3] ;
+X = [a, a, a, a, a, a, 1, 2, 3] ;
+X = [a, a, a, a, a, b, 1, 2, 3] ;
+```
+
+Note the tail of `[1,2,3]` doesn't follow the terminator rules, so it just gets tacked on to the end of any list it generates that does follow the rules.
+
+To enumerate things more fairly:
+
+```prolog
+?- length(X,_), gen_ab(X,[1,2,3]).
+X = [a, 1, 2, 3] ;
+X = [b, 1, 2, 3] ;
+X = [a, a, 1, 2, 3] ;
+X = [a, b, 1, 2, 3] ;
+X = [b, a, 1, 2, 3] ;
+X = [b, b, 1, 2, 3] ;
+X = [a, a, a, 1, 2, 3] ;
+X = [a, a, b, 1, 2, 3] ;
+X = [a, b, a, 1, 2, 3] ;
+X = [a, b, b, 1, 2, 3] ;
+X = [b, a, a, 1, 2, 3] ;
+X = [b, a, b, 1, 2, 3] ;
+X = [b, b, a, 1, 2, 3] ;
+X = [b, b, b, 1, 2, 3] ;
+```
+
+
+
+
