@@ -8,7 +8,7 @@ In the case of CLP, Prolog's search happily continues with incomplete conclusion
 
 At this point, Prolog + CLP is a bit tough to study. Outside of Bratko, in the 4th edition of ["Prolog Programming for Artificial Intelligence"](https://www.amazon.com/Programming-Artificial-Intelligence-International-Computer/dp/0321417461/) (chapters 7 and 14), there isn't really any books on Prolog + CLP, so there's no unified source for learning or reading about it. (I'm old fashioned; I learn things best and slowly from books.)
 
-It seems best then to just jump in and start experimenting with it, which is what I'm doing here. (Maybe this repo will be a book someday?) 
+It seems best then to just jump in and start experimenting with it, which is what I'll do here. (Maybe this repo will be a book someday?) This is defintely a "learn Prolog the hard way" kind of tutorial.
 
 # Contents
 
@@ -47,7 +47,6 @@ With CLP, we can recast the code like this:
 
 ```prolog
 :- use_module(library(clpfd)).
-
 
 go(X,Y,Z) :- 
             X #= 4, 
@@ -99,7 +98,7 @@ Now this is all very nice: whatever order Vixen ends up being in, it'll be a num
 
 But we're stuck now, because we can't say anything more about Vixen until we can "solve" for the ordering of the other reindeer.  We can *choose* some values for Rudolph, Prancer, and Dasher, but what values? Finding these values is the whole point of the code here.  But OK, suppose we we choose 5,6, and 7, so then Vixen can be 4.  But we're just guessing; likely these values won't hold up later when other ordering rules are enforced.
 
-At this level, classical (i.e. non-CLP) Prolog has no "magic" to offer. We have to code up a search strategy, since all we can do is guess values to keep the code going. In classical Prolog, we can't just tell it `Vixen > Rudolph`, as it will fail since it doesn't know anything about Rudolph. (Note: this puzzle can indeed be solved with classical Prolog, just as directly has stated). Using Prolog+CLP however, we can just state
+At this level, classical (i.e. non-CLP) Prolog has no "magic" to offer. We have to code up a search strategy, since all we can do is guess values to keep the code going. In classical Prolog, we can't just tell it `Vixen > Rudolph`, as it will fail since it doesn't know anything about Rudolph. (Note: this puzzle can indeed be solved with classical Prolog, just not as directly has stated). Using Prolog+CLP however, we can just state
 
 ```
 Vixen #< Dancer
@@ -1945,26 +1944,20 @@ The words can be download from [here](https://www-cs-faculty.stanford.edu/~knuth
 
 
 ```prolog
-word([w,h,i,c,h]).
-word([t,h,e,r,e]).
-word([t,h,e,i,r]).
-word([a,b,o,u,t]).
-word([w,o,u,l,d]).
-word([t,h,e,s,e]).
-word([o,t,h,e,r]).
-word([w,o,r,d,s]).
-word([c,o,u,l,d]).
-word([w,r,i,t,e]).
-word([f,i,r,s,t]).
-word([w,a,t,e,r]).
-word([a,f,t,e,r]).
-word([w,h,e,r,e]).
-word([r,i,g,h,t]).
-word([t,h,i,n,k]).
+word([w,h,i,c,h],[23,8,9,3,8],'which').
+word([t,h,e,r,e],[20,8,5,18,5],'there').
+word([t,h,e,i,r],[20,8,5,9,18],'their').
+word([a,b,o,u,t],[1,2,15,21,20],'about').
+word([w,o,u,l,d],[23,15,21,12,4],'would').
+word([t,h,e,s,e],[20,8,5,19,5],'these').
+word([o,t,h,e,r],[15,20,8,5,18],'other').
+word([w,o,r,d,s],[23,15,18,4,19],'words').
+word([c,o,u,l,d],[3,15,21,12,4],'could').
+word([w,r,i,t,e],[23,18,9,20,5],'write').
 ...
 ```
 
-This is the first 16 words, put into Prolog lists, one character per list element. You can find this list in this repo at SGB/words.pl. The line `:- include('words.pl').` is put at the stop of our code, and off we go. 
+This is the first 10 words, put into 3 convenient Prolog formats: 1) a list of characters, enumerate (a=1, b=2, etc.), then the word itself as a string. You can find this list in this repo at SGB/words.pl. The line `:- include('words.pl').` is put at the stop of our code, and off we go. 
 
 Solving Exercises 26-35 on p. 38 of Vol 4A (or at least some of them), seems like a good place to start.
 
@@ -1976,26 +1969,147 @@ A palindrome is a word spelled the same forward and backward. We got a non-CLP P
 :- include('words.pl').
 
 go :-
-        word([A,B,C,D,E]),
+        word([A,B,C,D,E],_,Word),
         A = E,
         B = D,
-        write([A,B,C,D,E]).
+        write(Word).
 ```
 
 For a 5-letter words, the middle letter will be the same and only checking to see if letters 1=5, and 2=4 will do it. Here are a few:
 
 ```prolog
 ?- go.
-[l,e,v,e,l]
-true ;
-[r,e,f,e,r]
-true ;
-[r,a,d,a,r]
-true ;
-[m,a,d,a,m]
-true ;
-[r,o,t,o,r]
-true ;
-[c,i,v,i,c]
+level
+refer
+radar
+madam
+rotor
+civic
+sexes
 ```
 
+And, just for a little practice building a list of palidromes using `findall`.
+
+```prolog
+:- include('words.pl').
+
+print_list([]) :- nl.
+print_list([H|T]) :- write(H), nl, print_list(T).
+
+
+go(L) :-
+        findall(X,word([A,B,_,B,A],_,X), L),
+        print_list(L).
+```
+
+#### Palindromes with DCGs
+
+The above technique works fine, but is limited, as it only works for 5 letter words.  At this point, the use of CLP with palindromes in not clear. What is
+a next step though for palindromes are DCGs or "Definite Clause Grammars."  In other words, can we develop a grammar that would 1) generate valid palindrome structure if called,
+and 2) recognize a palindrome if presented with one.  So, this is a good oppotunity to learn about DCGs with Prolog.
+
+###### Difference lists
+
+Difference lists are integral to DCGs, so we better look at those first.  In short, a difference list always keep track of two things: 1) the front part of the list that you may be interested in,
+and 2) the rest of the list that you are not, but you do not want to throw it out (since something downstream may be interested in it later).
+
+Algebraically, it mean a list X would be represented like
+
+```
+(X+A)-A
+```
+
+where X is the part of the list you are interested in, and A is the rest of it.  Note the expression is still just equal to `X`. The `X` and the `A` are called pairs, and
+since `A` may be unknown, it is sometimes called a `hole.`
+
+Suppose we want to look at examples of how to represent the list `[a,b,c]`. This could be:
+
+* `[a,b,c,d,e,f]-[d,e,f]` where you can see that `X` is `[a,b,c]` and `A` is `[d,e,f]`.
+
+* `[a,b,c]-[]` where you can see that `X` is `[a,b,c]` and `A` is `[]`.
+
+
+In Prolog, there are two ways of representing difference lists (from [here](https://stackoverflow.com/questions/26966055/understanding-difference-lists)) in a functor:
+
+* `foo([a|Tail],Tail)`
+or
+* `foo([a|Tail]-Tail)`
+
+although the 2nd version isn't really valid in modern Prologs, so we'll go with the first: the pair will take up two arguments of a functor. 
+
+A difference list in a function like `foo` above is also a terminator for recursive calls, since `a` is making an assignment (or insisting on) a value of the head of a list.
+
+As we study these lists, we're doing to work on a system that generates sequences of a's and b's. Here are the terminators for such:
+
+```prolog
+ab([a|Rest],Rest).
+ab([b|Rest],Rest).
+```
+
+Where we note the pairs, `a` and `Rest` and `b` and `Rest`. Here `ab([a|Rest],Rest).` means (a+Rest)-Rest and is meant to equal `a`. Likewise, `ab([b|Rest],Rest).` means (b+Rest)-Rest, which is
+just means to equal `b`.
+
+We find it curious to see how Prolog searches for solutions here.  `?- ab(X,Y).` evaluates to:
+
+```
+?- ab(X,Y).
+X = [a|Y] ;
+X = [b|Y].
+```
+
+We expected to see values for `X` and `Y` on both lines. If we redefine the `ab` clauses as:
+
+```prolog
+ab([a|Rest],Rest1).
+ab([b|Rest],Rest1).
+```
+
+we get
+
+```
+?- ab(X,Y).
+X = [a|_] ;
+X = [b|_].
+```
+
+This second group doesn't compile properly, as `Rest` and `Rest1` are so-called "singleton variables" and are not used in the clause at all.
+
+Hmmm...still not clear to us what's going on.  We think Prolog is simplifying its answers. Suppose we have:
+
+```prolog
+ab([a|Rest],Rest).
+ab([b|Rest],Rest).
+
+xy([R],R).
+```
+
+If we do:
+
+```
+?- xy(A,B).
+A = [B].
+```
+
+We see that `A` is supposed to be the list containing `B`. Ok--makes sense.  We expected to get:
+
+```
+A=[R], B=R
+```
+
+Now, when we do `ab(A,B).` we expected to see something like
+
+```
+A=[a|Rest], B=Rest ;
+A=[b|Rest], B=Rest
+```
+
+In both cases, it looks like Prolog is simplying things, likely because the `ab` clause contains the uninstantiated variable `Rest`. So it's thinks
+"ok, `B=Rest`, so anywhere we see `Rest`, put in a `B`." (We know `Rest` is not the name of an atom though. We didn't really expect to see R-E-S-T, but
+maybe just some reference to it.)
+
+```
+A=[a|B] ;
+A=[b|B]
+```
+
+as above.

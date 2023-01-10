@@ -1,7 +1,7 @@
 :- include('words.pl').
 
 go :-
-        word([A,B,C,D,E]),
+        word([A,B,C,D,E],_,Word),
         A = E,
         B = D,
-        write([A,B,C,D,E]).
+        write(Word).
