@@ -13,7 +13,7 @@ xy([R],R).
 cd(a,a).
 
 
+ab_other([c|L],L).
+ab_other([a|Tail],L) :- ab_other(Tail,[b|L]).
 
-pal_term([],_).
-pal_term([_|Rest],Rest).
-pal_term([X|Rest])
+

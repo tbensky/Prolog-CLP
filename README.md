@@ -6,7 +6,7 @@ CLP is a "new" (mid-2000s) addition to Prolog that didn't exist in Prolog in the
 
 In the case of CLP, Prolog's search happily continues with incomplete conclusions, hoping to firm up such (later), as part of the overall search.
 
-At this point, Prolog + CLP is a bit tough to study. Outside of Bratko, in the 4th edition of ["Prolog Programming for Artificial Intelligence"](https://www.amazon.com/Programming-Artificial-Intelligence-International-Computer/dp/0321417461/) (chapters 7 and 14), there isn't really any books on Prolog + CLP, so there's no unified source for learning or reading about it. (I'm old fashioned; I learn things best and slowly from books.)
+At this point, Prolog + CLP is a bit tough to study. Outside of Bratko, in the 4th edition of ["Prolog Programming for Artificial Intelligence"](https://www.amazon.com/Programming-Artificial-Intelligence-International-Computer/dp/0321417461/) (chapters 7 and 14) and ["CLP(FD) Constraint Logic Programming over Finite Domains"](https://github.com/Anniepoo/swiplclpfd/blob/master/clpfd.adoc) there are not really any books on Prolog + CLP, so there's no unified source for learning or reading about it. (I'm old fashioned; I learn things best and slowly from books.)
 
 It seems best then to just jump in and start experimenting with it, which is what I'll do here. (Maybe this repo will be a book someday?) This is defintely a "learn Prolog the hard way" kind of tutorial.
 
@@ -1932,15 +1932,14 @@ Note we also told Mathematica about the range of the variables too. Indeed A (=V
 
 ## Knuth's Stanford Graphbase: five-letter words
 
-In Knuth's Volume 4A book,  Ch 7 is titled "Combinatorial Searching," and is what got me started on the Langford pairs (above). On p. 9, he discusses a collection of five-letter words, a list of 5757 of them, that he
-personally compiled over 20 years for "testing many kinds of combinatorial algorithms."  
+In Knuth's Volume 4A book,  Ch 7 is titled "Combinatorial Searching," and is what got me started on the Langford pairs (above). On p. 9, he discusses a collection of five-letter words, a list of 5757 of them, that he personally compiled over 20 years for "testing many kinds of combinatorial algorithms."  
 
 Fun! So these words will be the next domain for our Prolog-searching-CLP studies.
 
 
 ### Getting the words
 
-The words can be download from [here](https://www-cs-faculty.stanford.edu/~knuth/sgb.html). A short Python script reads them in and puts them into a Prolog-friendly format, like this:
+The words can be download from [here](https://www-cs-faculty.stanford.edu/~knuth/sgb.html). (We note also that about 12,000 5 letters words are available [here](https://github.com/3b1b/videos/blob/master/_2022/wordle/data/allowed_words.txt).  We'll stick with Knuth's words for now.  A short Python script (in SGB/fix.py) reads them in and puts them into a Prolog-friendly format, like this:
 
 
 ```prolog
@@ -1957,7 +1956,7 @@ word([w,r,i,t,e],[23,18,9,20,5],'write').
 ...
 ```
 
-This is the first 10 words, put into 3 convenient Prolog formats: 1) a list of characters, enumerate (a=1, b=2, etc.), then the word itself as a string. You can find this list in this repo at SGB/words.pl. The line `:- include('words.pl').` is put at the stop of our code, and off we go. 
+This is the first 10 words, put into 3 convenient Prolog formats: 1) a list of characters, each letter enumerated with a=1, b=2, etc., then the word itself as a string. You can find this list in this repo at SGB/words.pl. The line `:- include('words.pl').` is put at the stop of our code, and off we go. 
 
 Solving Exercises 26-35 on p. 38 of Vol 4A (or at least some of them), seems like a good place to start.
 
@@ -2005,8 +2004,13 @@ go(L) :-
 #### Palindromes with DCGs
 
 The above technique works fine, but is limited, as it only works for 5 letter words.  At this point, the use of CLP with palindromes in not clear. What is
-a next step though for palindromes are DCGs or "Definite Clause Grammars."  In other words, can we develop a grammar that would 1) generate valid palindrome structure if called,
-and 2) recognize a palindrome if presented with one.  So, this is a good oppotunity to learn about DCGs with Prolog.
+a next step though for palindromes are DCGs or "Definite Clause Grammars." DCGs in Prolog are an "easy" way to generate and test lists for certain properties,
+such is if its memebers are the same forward and reverse (as in a palindrome). In other words, can we develop a grammar that would
+
+1. Generate valid palindrome structure if called,
+1. Recognize a palindrome if presented with one.  
+
+So, this is a good oppotunity to learn about DCGs with Prolog.
 
 ###### Difference lists
 
@@ -2051,7 +2055,7 @@ just means to equal `b`.
 
 We find it curious to see how Prolog searches for solutions here.  `?- ab(X,Y).` evaluates to:
 
-```
+```prolog
 ?- ab(X,Y).
 X = [a|Y] ;
 X = [b|Y].
@@ -2066,7 +2070,7 @@ ab([b|Rest],Rest1).
 
 we get
 
-```
+```prolog
 ?- ab(X,Y).
 X = [a|_] ;
 X = [b|_].
@@ -2085,14 +2089,14 @@ xy([R],R).
 
 If we do:
 
-```
+```prolog
 ?- xy(A,B).
 A = [B].
 ```
 
 We see that `A` is supposed to be the list containing `B`. Ok--makes sense.  We expected to get:
 
-```
+```prolog
 A=[R], B=R
 ```
 
@@ -2100,7 +2104,7 @@ But we suppose since `R` isn't an atom, Prolog is just tying things up--eliminat
 
 Now, when we do `ab(A,B).` we expected to see something like
 
-```
+```prolog
 A=[a|Rest], B=Rest ;
 A=[b|Rest], B=Rest
 ```
@@ -2109,7 +2113,7 @@ In both cases, it looks like Prolog is simplying things, likely because the `ab`
 "ok, `B=Rest`, so anywhere we see `Rest`, put in a `B`." (We know `Rest` is not the name of an atom though. We didn't really expect to see R-E-S-T, but
 maybe just some reference to it.)
 
-```
+```prolog
 A=[a|B] ;
 A=[b|B]
 ```
@@ -2118,7 +2122,7 @@ as above.
 
 We can get the output we more expecte by running `?- length(X,_), ab(X,Y).`, which gives
 
-```
+```prolog
 X = [a],
 Y = [] ;
 X = [b],
@@ -2180,7 +2184,7 @@ a pattern that follows he rules of the terminators + its own hole.
 
 Note (again, unknown Prolog behavior):
 
-```
+```prolog
 ?- L=[a|[a|b]].
 L = [a, a|b].
 ```
@@ -2193,7 +2197,7 @@ Note how the hole is never filled, as it's in the position of the uninstantiated
 So, we see how given the difference list terminators (the `ab` clauses), `gen_ab` *generates* output like this:
 
 
-```
+```prolog
 ?- gen_ab(X,Y).
 X = [a|Y] ;
 X = [b|Y] ;
@@ -2218,7 +2222,7 @@ And notice that the result always has the difference list format with the `Y` in
 The pattern seems "unfair" in terms of the a's and the b's. This is "unfair enumeration" which we learned from Triska [here](https://www.youtube.com/watch?v=CvLsVfq6cks). We can fix this by
 running
 
-```
+```prolog
 ?- length(X,_), gen_ab(X,Y).
 X = [a],
 Y = [] ;
@@ -2254,7 +2258,7 @@ This forces Prolog to hunt for all solutions of a given length before continuing
 
 Now for some usage. The `gen_ab` clause above can be used to *test* that an input list follows the rules of the terminators, like this:
 
-```
+```prolog
 ?- gen_ab([a,1,2,3],X).
 X = [1, 2, 3] ;
 false.
@@ -2263,7 +2267,7 @@ Here, it sees the `a` in the head and returns the rest or hole (`X`) that consis
 
 As another example, here it'll strip off both leading `a`'s, one-by-one, before stopping:
 
-```
+```prolog
 ?- gen_ab([a,a,1,2,3],X).
 X = [a, 1, 2, 3] ;
 X = [1, 2, 3] ;
@@ -2272,7 +2276,7 @@ false.
 
 Lastly, it'll strip off any `a` or `b` from the head of a list (one by one):
 
-```
+```prolog
 ?- gen_ab([a,b,a,b,1,2,3],X).
 X = [b, a, b, 1, 2, 3] ;
 X = [a, b, 1, 2, 3] ;
@@ -2321,7 +2325,27 @@ X = [b, a, b, 1, 2, 3] ;
 X = [b, b, a, 1, 2, 3] ;
 X = [b, b, b, 1, 2, 3] ;
 ```
+##### Is there another way?
+
+Is there another way to prepend append a domain of atoms (a, b, and c in this case) to a list? Here's a clever approach
+we found [here](https://www.inf.ed.ac.uk/teaching/courses/lp/2015/slides/prog6.pdf), that captures the essence of prepending a,b, or c, while preserving the tail (or hole) aspect of the list.
 
 
+```prolog
+ab_other([c|L],L).
+ab_other([a|Tail],L) :- ab_other(Tail,[b|L]).
+```
 
+You can see the first clause will put a `c` at the start of a list, while preserving the hole in `L`.  The second clause will prepend `a`
+while also preserving the hole in `L`.  Lastly, the body of the second clause takes the tail of the new list and uses it as the main target,
+and puts a `b` into its tail (while again preserving the hole in `L`). Here's it output:
 
+```prolog
+?- ab_other(Z,L).
+Z = [c|L] ;
+Z = [a, c, b|L] ;
+Z = [a, a, c, b, b|L] ;
+Z = [a, a, a, c, b, b, b|L] ;
+```
+
+The first line is clearly the action of clause #1 alone.
