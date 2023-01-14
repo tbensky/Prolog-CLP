@@ -6,9 +6,14 @@ CLP is a "new" (mid-2000s) addition to Prolog that didn't exist in Prolog in the
 
 In the case of CLP, Prolog's search happily continues with incomplete conclusions, hoping to firm up such (later), as part of the overall search.
 
-At this point, Prolog + CLP is a bit tough to study. Outside of Bratko, in the 4th edition of ["Prolog Programming for Artificial Intelligence"](https://www.amazon.com/Programming-Artificial-Intelligence-International-Computer/dp/0321417461/) (chapters 7 and 14) and ["CLP(FD) Constraint Logic Programming over Finite Domains"](https://github.com/Anniepoo/swiplclpfd/blob/master/clpfd.adoc) there are not really any books on Prolog + CLP, so there's no unified source for learning or reading about it. (I'm old fashioned; I learn things best and slowly from books.)
+At this point, Prolog + CLP is a bit tough to study. I can only find a few solid references on it:
 
-It seems best then to just jump in and start experimenting with it, which is what I'll do here. (Maybe this repo will be a book someday?) This is defintely a "learn Prolog the hard way" kind of tutorial.
+* Bratko, in the 4th edition of ["Prolog Programming for Artificial Intelligence"](https://www.amazon.com/Programming-Artificial-Intelligence-International-Computer/dp/0321417461/) (chapters 7 and 14)
+* ["CLP(FD) Constraint Logic Programming over Finite Domains"](https://github.com/Anniepoo/swiplclpfd/blob/master/clpfd.adoc) 
+* ["Constraint Processing](https://www.amazon.com/Constraint-Processing-Kaufmann-Artificial-Intelligence/dp/1558608907) by Dechter, Ch 15.
+
+
+So, it seems best then to just jump in and start experimenting with it, which is what I'll do here. (Maybe this repo will be a book someday?) This is defintely a "learn Prolog the hard way" kind of tutorial.
 
 # Contents
 
@@ -2005,17 +2010,62 @@ go(L) :-
 
 The above technique works fine, but is limited, as it only works for 5 letter words.  At this point, the use of CLP with palindromes in not clear. What is
 a next step though for palindromes are DCGs or "Definite Clause Grammars." DCGs in Prolog are an "easy" way to generate and test lists for certain properties,
-such is if its memebers are the same forward and reverse (as in a palindrome). In other words, can we develop a grammar that would
+such is if its members are the same forward and reverse (as in a palindrome). In other words, can we develop a grammar that would
 
 1. Generate valid palindrome structure if called,
 1. Recognize a palindrome if presented with one.  
 
-So, this is a good oppotunity to learn about DCGs with Prolog.
+The big hint for this was a search for "palindromes in Prolog" that result in this code
+
+```prolog
+palindrome --> [].
+palindrome --> [_].
+palindrome --> [X], palindrome, [X].
+```
+
+whick works wonderfully as in:
+
+```prolog
+?- word(X,_,_), palindrome(X,[]).
+X = [l, e, v, e, l] ;
+X = [r, e, f, e, r] ;
+X = [r, a, d, a, r] ;
+X = [m, a, d, a, m] ;
+X = [r, o, t, o, r] ;
+X = [c, i, v, i, c] ;
+X = [s, e, x, e, s] ;
+X = [s, o, l, o, s] 
+```
+
+but we have no idea how this works.  We understand that `-->` is just syntatic-sugar in Prolog, so doing a `listing(palindrome)` gives
+
+```prolog
+?- listing(palindrome).
+palindrome(A, B) :-
+    A=B.
+palindrome([_|A], A).
+palindrome([A|B], C) :-
+    palindrome(B, D),
+    D=[A|C].
+```
+But still, we cannot explain how this works.  So, this is a good oppotunity to learn about DCGs with Prolog.
 
 ###### Difference lists
 
 Difference lists are integral to DCGs, so we better look at those first.  In short, a difference list always keep track of two things: 1) the front part of the list that you may be interested in,
-and 2) the rest of the list that you are not, but you do not want to throw it out (since something downstream may be interested in it later).
+and 2) the rest of the list that you are not, but you do not want to throw it out (since something downstream may be interested in it later). 
+
+Difference lists and their implementation in Prolog are hard to understand. They remind me a little bit of using a wildcard character at at OS prompt like
+
+```
+$ ls prog*
+```
+
+which will show all files that start with `prog` and can have whatever ending you wish. Here difference lists are sort of the the `prog` + the `*`.
+
+Here's what I think they mean in a nutshell in Prolog:  you make a list containing any needed information, but you always tack an uninstantiated, unbound (fix word), variable
+to the list as its tail.  This way as the list is passed around, you can add things to the list via this unbound tail. But as you do so, don't forget to always add a new
+unbound tail, so it's always there.
 
 Algebraically, it mean a list X would be represented like
 
