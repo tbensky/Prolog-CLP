@@ -2008,9 +2008,10 @@ go(L) :-
 
 #### Palindromes with DCGs
 
-The above technique works fine, but is limited, as it only works for 5 letter words.  At this point, the use of CLP with palindromes in not clear. What is
-a next step though for palindromes are DCGs or "Definite Clause Grammars." DCGs in Prolog are an "easy" way to generate and test lists for certain properties,
-such is if its members are the same forward and reverse (as in a palindrome). In other words, can we develop a grammar that would
+The above technique works fine, but is limited, as it only works for 5 letter words.  At this point, the use of CLP with palindromes in not clear. 
+
+What is a next step though (for palindromes) are DCGs or "Definite Clause Grammars." DCGs in Prolog are an "easy" way to generate and test lists for certain properties,
+such is if its members are the same forward and reverse (as in a palindrome). In other words, can may be able to develop a grammar that would
 
 1. Generate valid palindrome structure if called,
 1. Recognize a palindrome if presented with one.  
@@ -2052,10 +2053,10 @@ But still, we cannot explain how this works.  So, this is a good oppotunity to l
 
 ###### Difference lists
 
-Difference lists are integral to DCGs, so we better look at those first.  In short, a difference list always keep track of two things: 1) the front part of the list that you may be interested in,
-and 2) the rest of the list that you are not, but you do not want to throw it out (since something downstream may be interested in it later). 
+It turns out that difference lists are integral to DCGs, so we better look at those first.  In short, a difference list always keep track of two things: 1) the front part of the list that you may be interested in,
+and 2) the rest of the list that you are not, but do not want to throw out (since something downstream may be interested in it later). 
 
-Difference lists and their implementation in Prolog are hard to understand. They remind me a little bit of using a wildcard character at at OS prompt like
+I have found difference lists and their implementation in Prolog hard to understand. They remind me a little bit of using a wildcard character at at OS prompt like
 
 ```
 $ ls prog*
@@ -2063,9 +2064,13 @@ $ ls prog*
 
 which will show all files that start with `prog` and can have whatever ending you wish. Here difference lists are sort of the the `prog` + the `*`.
 
-Here's what I think they mean in a nutshell in Prolog:  you make a list containing any needed information, but you always tack an uninstantiated, unbound (fix word), variable
-to the list as its tail.  This way as the list is passed around, you can add things to the list via this unbound tail. But as you do so, don't forget to always add a new
-unbound tail, so it's always there.
+Here's what I think they mean in a nutshell in Prolog:
+
+* think of using a list in Prolog to keep track of some result your code is working on.  How do modify the list as you go?  Perhaps `append` comes to mind? Difference lists can be used in this regard.
+
+* Suppose you make a list containing any needed information, but you always tack an uninstantiated, ununified, variable to the list as its tail.  This 
+way as the list is passed around, you can add things to the list by unifying this ununified tail. But as you do so, don't forget to always add a new unbound tail, so it's always there 
+for something later. 
 
 Algebraically, it mean a list X would be represented like
 
@@ -2399,3 +2404,50 @@ Z = [a, a, a, c, b, b, b|L] ;
 ```
 
 The first line is clearly the action of clause #1 alone.
+
+
+#### More on difference lists
+
+We found a *really nice* reference [here](https://tmcs.math.unideb.hu/load_doc.php?p=185&t=doc), called "Difference lists in Prolog" by Attila Csenki. (This author also has two books out on Prolog.) In particular, let's look at appending two lists.  If you're studying Prolog, explaining how the traditional `append` predicate works is really difficult. (Clocksin says "Do not worry if would not have thought of this yourself."  Hint: the successor idea in Prolog help some.) 
+
+Anyway, back at it. Append using difference lists using this simple clause `app_dl` (for append with difference lists):
+
+```prolog
+app_dl(A,B,B,A).
+```
+
+Suppose we want to append `[d,e]` to `[a,b,c]`.  We'll call this as follows:
+
+```prolog
+?- app_dl([a,b,c|X],X,[d,e],Z).
+```
+
+As you can see `A` is unified to the difference list `[a,b,c|X]`: some atoms, a, b, and c, and some unknown `X` as its tail.  Next, `B` is bound to `X`.  Next again, B is bound to `[d,e]`. But since B is bound to X, the `[d,e]` now makes it into `X`, which is that unknown tail of `A`.  Now unifying `Z` to `A` means `Z` will be `[a,b,c,d,e]` as shown here:
+
+```prolog
+?- app_dl1([a,b,c|X],X,[d,e],Z).
+X = [d, e],
+Z = [a, b, c, d, e].
+```
+
+Now, we suppose a weakness here is that `Z` no longer has a hole at the end of it, so `Z` is no longer a difference list, and quick appending to it is no longer possible.  If we do this, however:
+
+```prolog
+?- app_dl1([a,b,c|X],X,[d,e|Y],Z).
+X = [d, e],
+Z = [a, b, c, d, e|Y].
+```
+
+Then `Z` does now have an ununified variable `Y` at the end of it for future modifications, maybe something like this:
+
+```prolog
+?- app_dl1([a,b,c|X],X,[d,e|Y],Z), app_dl1(Z,Y,[f,g,h,i], L).
+X = [d, e, f, g, h, i],
+Y = [f, g, h, i],
+Z = L, L = [a, b, c, d, e, f, g, h, i].
+```
+
+
+
+
+
