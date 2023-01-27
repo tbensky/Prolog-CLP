@@ -2038,7 +2038,17 @@ X = [s, e, x, e, s] ;
 X = [s, o, l, o, s] 
 ```
 
-but we have no idea how this works.  We understand that `-->` is just syntatic-sugar in Prolog, so doing a `listing(palindrome)` gives
+but we have no idea how this is working. 
+
+Interpreting the code above, we see the following:
+
+* Clause 1: An empty list is a palindrome.
+
+* Clause 2: A single character is a palindrome (i.e. 'a' is a palindrome). We think this it the driving logic and "base case" of this formulation.
+
+* Clause 3: A palindome is some character X + a palindrome + the same character X again.
+
+We understand that `-->` is just syntatic-sugar in Prolog, so doing a `listing(palindrome)` gives
 
 ```prolog
 ?- listing(palindrome).
@@ -2049,7 +2059,33 @@ palindrome([A|B], C) :-
     palindrome(B, D),
     D=[A|C].
 ```
-But still, we cannot explain how this works.  So, this is a good oppotunity to learn about DCGs with Prolog.
+
+This clause work as follows:
+
+```prolog
+?- palindrome([a,b,a],[]).
+true ;
+false.
+
+?- palindrome([a,b,c],[]).
+false.
+```
+
+The DCGs are cool because they'll also generate structures of unbound variables that also fit as beingm palindromes:
+
+```
+?- palindrome(L,[]).
+L = [] ;
+L = [_] ;
+L = [_A, _A] ;
+L = [_A, _, _A] ;
+L = [_A, _B, _B, _A] ;
+L = [_A, _B, _, _B, _A] ;
+L = [_A, _B, _C, _C, _B, _A] ;
+L = [_A, _B, _C, _, _C, _B, _A] 
+```
+
+You can see that it 1) Will verify that a given list is a palindrome and 2) suggest a list structure that a palindrome must follow. But still, we cannot explain how this works.  So, this is a good oppotunity to learn about DCGs with Prolog.
 
 ###### Difference lists
 
@@ -2380,30 +2416,6 @@ X = [b, a, b, 1, 2, 3] ;
 X = [b, b, a, 1, 2, 3] ;
 X = [b, b, b, 1, 2, 3] ;
 ```
-##### Is there another way?
-
-Is there another way to prepend append a domain of atoms (a, b, and c in this case) to a list? Here's a clever approach
-we found [here](https://www.inf.ed.ac.uk/teaching/courses/lp/2015/slides/prog6.pdf), that captures the essence of prepending a,b, or c, while preserving the tail (or hole) aspect of the list.
-
-
-```prolog
-ab_other([c|L],L).
-ab_other([a|Tail],L) :- ab_other(Tail,[b|L]).
-```
-
-You can see the first clause will put a `c` at the start of a list, while preserving the hole in `L`.  The second clause will prepend `a`
-while also preserving the hole in `L`.  Lastly, the body of the second clause takes the tail of the new list and uses it as the main target,
-and puts a `b` into its tail (while again preserving the hole in `L`). Here's it output:
-
-```prolog
-?- ab_other(Z,L).
-Z = [c|L] ;
-Z = [a, c, b|L] ;
-Z = [a, a, c, b, b|L] ;
-Z = [a, a, a, c, b, b, b|L] ;
-```
-
-The first line is clearly the action of clause #1 alone.
 
 
 #### More on difference lists
@@ -2447,6 +2459,103 @@ Y = [f, g, h, i],
 Z = L, L = [a, b, c, d, e, f, g, h, i].
 ```
 
+Clocksin (in Clause and Effect, p.59) has a very nice discussion on difference lists.  He also addressed is via the append operation. In his work, suppose
+you have two difference lists, L1-L2 and L3-L4. This means L1 has L2 as it's hole and L3 has L4 as its hole. So if `L1=[a,b,c]`, L1-L2 would be `[a,b,c|L2] - L2`,
+and if `L3=[d,e]`, L3-L4 would be `[1,2,3|L4]-L4`. He writes an append `app` like this
+
+```prolog
+app(L1,L2,L3,L4,L1,L4).
+```
+
+which works as
+
+```prolog
+?- app([a,b,c|L2],L2,[d,e|L4],L4,X,Y).
+L2 = [d, e|Y],
+L4 = Y,
+X = [a, b, c, d, e|Y].
+```
+
+He also goes on to remark that it might be clearer to define it as
+
+```prolog
+app(A,B,B,C,A,C).
+```
+One can also stress the idea of a difference list, defining it as
+
+```prolog
+app(A-B,B-C,A-C).
+```
+which also works
+
+```prolog
+?- app([a,b,c|L2]-L2,[d,e|L4]-L4,X-Y).
+L2 = [d, e|Y],
+L4 = Y,
+X = [a, b, c, d, e|Y].
+```
+
+The A to B, B to C, and A to C pattern is pretty standard.
+
+#### Back to palindromes
+
+So with the difference lists in mind, we're back to deciphering what this
+
+```prolog
+palindrome --> [].
+palindrome --> [_].
+palindrome --> [X], palindrome, [X].
+```
+
+does.  (Let's rename it `p`, so we'll look at
+
+```prolog
+p --> [].
+p --> [_].
+p --> [X], p, [X].
+```
+
+It helps to look at the Prolog this is translated into, by doing a `listings(p).`, for which we get:
+
+```prolog
+p(A, B) :- A=B.
+
+p([_|A], A).
+
+p([A|B], C) :-
+    p(B, D),
+    D=[A|C].
+```
+
+Here's what we've learned:
+
+* the `p(A,B) :- A=B.` is the `p-->[]` line. Why? Well, recall this is called like `p([a,b,a],[]).` As we'll see the `[]` is passed in as an empty accumulator list, to be used later. Turns out this DCG clause means "an empty list is a palindrome," whic his kind of an "oh wow" logic statement, but this clause is not even necessary. So, the palindrom definition could be:
+
+```prolog
+p --> [_].
+p --> [X], p, [X].
+```
+
+
+* The `p([_|A], A).` is tricky. It it a difference list, which means we're looking for a list whose head is any atom, and whose tail we can pass along to the next use in some clause.  But, all it says is a single atom, meaning the `_` is a palindrome. Translation: Any single digit is a palindrome, so "a" is palindrome (same forward and backward).  Again, this logic meaning is cool, but secretly this will serve as the "base case" for the recursive part of this definition.
+
+* Now for the recursive part
+
+```prolog
+p([A|B], C) :-
+    p(B, D),
+    D=[A|C].
+```
+
+Forgetting palindromes for a moment, this clause is just list list reverser. If you look at it, the head of the incoming list `[A|C]`, which is `A` is put on to the head of list `D`, via the `[A|C]` construct. How is this a list reverser? Because the `A` is always stuck on as the *head* of list `D`. It works like this. If we call `p([a,b,a],[]).` here's what we'll get
+
+* `[A|B]` will come in as `A=a` and `B=[b,a]`. The call to `p` will be `p([b,a],[])`, then `p([a],[])`. So, you can see how the list is getting whittled down, and will eventually hit the base base to teminate the recursion.
+
+But, here's the thing with this approach. In the `p([_|A],A).` clause, `A` is that hole (and in this case an accumulator of the reversed list), that keeps growing with the list reversal aspect of this algorithm.
+
+| [_|A] | A |
+-------------
+|       |   |
 
 
 
