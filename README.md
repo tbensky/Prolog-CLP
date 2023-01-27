@@ -2529,15 +2529,27 @@ p([A|B], C) :-
 
 Here's what we've learned:
 
-* the `p(A,B) :- A=B.` is the `p-->[]` line. Why? Well, recall this is called like `p([a,b,a],[]).` As we'll see the `[]` is passed in as an empty accumulator list, to be used later. Turns out this DCG clause means "an empty list is a palindrome," whic his kind of an "oh wow" logic statement, but this clause is not even necessary. So, the palindrom definition could be:
+* the `p(A,B) :- A=B.` is the `p-->[]` line. Why? This means "an empty list is a palindrome." This is one of those fun "oh wow" logic statements, but this clause is not necessary for the definition of a palindrome. Recall this is called like `p([a,b,a],[]).` As we'll see the `[]` is passed in as an empty accumulator list, to be used later.  So, `p(A,B) :- A = B.` can only succeed if `A` is also empty (again: an empty list is a palindrome).
+
+So, the palindrome definition could be:
 
 ```prolog
 p --> [_].
 p --> [X], p, [X].
 ```
 
+This means all we have to interpret is
 
-* The `p([_|A], A).` is tricky. It it a difference list, which means we're looking for a list whose head is any atom, and whose tail we can pass along to the next use in some clause.  But, all it says is a single atom, meaning the `_` is a palindrome. Translation: Any single digit is a palindrome, so "a" is palindrome (same forward and backward).  Again, this logic meaning is cool, but secretly this will serve as the "base case" for the recursive part of this definition.
+```prolog
+p([_|A], A).
+
+p([A|B], C) :-
+    p(B, D),
+    D=[A|C].
+```
+
+
+* The `p([_|A], A).` is tricky. It it a difference list, which means we're looking for a list whose head is any atom, and whose tail we can pass along to the next use in some clause.  But, all it says is a single atom  (meaning the `_`) is a palindrome. Translation: Any single digit is a palindrome, so "a" for example is palindrome (same forward and backward).  Again, this logic meaning is cool, but secretly this will serve as the "base case" for the recursive part of this definition.
 
 * Now for the recursive part
 
@@ -2553,9 +2565,9 @@ Forgetting palindromes for a moment, this clause is just a list reverser. If you
 
 But, here's the thing with this approach. In the `p([_|A],A).` clause, `A` is that hole (and in this case an accumulator of the reversed list), that keeps growing with the list reversal aspect of this algorithm.
 
-| [_\|A] | A  |
-|-------|----|
-| A=[]  | [] |
+| [_\|A] | A  | p([_|A],A) fails or succeeds? |
+|-------|----|--------------------------------|
+| _ is [a,b,a], A=[]  | [] | fails since the head [a,b,a] is not a single atom. |
 
 
 
