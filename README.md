@@ -2553,9 +2553,9 @@ Forgetting palindromes for a moment, this clause is just list list reverser. If 
 
 But, here's the thing with this approach. In the `p([_|A],A).` clause, `A` is that hole (and in this case an accumulator of the reversed list), that keeps growing with the list reversal aspect of this algorithm.
 
-| [_|A] | A |
--------------
-|       |   |
+| [_|A] | A  |
+|-------|----|
+| A=[]  | [] |
 
 
 
