@@ -2565,7 +2565,7 @@ Forgetting palindromes for a moment, this clause is just a list reverser. If you
 
 But, here's the thing with this approach. In the `p([_|A],A).` clause, `A` is that hole (and in this case an accumulator of the reversed list), that keeps growing with the list reversal aspect of this algorithm.
 
-| [_\|A] | A  | p([_|A],A) fails or succeeds? |
+| [_\|A] | A  | p([_\|A],A) fails or succeeds? |
 |-------|----|--------------------------------|
 | _ is [a,b,a], A=[]  | [] | fails since the head [a,b,a] is not a single atom. |
 
