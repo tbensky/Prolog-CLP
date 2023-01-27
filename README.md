@@ -2563,11 +2563,16 @@ Forgetting palindromes for a moment, this clause is just a list reverser. If you
 
 * `[A|B]` will come in as `A=a` and `B=[b,a]`. The call to `p` will be `p([b,a],[])`, then `p([a],[])`. So, you can see how the list is getting whittled down, and will eventually hit the base base to teminate the recursion.
 
-But, here's the thing with this approach. In the `p([_|A],A).` clause, `A` is that hole (and in this case an accumulator of the reversed list), that keeps growing with the list reversal aspect of this algorithm.
+But, here's the thing with this approach. In the `p([_|A],A).` clause, `A` is that hole (and in this case an accumulator of the reversed list), that keeps growing with the list reversal aspect of this algorithm. Let's
+rewrite this as
 
-| [_\|A] | A  | p([_\|A],A) fails or succeeds? |
+`p([_|Tail],A) :- Tail = A.`
+
+| [_\|Tail] | A  | p([_\|A],A) fails or succeeds? |
 |-------|----|--------------------------------|
-| _ is [a,b,a], A=[]  | [] | fails since the head [a,b,a] is not a single atom. |
+| _ is [a,b,a], Tail=[]  | [] | fails since the head [a,b,a] is not a single atom. |
+| _ is [b,a], Tail = [a] | [a] | fails since [b,a] is not a single atom. |
+| _ is [b], Tail = [b,a] | [b,a] | Succeeds since [b] is a single atom and Tail = [b,a] 
 
 
 
