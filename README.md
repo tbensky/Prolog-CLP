@@ -2547,13 +2547,13 @@ p([A|B], C) :-
     D=[A|C].
 ```
 
-Forgetting palindromes for a moment, this clause is just list list reverser. If you look at it, the head of the incoming list `[A|C]`, which is `A` is put on to the head of list `D`, via the `[A|C]` construct. How is this a list reverser? Because the `A` is always stuck on as the *head* of list `D`. It works like this. If we call `p([a,b,a],[]).` here's what we'll get
+Forgetting palindromes for a moment, this clause is just a list reverser. If you look at it, the head of the incoming list `[A|C]`, which is `A` is put on to the head of list `D`, via the `[A|C]` construct. How is this a list reverser? Because the `A` is always stuck on as the *head* of list `D`. It works like this. If we call `p([a,b,a],[]).` here's what we'll get
 
 * `[A|B]` will come in as `A=a` and `B=[b,a]`. The call to `p` will be `p([b,a],[])`, then `p([a],[])`. So, you can see how the list is getting whittled down, and will eventually hit the base base to teminate the recursion.
 
 But, here's the thing with this approach. In the `p([_|A],A).` clause, `A` is that hole (and in this case an accumulator of the reversed list), that keeps growing with the list reversal aspect of this algorithm.
 
-| [_|A] | A  |
+| [_\|A] | A  |
 |-------|----|
 | A=[]  | [] |
 
