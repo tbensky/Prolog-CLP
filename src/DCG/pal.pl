@@ -1,6 +1,6 @@
 %palindrome(A, B) := A = B, write('clause 1'), nl.
 palindrome([_|Tail], A) :- Tail = A, write(['clause 2',Tail,A]), nl.
-palindrome([Head|Tail], C) :- write([Tail,[Head|C]]), nl, palindrome(Tail, [Head|C]).
+%palindrome([Head|Tail], C) :- write(['clause 3',Tail,[Head|C]]), nl, palindrome(Tail, [Head|C]).
 
 /*
 

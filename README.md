@@ -2089,10 +2089,10 @@ You can see that it 1) Will verify that a given list is a palindrome and 2) sugg
 
 ###### Difference lists
 
-It turns out that difference lists are integral to DCGs, so we better look at those first.  In short, a difference list always keep track of two things: 1) the front part of the list that you may be interested in,
-and 2) the rest of the list that you are not, but do not want to throw out (since something downstream may be interested in it later). 
+It turns out that difference lists are integral to DCGs, so we better look at those first.  In short, a difference list always keep track of two things: 1) the front part of the list that you may be immediately interested in,
+and 2) the tail of the list that you may not be at the moment. The tail is not even instantiated, but your algorithm may want to instantiate to something later on.
 
-I have found difference lists and their implementation in Prolog hard to understand. They remind me a little bit of using a wildcard character at at OS prompt like
+I have found difference lists and their implementation in Prolog difficult to understand. They remind me a little bit of using a wildcard character at at OS prompt like
 
 ```
 $ ls prog*
@@ -2100,13 +2100,23 @@ $ ls prog*
 
 which will show all files that start with `prog` and can have whatever ending you wish. Here difference lists are sort of the the `prog` + the `*`.
 
-Here's what I think they mean in a nutshell in Prolog:
+Triska, in his Power of Prolog videos has a very good video on [difference lists](https://youtu.be/6egAF4-HVzw). Here's my takeaways from his presentation:
 
-* think of using a list in Prolog to keep track of some result your code is working on.  How do modify the list as you go?  Perhaps `append` comes to mind? Difference lists can be used in this regard.
+* Think of a list `L1`. You can write it like `L1 = [a,b,c|L2]`. This is a perfectly acceptable thing to do in Prolog. The first part of the list will be `a,b,c`, and the tail will be uninstantiated, and held by the variable `L2`. In Prolog this is all told an "incomplete data structure," and is a perfectly valid list.
 
-* Suppose you make a list containing any needed information, but you always tack an uninstantiated, ununified, variable to the list as its tail.  This 
-way as the list is passed around, you can add things to the list by unifying this ununified tail. But as you do so, don't forget to always add a new unbound tail, so it's always there 
-for something later. 
+* You can now go on and start specifying what `L2` might be with additional clauses like this:
+
+```prolog
+L1=[a,b,c|L2], L2=[1,2,3|L3], L3=[d,e,f|L4]
+```
+
+* If you do this, `L1` will come out to be `L1=[a,b,c,1,2,3,d,e,f|L4]`, which itself is a difference list, with `L4` being uninstantiated. Note, no calls to `append` were used anywhere. 
+
+* Of such code, Triska says "you are describing `L2` more and more."
+
+Now, as stated in "The Art of Prolog"  (2nd ed.), p. 284, "logical expressions are unified, not evaluated." Thus, we should always be looking for how the variables in an expression might be unified and not how the expression as a whole might come out. With difference lists, we're looking out for the ultimate evolution of  uninstantiated tail.
+
+Thus (as both Triska and "Art of Prolog" state), there is no reason to use the `=` operator above in the expressions above. We could define `-` and say things like `L1-L4`
 
 Algebraically, it mean a list X would be represented like
 
@@ -2133,289 +2143,6 @@ or
 although the 2nd version isn't really valid in modern Prologs, so we'll go with the first: the pair will take up two arguments of a functor. 
 
 A difference list in a function like `foo` above is also a terminator for recursive calls, since `a` is making an assignment (or insisting on) a value of the head of a list.
-
-As we study these lists, we're doing to work on a system that generates sequences of a's and b's. Here are the terminators for such:
-
-```prolog
-ab([a|Rest],Rest).
-ab([b|Rest],Rest).
-```
-
-Where we note the pairs, `a` and `Rest` and `b` and `Rest`. Here `ab([a|Rest],Rest).` means (a+Rest)-Rest and is meant to equal `a`. Likewise, `ab([b|Rest],Rest).` means (b+Rest)-Rest, which is
-just means to equal `b`.
-
-We find it curious to see how Prolog searches for solutions here.  `?- ab(X,Y).` evaluates to:
-
-```prolog
-?- ab(X,Y).
-X = [a|Y] ;
-X = [b|Y].
-```
-
-We expected to see values for `X` and `Y` on both lines. If we redefine the `ab` clauses as:
-
-```prolog
-ab([a|Rest],Rest1).
-ab([b|Rest],Rest1).
-```
-
-we get
-
-```prolog
-?- ab(X,Y).
-X = [a|_] ;
-X = [b|_].
-```
-
-This second group doesn't compile properly, as `Rest` and `Rest1` are so-called "singleton variables" and are not used in the clause at all.
-
-Hmmm...still not clear to us what's going on.  We think Prolog is simplifying its answers. Suppose we have:
-
-```prolog
-ab([a|Rest],Rest).
-ab([b|Rest],Rest).
-
-xy([R],R).
-```
-
-If we do:
-
-```prolog
-?- xy(A,B).
-A = [B].
-```
-
-We see that `A` is supposed to be the list containing `B`. Ok--makes sense.  We expected to get:
-
-```prolog
-A=[R], B=R
-```
-
-But we suppose since `R` isn't an atom, Prolog is just tying things up--eliminating uninstantiated variables in solutions; we've never seen this behavior before.
-
-Now, when we do `ab(A,B).` we expected to see something like
-
-```prolog
-A=[a|Rest], B=Rest ;
-A=[b|Rest], B=Rest
-```
-
-In both cases, it looks like Prolog is simplying things, likely because the `ab` clause contains the uninstantiated variable `Rest`. So it's thinks
-"ok, `B=Rest`, so anywhere we see `Rest`, put in a `B`." (We know `Rest` is not the name of an atom though. We didn't really expect to see R-E-S-T, but
-maybe just some reference to it.)
-
-```prolog
-A=[a|B] ;
-A=[b|B]
-```
-
-as above.
-
-We can get the output we more expecte by running `?- length(X,_), ab(X,Y).`, which gives
-
-```prolog
-X = [a],
-Y = [] ;
-X = [b],
-Y = [] ;
-X = [a, _A],
-Y = [_A] ;
-X = [b, _A],
-Y = [_A] ;
-X = [a, _A, _B],
-Y = [_A, _B] ;
-X = [b, _A, _B],
-Y = [_A, _B] ;
-X = [a, _A, _B, _C],
-Y = [_A, _B, _C] ;
-X = [b, _A, _B, _C],
-Y = [_A, _B, _C] ;
-X = [a, _A, _B, _C, _D],
-Y = [_A, _B, _C, _D] ;
-X = [b, _A, _B, _C, _D],
-Y = [_A, _B, _C, _D] ;
-X = [a, _A, _B, _C, _D, _E],
-Y = [_A, _B, _C, _D, _E] ;
-X = [b, _A, _B, _C, _D, _E],
-Y = [_A, _B, _C, _D, _E] 
-```
-
-In this case, the list differencing is clear between `X` and `Y`. The `length` constraint forces Prolog to generate lists grouped by their length. So a difference
-list of length 1 is the `X=[a]` and `Y=[]` then `X=[b]` and `Y=[]` combination. Of length 2, the `X = [a, _A], Y = [_A]`  and `X = [b, _A], Y = [_A]` combination.
-
-
-Now let's move on to a clause that will generate output from the `ab` clauses, like this:
-
-```prolog
-gen_ab(List,Rest) :- ab(List,Rest).
-
-
-gen_ab(List1,Rest) :- 
-                    ab(List1,List2),
-                    gen_ab(List2,Rest).
-```
-
-The first clause just echos the direct `ab` calls from above. What about the second?
-
-This is where the hole (or rest, or tail) of `List1` (or `List2`) now gets its chance to become populated, as it's next
-passed back into `gen_ab` as the first parameter.  Tracing:
-
-* After the first `ab(List1,List2)` call, `List1` will be `[a|List2]`
-
-* In the `gen_ab(List2,Rest).`, `List2` will also become `[a|List2]`. 
-
-* As before, `List2` will now become `[a|Rest]`.
-
-* So with `List1=[a|List2]` and `List2=[a|Rest]`, `List1` will become `[a|[a|Rest]]` which Prolog evaluates to `[a,a|Rest]`. 
-
-* The `List2` to `List2` connection between the `ab()` call and the `gen_ab()` call is key here. 
-
-** Not sure how to highlight this right now, but this idea is the key functionality here: the hole in the original list, gets filled with
-a pattern that follows he rules of the terminators + its own hole.
-
-Note (again, unknown Prolog behavior):
-
-```prolog
-?- L=[a|[a|b]].
-L = [a, a|b].
-```
-Apparently in a single list, Prolog wants only one tail--everything else is the head.
-
-> The key take-away from this construct is: The hole of the original list, now becomes instantiated as allowed by the terminators, generating its own new hole each time. 
-
-Note how the hole is never filled, as it's in the position of the uninstantiated `Rest` list throughout. It's always available in the list to successfully match the "leftover junk" in a tail of a list, whose head strictly matches the rules of the terminators.
-
-So, we see how given the difference list terminators (the `ab` clauses), `gen_ab` *generates* output like this:
-
-
-```prolog
-?- gen_ab(X,Y).
-X = [a|Y] ;
-X = [b|Y] ;
-X = [a, a|Y] ;
-X = [a, b|Y] ;
-X = [a, a, a|Y] ;
-X = [a, a, b|Y] ;
-X = [a, a, a, a|Y] ;
-X = [a, a, a, b|Y] ;
-X = [a, a, a, a, a|Y] ;
-X = [a, a, a, a, b|Y] ;
-X = [a, a, a, a, a, a|Y] ;
-X = [a, a, a, a, a, b|Y] ;
-X = [a, a, a, a, a, a, a|Y] ;
-X = [a, a, a, a, a, a, b|Y] ;
-X = [a, a, a, a, a, a, a, a|Y] ;
-X = [a, a, a, a, a, a, a, b|Y] ;
-```
-
-And notice that the result always has the difference list format with the `Y` in there.
-
-The pattern seems "unfair" in terms of the a's and the b's. This is "unfair enumeration" which we learned from Triska [here](https://www.youtube.com/watch?v=CvLsVfq6cks). We can fix this by
-running
-
-```prolog
-?- length(X,_), gen_ab(X,Y).
-X = [a],
-Y = [] ;
-X = [b],
-Y = [] ;
-X = [a, _A],
-Y = [_A] ;
-X = [b, _A],
-Y = [_A] ;
-X = [a, a],
-Y = [] ;
-X = [a, b],
-Y = [] ;
-X = [b, a],
-Y = [] ;
-X = [b, b],
-Y = [] ;
-X = [a, _A, _B],
-Y = [_A, _B] ;
-X = [b, _A, _B],
-Y = [_A, _B] ;
-X = [a, a, _A],
-Y = [_A] ;
-X = [a, b, _A],
-Y = [_A] ;
-X = [a, a, a],
-Y = [] 
-```
-
-This forces Prolog to hunt for all solutions of a given length before continuing.
-
-##### Bi-directional
-
-Now for some usage. The `gen_ab` clause above can be used to *test* that an input list follows the rules of the terminators, like this:
-
-```prolog
-?- gen_ab([a,1,2,3],X).
-X = [1, 2, 3] ;
-false.
-```
-Here, it sees the `a` in the head and returns the rest or hole (`X`) that consists of everything else other that isn't a single `a`. 
-
-As another example, here it'll strip off both leading `a`'s, one-by-one, before stopping:
-
-```prolog
-?- gen_ab([a,a,1,2,3],X).
-X = [a, 1, 2, 3] ;
-X = [1, 2, 3] ;
-false.
-```
-
-Lastly, it'll strip off any `a` or `b` from the head of a list (one by one):
-
-```prolog
-?- gen_ab([a,b,a,b,1,2,3],X).
-X = [b, a, b, 1, 2, 3] ;
-X = [a, b, 1, 2, 3] ;
-X = [b, 1, 2, 3] ;
-X = [1, 2, 3] ;
-false.
-```
-
-
-And, as we've already seen, it can also be used to *generate* lists that follow the rules of the terminators:
-
-```prolog
-?- gen_ab(X,[1,2,3]).
-X = [a, 1, 2, 3] ;
-X = [b, 1, 2, 3] ;
-X = [a, a, 1, 2, 3] ;
-X = [a, b, 1, 2, 3] ;
-X = [a, a, a, 1, 2, 3] ;
-X = [a, a, b, 1, 2, 3] ;
-X = [a, a, a, a, 1, 2, 3] ;
-X = [a, a, a, b, 1, 2, 3] ;
-X = [a, a, a, a, a, 1, 2, 3] ;
-X = [a, a, a, a, b, 1, 2, 3] ;
-X = [a, a, a, a, a, a, 1, 2, 3] ;
-X = [a, a, a, a, a, b, 1, 2, 3] ;
-```
-
-Note the tail of `[1,2,3]` doesn't follow the terminator rules, so it just gets tacked on to the end of any list it generates that does follow the rules.
-
-To enumerate things more fairly:
-
-```prolog
-?- length(X,_), gen_ab(X,[1,2,3]).
-X = [a, 1, 2, 3] ;
-X = [b, 1, 2, 3] ;
-X = [a, a, 1, 2, 3] ;
-X = [a, b, 1, 2, 3] ;
-X = [b, a, 1, 2, 3] ;
-X = [b, b, 1, 2, 3] ;
-X = [a, a, a, 1, 2, 3] ;
-X = [a, a, b, 1, 2, 3] ;
-X = [a, b, a, 1, 2, 3] ;
-X = [a, b, b, 1, 2, 3] ;
-X = [b, a, a, 1, 2, 3] ;
-X = [b, a, b, 1, 2, 3] ;
-X = [b, b, a, 1, 2, 3] ;
-X = [b, b, b, 1, 2, 3] ;
-```
 
 
 #### More on difference lists
@@ -2573,6 +2300,9 @@ rewrite this as
 | _ is [a,b,a], Tail=[]  | [] | fails since the head [a,b,a] is not a single atom. |
 | _ is [b,a], Tail = [a] | [a] | fails since [b,a] is not a single atom. |
 | _ is [b], Tail = [b,a] | [b,a] | Succeeds since [b] is a single atom and Tail = [b,a] 
+
+So as you can see, `p([_|A],A).` succeeds if a list is passed in that has a single atom as a head, and whose tail matches the reverse of the first part of the list.  We think
+of the single character as a 'pivot point' for the palindrome. 
 
 
 
