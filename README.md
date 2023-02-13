@@ -2116,7 +2116,32 @@ L1=[a,b,c|L2], L2=[1,2,3|L3], L3=[d,e,f|L4]
 
 Now, as stated in "The Art of Prolog"  (2nd ed.), p. 284, "logical expressions are unified, not evaluated." Thus, we should always be looking for how the variables in an expression might be unified and not how the expression as a whole might come out. With difference lists, we're looking out for the ultimate evolution of  uninstantiated tail.
 
-Thus (as both Triska and "Art of Prolog" state), there is no reason to use the `=` operator above in the expressions above. We could define `-` and say things like `L1-L4`
+Thus (as both Triska and "Art of Prolog" state), there is no reason to use the `=` operator above in the expressions above. We could define predicates to keep track of the list and it's uninstantiated tail like this:
+
+```prolog
+p(L1,L2),
+q(L2,L3),
+r(L3,L4).
+```
+
+In this case, the predicates can be as simple as
+
+```prolog
+p([a,b,c|L],L).
+q([1,2,3|L],L).
+r([d,e,f|L],L).
+```
+
+to produce the same as the results above, or as arbitrary complicated as needed. The only constraint on these in the spririt of difference lists is that they maintain the uninstantated tail, so the terminal difference list, will still be a difference list. 
+
+Now, supposing we collected the effects of `p`, `q`, and `r` into a clause `h` like this:
+
+```prolog
+h(L1,L4) :- 
+        p(L1,L2),
+        q(L2,L3),
+        r(L3,L4).
+```
 
 Algebraically, it mean a list X would be represented like
 
