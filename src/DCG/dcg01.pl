@@ -27,3 +27,12 @@ ab_other([a|Tail],L) :- ab_other(Tail,[b|L]).
 palindrome --> [].
 palindrome --> [_].
 palindrome --> [X], palindrome, [X].
+
+p([a,b,c|L],L).
+q([1,2,3|L],L).
+r([d,e,f|L],L).
+
+h(L1,L4) :- 
+        p(L1,L2),
+        q(L2,L3),
+        r(L3,L4).

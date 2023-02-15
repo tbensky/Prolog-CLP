@@ -2071,7 +2071,7 @@ false.
 false.
 ```
 
-The DCGs are cool because they'll also generate structures of unbound variables that also fit as beingm palindromes:
+The DCGs are cool because they'll also **generate** structures of unbound variables that also fit as beingm palindromes:
 
 ```
 ?- palindrome(L,[]).
@@ -2085,12 +2085,20 @@ L = [_A, _B, _C, _C, _B, _A] ;
 L = [_A, _B, _C, _, _C, _B, _A] 
 ```
 
-You can see that it 1) Will verify that a given list is a palindrome and 2) suggest a list structure that a palindrome must follow. But still, we cannot explain how this works.  So, this is a good oppotunity to learn about DCGs with Prolog.
+So, you can see that a DCG will 1) verify that a given list is a palindrome and 2) suggest a list structure that a palindrome must follow. But still, we cannot explain how this works.  So, this is a good oppotunity to learn about DCGs with Prolog.
 
 ###### Difference lists
 
-It turns out that difference lists are integral to DCGs, so we better look at those first.  In short, a difference list always keep track of two things: 1) the front part of the list that you may be immediately interested in,
-and 2) the tail of the list that you may not be at the moment. The tail is not even instantiated, but your algorithm may want to instantiate to something later on.
+It turns out that difference lists are integral to DCGs, so we better look at those first.  In short, a difference list always keeps track of two things: 1) the front part of the list that you may be immediately interested in,
+and 2) the tail of the list that you may not be at the moment. 
+
+The tail of a difference list is an uninstantiated variable that your algorithm may can instantiate to something later on. A difference list is a list like other in Prolog; it's just a list who's tail is an uninstantiated variable. So, here's a difference list:
+
+```prolog
+L = [a,b,c|X].
+```
+
+Note the uninstantiated variable `X` as the tail.
 
 I have found difference lists and their implementation in Prolog difficult to understand. They remind me a little bit of using a wildcard character at at OS prompt like
 
@@ -2114,7 +2122,9 @@ L1=[a,b,c|L2], L2=[1,2,3|L3], L3=[d,e,f|L4]
 
 * Of such code, Triska says "you are describing `L2` more and more."
 
-Now, as stated in "The Art of Prolog"  (2nd ed.), p. 284, "logical expressions are unified, not evaluated." Thus, we should always be looking for how the variables in an expression might be unified and not how the expression as a whole might come out. With difference lists, we're looking out for the ultimate evolution of  uninstantiated tail.
+And, as you work with difference lists, instantiating the tail, you should always be sure to keep maintaining that tail of the the list.
+
+Now, as stated in "The Art of Prolog"  (2nd ed.), p. 284, "logical expressions are unified, not evaluated." Thus, we should always be looking for how the variables in an expression might be unified and not how the expression as a whole might come out. With difference lists, we're looking out for the ultimate evolution of uninstantiated tail.
 
 Thus (as both Triska and "Art of Prolog" state), there is no reason to use the `=` operator above in the expressions above. We could define predicates to keep track of the list and it's uninstantiated tail like this:
 
@@ -2132,7 +2142,7 @@ q([1,2,3|L],L).
 r([d,e,f|L],L).
 ```
 
-to produce the same as the results above, or as arbitrary complicated as needed. The only constraint on these in the spririt of difference lists is that they maintain the uninstantated tail, so the terminal difference list, will still be a difference list. 
+to produce the same as the results above, or as arbitrarily complicated as needed. The only constraint on these in the spirit of difference lists is that they maintain the uninstantated tail, so the terminal difference list, will still be a difference list. 
 
 Now, supposing we collected the effects of `p`, `q`, and `r` into a clause `h` like this:
 
@@ -2142,6 +2152,17 @@ h(L1,L4) :-
         q(L2,L3),
         r(L3,L4).
 ```
+
+Doing a call like `h(L1,L2)` will come out to be
+
+```prolog
+?- h(L1,L2).
+L1 = [a, b, c, 1, 2, 3, d, e, f|...].
+```
+
+Prolog seems to interpret this as a difference list, so puts the `...` at the location of the uninstantiated `L2`.
+
+
 
 Algebraically, it mean a list X would be represented like
 
