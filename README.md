@@ -2089,8 +2089,10 @@ So, you can see that a DCG will 1) verify that a given list is a palindrome and 
 
 ###### Difference lists
 
-It turns out that difference lists are integral to DCGs, so we better look at those first.  In short, a difference list always keeps track of two things: 1) the front part of the list that you may be immediately interested in,
-and 2) the tail of the list that you may not be at the moment. 
+It turns out that difference lists are integral to DCGs, so we better look at those first.  In short, a difference list always keeps track of two things: 
+
+1. The front part of the list that you may be immediately interested in,
+2. The tail of the list that you may not be at the moment. 
 
 The tail of a difference list is an uninstantiated variable that your algorithm may can instantiate to something later on. A difference list is a list like other in Prolog; it's just a list who's tail is an uninstantiated variable. So, here's a difference list:
 
@@ -2098,7 +2100,20 @@ The tail of a difference list is an uninstantiated variable that your algorithm 
 L = [a,b,c|X].
 ```
 
-Note the uninstantiated variable `X` as the tail.
+Note the uninstantiated variable `X` as the tail. You can find this written as
+
+```prolog
+L-X=[a,b,c]
+```
+
+or
+
+
+``prolog
+[a,b,c]=L-X
+```
+
+which empasizes the "difference" nature here.
 
 I have found difference lists and their implementation in Prolog difficult to understand. They remind me a little bit of using a wildcard character at at OS prompt like
 
@@ -2122,7 +2137,7 @@ L1=[a,b,c|L2], L2=[1,2,3|L3], L3=[d,e,f|L4]
 
 * Of such code, Triska says "you are describing `L2` more and more."
 
-And, as you work with difference lists, instantiating the tail, you should always be sure to keep maintaining that tail of the the list.
+And, as you work with difference lists, instantiating the tail, you should always be sure to keep maintaining an uninstantiated tail of the the new list. This keeps a difference list always evolving, but still a difference list.
 
 Now, as stated in "The Art of Prolog"  (2nd ed.), p. 284, "logical expressions are unified, not evaluated." Thus, we should always be looking for how the variables in an expression might be unified and not how the expression as a whole might come out. With difference lists, we're looking out for the ultimate evolution of uninstantiated tail.
 
@@ -2163,37 +2178,9 @@ L1 = [a, b, c, 1, 2, 3, d, e, f|...].
 Prolog seems to interpret this as a difference list, so puts the `...` at the location of the uninstantiated `L2`.
 
 
-
-Algebraically, it mean a list X would be represented like
-
-```
-(X+A)-A
-```
-
-where X is the part of the list you are interested in, and A is the rest of it.  Note the expression is still just equal to `X`. The `X` and the `A` are called pairs, and
-since `A` may be unknown, it is sometimes called a `hole.`
-
-Suppose we want to look at examples of how to represent the list `[a,b,c]`. This could be:
-
-* `[a,b,c,d,e,f]-[d,e,f]` where you can see that `X` is `[a,b,c]` and `A` is `[d,e,f]`.
-
-* `[a,b,c]-[]` where you can see that `X` is `[a,b,c]` and `A` is `[]`.
-
-
-In Prolog, there are two ways of representing difference lists (from [here](https://stackoverflow.com/questions/26966055/understanding-difference-lists)) in a functor:
-
-* `foo([a|Tail],Tail)`
-or
-* `foo([a|Tail]-Tail)`
-
-although the 2nd version isn't really valid in modern Prologs, so we'll go with the first: the pair will take up two arguments of a functor. 
-
-A difference list in a function like `foo` above is also a terminator for recursive calls, since `a` is making an assignment (or insisting on) a value of the head of a list.
-
-
 #### More on difference lists
 
-We found a *really nice* reference [here](https://tmcs.math.unideb.hu/load_doc.php?p=185&t=doc), called "Difference lists in Prolog" by Attila Csenki. (This author also has two books out on Prolog.) In particular, let's look at appending two lists.  If you're studying Prolog, explaining how the traditional `append` predicate works is really difficult. (Clocksin says "Do not worry if would not have thought of this yourself."  Hint: the successor idea in Prolog help some.) 
+We found a *really nice* reference [here](https://tmcs.math.unideb.hu/load_doc.php?p=185&t=doc), called "Difference lists in Prolog" by Attila Csenki. (This author also has two books out on Prolog.) In particular, let's look at appending two lists.  If you're studying Prolog, explaining how the traditional `append` predicate works is really difficult. (Clocksin says "Do not worry if would not have thought of this yourself."  Hint: the successor idea in Prolog will help some.) 
 
 Anyway, back at it. Append using difference lists using this simple clause `app_dl` (for append with difference lists):
 
@@ -2267,8 +2254,6 @@ L2 = [d, e|Y],
 L4 = Y,
 X = [a, b, c, d, e|Y].
 ```
-
-The A to B, B to C, and A to C pattern is pretty standard.
 
 #### Back to palindromes
 
