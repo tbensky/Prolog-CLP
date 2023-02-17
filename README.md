@@ -2180,7 +2180,9 @@ Prolog seems to interpret this as a difference list, so puts the `...` at the lo
 
 #### More on difference lists
 
-We found a *really nice* reference [here](https://tmcs.math.unideb.hu/load_doc.php?p=185&t=doc), called "Difference lists in Prolog" by Attila Csenki. (This author also has two books out on Prolog.) In particular, let's look at appending two lists.  If you're studying Prolog, explaining how the traditional `append` predicate works is really difficult. (Clocksin says "Do not worry if would not have thought of this yourself."  Hint: the successor idea in Prolog will help some.) 
+We found a *really nice* reference [here](https://tmcs.math.unideb.hu/load_doc.php?p=185&t=doc), called "Difference lists in Prolog" by Attila Csenki. (This author also has two books out on Prolog.) In particular, let's look at appending two lists.  
+
+If you're studying Prolog, explaining how the traditional `append` predicate works is  difficult. (Clocksin says "Do not worry if would not have thought of this yourself."  Hint: the successor idea in Prolog will help some.) 
 
 Anyway, back at it. Append using difference lists using this simple clause `app_dl` (for append with difference lists):
 
@@ -2219,8 +2221,7 @@ Y = [f, g, h, i],
 Z = L, L = [a, b, c, d, e, f, g, h, i].
 ```
 
-Clocksin (in Clause and Effect, p.59) has a very nice discussion on difference lists.  He also addressed is via the append operation. In his work, suppose
-you have two difference lists, L1-L2 and L3-L4. This means L1 has L2 as it's hole and L3 has L4 as its hole. So if `L1=[a,b,c]`, L1-L2 would be `[a,b,c|L2] - L2`,
+Clocksin (in Clause and Effect, p.59) has a very nice discussion on difference lists.  He also addressed is via the append operation. In his work, suppose you have two difference lists, L1-L2 and L3-L4. This means L1 has L2 as it's hole and L3 has L4 as its hole. So if `L1=[a,b,c]`, L1-L2 would be `[a,b,c|L2] - L2`,
 and if `L3=[d,e]`, L3-L4 would be `[1,2,3|L4]-L4`. He writes an append `app` like this
 
 ```prolog
@@ -2265,7 +2266,30 @@ palindrome --> [_].
 palindrome --> [X], palindrome, [X].
 ```
 
-does.  (Let's rename it `p`, so we'll look at
+does.
+
+The `-->` symbol is Prolog is not anything new, it's just syntactic sugar for the following.
+
+Returning to this for a moment:
+
+```prolog
+h(L1,L4) :- 
+        p(L1,L2),
+        q(L2,L3),
+        r(L3,L4).
+```
+
+This gets a little messy with all of the list naming and all. But note the pattern. `L1` is the first list in `p` and `L4` is the last list in `r`.  The pattern is essentially that `L1` is the main list and `L4` is its uninstantiated tail (sometimes called the "hole").  As we learned, a series of predicates like this go in and describe the hole in more and more detail. In fact, `p` allows `L2` to work on what the hole of `L1` will be.  `L3` works on it more, and we of course leave the list with `L4` still being the hole.
+
+This call all be represented with the `-->` notation, as
+
+```prolog
+h --> p, q, r.
+```
+
+Neat huh? The `-->` merely chains `p`, `q`, and `r` together, coupling their holes as per the pattern above.
+
+So back to the palindromes, let's rename it `p`, so we'll look at:
 
 ```prolog
 p --> [].
